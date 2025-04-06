@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "es6",                          // Hoặc phiên bản ECMAScript bạn muốn
+        "module": "commonjs",                     // Hoặc module bạn muốn sử dụng
+        "outDir": "./dist",                       // Thư mục đầu ra
+        "rootDir": "./src",                       // Thư mục gốc chứa mã nguồn
+        "strict": true,                            // Bật kiểm tra nghiêm ngặt
+        "esModuleInterop": true,                   // Cho phép sử dụng CommonJS và ES Module
+        "skipLibCheck": true                       // Bỏ qua kiểm tra kiểu cho các thư viện
+    },
+    "include": [
+        "src/**/*"                                  // Chỉ định đường dẫn tới thư mục src
+    ],
+    "exclude": [
+        "node_modules",
+        "./src/@types" ,
+        "**/*.spec.ts"                             // Bỏ qua các tệp kiểm tra
+    ]
+}
