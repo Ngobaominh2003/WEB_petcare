@@ -43,7 +43,7 @@ const Users: React.FC = () => {
     try {
       await axios.delete(`http://localhost:5000/api/users/${id}`);
       alert("Xóa người dùng thành công");
-      fetchUsers(); // ✅ Tải lại danh sách người dùng
+      fetchUsers(); 
     } catch (error) {
       console.error("Lỗi khi xóa người dùng:", error);
       alert("Không thể xóa người dùng");

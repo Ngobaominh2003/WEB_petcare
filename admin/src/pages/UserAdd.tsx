@@ -36,7 +36,7 @@ const AddUser: React.FC = () => {
       alert('Thêm người dùng thành công!');
       console.log(response.data);
   
-      window.location.reload(); // 👉 Tải lại trang sau khi thêm
+      window.location.reload(); 
     } catch (error) {
       console.error('Lỗi thêm người dùng:', error);
       alert('Thêm người dùng thất bại!');
