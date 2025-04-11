@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; 
 import Navigation from "../components/Navigation";
 import DieuKhien from "../components/DieuKhien";
 import AddUser from "./UserAdd";
@@ -19,6 +20,7 @@ const Users: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const navigate = useNavigate(); // Use navigate hook
 
   // Lấy danh sách người dùng từ API
   const fetchUsers = async () => {
@@ -51,6 +53,11 @@ const Users: React.FC = () => {
   // Chọn người dùng để xem chi tiết hoặc sửa
   const handleRowClick = (user: User) => {
     setSelectedUser(user);
+  };
+
+  // Chuyển hướng khi click "Chi tiết"
+  const handleDetailClick = (userId: number) => {
+    navigate(`/UserCT/${userId}`); // Chuyển hướng đến trang chi tiết người dùng với userId
   };
 
   // Hiển thị loader trong khi tải dữ liệu
@@ -107,7 +114,7 @@ const Users: React.FC = () => {
                         className="btn view-btn"
                         onClick={(e) => {
                           e.stopPropagation();
-                          alert(JSON.stringify(user, null, 2)); // Hoặc mở modal chi tiết
+                          handleDetailClick(user.tai_khoan_id); 
                         }}
                       >
                         Chi tiết

@@ -19,7 +19,7 @@ export const createNhaCungCap = async (
   tai_khoan_id: number,
   ten_nha_cung_cap: string,
   ma_so_thue: string,
-  giay_phep_kinh_doanh: string | null,
+  giay_phep_kinh_doanh: string,
   dia_chi: string,
   loai_hinh: string,
   mo_ta: string | null
