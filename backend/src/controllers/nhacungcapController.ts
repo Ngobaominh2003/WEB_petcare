@@ -1,31 +1,46 @@
 import { Request, Response } from 'express';
-import * as NhaCungCapModel from '../models/NhaCungCap'; // Import model
+import * as NhaCungCapModel from '../models/NhaCungCap'; 
 
+export const getDanhSachNhaCungCap = async (req: Request, res: Response) => {
+  try {
+    const rows = await NhaCungCapModel.getDanhSachNhaCungCap(); // Get the data
+    res.status(200).json(rows); // Respond with the list of nhà cung cấp
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: `Lỗi khi lấy danh sách nhà cung cấp: ${err.message}` });
+    } else {
+      res.status(500).json({ message: 'Lỗi không xác định khi lấy danh sách nhà cung cấp' });
+    }
+  }
+};
 // Thêm nhà cung cấp
 export const createNhaCungCap = async (req: Request, res: Response): Promise<void> => {
-  const { tai_khoan_id, ten_nha_cung_cap, ma_so_thue, dia_chi, loai_hinh, mo_ta } = req.body;
-  
-  // Lấy tên tệp ảnh từ req.file (giấy phép kinh doanh), nếu không có tệp thì giay_phep_kinh_doanh sẽ là null
-  const giay_phep_kinh_doanh: string | null = req.file?.filename || null;
-
   try {
-    // Tạo nhà cung cấp
+    // Lấy dữ liệu từ request body
+    const { tai_khoan_id, ten_nha_cung_cap, ma_so_thue, dia_chi, loai_hinh, mo_ta } = req.body;
+
+    // Kiểm tra tệp giấy phép kinh doanh
+    const giay_phep_kinh_doanh: string = req.file?.filename || 'default_filename.jpg'; // Gán tên tệp mặc định nếu không có tệp
+
+    // Gọi phương thức tạo nhà cung cấp từ model
     await NhaCungCapModel.createNhaCungCap(
       tai_khoan_id,
       ten_nha_cung_cap,
       ma_so_thue,
-      giay_phep_kinh_doanh, // Lưu tên tệp ảnh vào CSDL
+      giay_phep_kinh_doanh,  // Giấy phép kinh doanh không thể là null
       dia_chi,
-      loai_hinh, // Loại hình doanh nghiệp
-      mo_ta // Mô tả doanh nghiệp
+      loai_hinh,
+      mo_ta
     );
+
+    // Trả về phản hồi thành công
     res.status(201).json({ message: 'Nhà cung cấp đã được tạo thành công' });
   } catch (error) {
+    // Log lỗi và trả về thông báo lỗi
     console.error('Lỗi khi thêm nhà cung cấp:', error);
     res.status(500).json({ message: 'Lỗi khi thêm nhà cung cấp', error });
   }
 };
-
 // Cập nhật nhà cung cấp
 export const updateNhaCungCap = async (req: Request, res: Response): Promise<void> => {
   const { tai_khoan_id, ten_nha_cung_cap, ma_so_thue, dia_chi, loai_hinh, mo_ta } = req.body;

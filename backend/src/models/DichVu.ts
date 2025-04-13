@@ -1,105 +1,212 @@
-    import connection from '../config/db';  // Kết nối đến cơ sở dữ liệu
-    import { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
+import { RowDataPacket } from "mysql2/promise";
+import connection from "../config/db"; // Kết nối database
 
-    // Hàm hiển thị tất cả dịch vụ
-    export const hienThiTatCaDichVu = async (): Promise<RowDataPacket[]> => {
-        const query = `SELECT * FROM dich_vu ORDER BY ngay_tao DESC`;
+// Định nghĩa interface cho dịch vụ
+interface DichVu extends RowDataPacket {
+  dich_vu_id: number;
+  ten_dich_vu: string;
+  mo_ta: string;
+  logo?: string;
+  gia: number;
+  ngay_tao: Date;
+  tai_khoan_id: number;
+  luot_dung: number;
+  trang_thai: number;
+  xet_duyet: "chờ duyệt" | "đã duyệt" | "không duyệt";
+}
 
-        try {
-            const [rows] = await connection.execute<RowDataPacket[]>(query);
-            return rows;
-        } catch (error) {
-            if (error instanceof Error) {
-                console.error('Lỗi khi hiển thị danh sách dịch vụ:', error.message);
-            } else {
-                console.error('Lỗi không xác định khi hiển thị danh sách dịch vụ:', error);
-            }
-            throw error; // Throw lại lỗi để đảm bảo hàm trả về Promise bị reject
-        }
-    };
+export const dichVuModel = {
+  // Thêm mới dịch vụ
+  async themDichVu(dichVu: DichVu) {
+    const query = `
+        INSERT INTO dich_vu (ten_dich_vu, mo_ta, logo, gia, tai_khoan_id, luot_dung, trang_thai, xet_duyet)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+    const values = [
+      dichVu.ten_dich_vu,
+      dichVu.mo_ta,
+      dichVu.logo || null, // Nếu không có logo, để null
+      dichVu.gia,
+      dichVu.tai_khoan_id,
+      dichVu.luot_dung || 0,
+      dichVu.trang_thai || 1,
+      dichVu.xet_duyet || "chờ duyệt", // Nếu không có giá trị xet_duyet, mặc định là 'chờ duyệt'
+    ];
 
-    // Hàm tìm kiếm dịch vụ theo tên
-    export const timKiemDichVu = async (tenDichVu: string): Promise<RowDataPacket[]> => {
-        const query = `SELECT * FROM dich_vu WHERE ten_dich_vu LIKE ?`;
-        const values = [`%${tenDichVu}%`];
+    try {
+      const [result] = await connection.execute(query, values);
+      return result;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        throw new Error(`Lỗi khi thêm dịch vụ: ${err.message}`);
+      } else {
+        throw new Error("Lỗi không xác định khi thêm dịch vụ");
+      }
+    }
+  },
 
-        try {
-            const [rows] = await connection.execute<RowDataPacket[]>(query, values);
-            return rows;
-        } catch (error) {
-            if (error instanceof Error) {
-                console.error('Lỗi khi tìm kiếm dịch vụ:', error.message);
-            } else {
-                console.error('Lỗi không xác định khi tìm kiếm dịch vụ:', error);
-            }
-            throw error; // Throw lại lỗi để đảm bảo hàm trả về Promise bị reject
-        }
-    };
-
-    // Hàm thêm dịch vụ mới
-    export const themDichVu = async (tenDichVu: string, moTa: string, logo: string | null, gia: number): Promise<number> => {
-        // Kiểm tra giá trị trước khi đưa vào truy vấn
-        if (!tenDichVu || !moTa || gia === undefined) {
-            throw new Error('Các tham số không hợp lệ. Vui lòng kiểm tra dữ liệu đầu vào.');
-        }
-
-        const query = `INSERT INTO dich_vu (ten_dich_vu, mo_ta, logo, gia) VALUES (?, ?, ?, ?)`;
-        const values = [tenDichVu, moTa, logo, gia];
-
-        try {
-            const [result] = await connection.execute<ResultSetHeader>(query, values);
-            return result.insertId; // Trả về ID của dịch vụ mới được thêm
-        } catch (error) {
-            if (error instanceof Error) {
-                console.error('Lỗi khi thêm dịch vụ:', error.message);
-            } else {
-                console.error('Lỗi không xác định khi thêm dịch vụ:', error);
-            }
-            throw error; // Throw lại lỗi để đảm bảo hàm trả về Promise bị reject
-        }
-    };
-
-    export const suaDichVu = async (
-        dichVuId: number,
-        tenDichVu: string,
-        moTa: string,
-        logo: string | null,
-        gia: number
-    ): Promise<number> => {
-        const query = `
-            UPDATE dich_vu 
-            SET ten_dich_vu = ?, mo_ta = ?, logo = ?, gia = ? 
-            WHERE dich_vu_id = ?
-        `;
-        const values = [tenDichVu, moTa, logo, gia, dichVuId];
+  // Cập nhật dịch vụ chỉ với các trường có thay đổi
+  async capNhatDichVu(dichVuId: number, dichVu: Partial<DichVu>) {
+    const fieldsToUpdate = [];
+    const values = [];
+  
+    // Kiểm tra nếu có các trường cần cập nhật
+    if (dichVu.ten_dich_vu) {
+      fieldsToUpdate.push("ten_dich_vu = ?");
+      values.push(dichVu.ten_dich_vu);
+    }
+    if (dichVu.mo_ta) {
+      fieldsToUpdate.push("mo_ta = ?");
+      values.push(dichVu.mo_ta);
+    }
+    if (dichVu.logo !== undefined) {
+      fieldsToUpdate.push("logo = ?");
+      values.push(dichVu.logo);
+    }
+    if (dichVu.gia !== undefined) {
+      fieldsToUpdate.push("gia = ?");
+      values.push(dichVu.gia);
+    }
+    if (dichVu.luot_dung !== undefined) {
+      fieldsToUpdate.push("luot_dung = ?");
+      values.push(dichVu.luot_dung);
+    }
+    if (dichVu.trang_thai !== undefined) {
+      fieldsToUpdate.push("trang_thai = ?");
+      values.push(dichVu.trang_thai);
+    }
+    if (dichVu.xet_duyet !== undefined) {
+      fieldsToUpdate.push("xet_duyet = ?");
+      values.push(dichVu.xet_duyet);
+    }
     
-        try {
-            const [result] = await connection.execute<ResultSetHeader>(query, values);
-            return result.affectedRows; // Return the number of affected rows
-        } catch (error) {
-            if (error instanceof Error) {
-                console.error('Lỗi khi cập nhật dịch vụ:', error.message);
-            } else {
-                console.error('Lỗi không xác định khi cập nhật dịch vụ:', error);
-            }
-            throw error; // Throw the error to ensure the Promise is rejected properly
-        }
-    };
+    // Thêm phần xử lý cho tai_khoan_id
+    if (dichVu.tai_khoan_id !== undefined) {
+      fieldsToUpdate.push("tai_khoan_id = ?");
+      values.push(dichVu.tai_khoan_id);
+    }
+  
+    // Nếu không có trường nào để cập nhật
+    if (fieldsToUpdate.length === 0) {
+      throw new Error("Không có trường nào để cập nhật");
+    }
+  
+    // Truy vấn SQL để cập nhật dữ liệu
+    const query = `
+      UPDATE dich_vu
+      SET ${fieldsToUpdate.join(", ")}
+      WHERE dich_vu_id = ?
+    `;
+    values.push(dichVuId);
+  
+    try {
+      // Ghi log để kiểm tra các giá trị truyền vào
+      console.log("Câu truy vấn:", query);
+      console.log("Giá trị truyền vào:", values);
+  
+      // Thực thi truy vấn
+      const [result] = await connection.execute(query, values);
+  
+      // Kiểm tra nếu affectedRows > 0 thì cập nhật thành công
+      const affectedRows = (result as { affectedRows: number }).affectedRows;
+      if (affectedRows === 0) {
+        throw new Error("Không tìm thấy dịch vụ để cập nhật");
+      }
+      return result;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        throw new Error(`Lỗi khi cập nhật dịch vụ: ${err.message}`);
+      } else {
+        throw new Error("Lỗi không xác định khi cập nhật dịch vụ");
+      }
+    }
+  }
+,  
+  
+  
+  // Hiển thị danh sách tất cả dịch vụ
+  async getDanhSachDichVu() {
+    const query = `SELECT * FROM dich_vu`;
+    try {
+      const [rows] = await connection.execute(query);
+      return rows;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        throw new Error(`Lỗi khi hiển thị danh sách dịch vụ: ${err.message}`);
+      } else {
+        throw new Error("Lỗi không xác định khi hiển thị danh sách dịch vụ");
+      }
+    }
+  },
 
-    // Hàm xóa dịch vụ
-    export const xoaDichVu = async (dichVuId: number): Promise<number> => {
-        const query = `DELETE FROM dich_vu WHERE dich_vu_id = ?`;
-        const values = [dichVuId];
+  // Hiển thị dịch vụ theo tai_khoan_id
+  async getDichVuTheoTaiKhoanId(taiKhoanId: number) {
+    const query = `SELECT * FROM dich_vu WHERE tai_khoan_id = ?`;
+    try {
+      const [rows] = await connection.execute(query, [taiKhoanId]);
+      return rows;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        throw new Error(
+          `Lỗi khi lấy dịch vụ theo tai_khoan_id: ${err.message}`
+        );
+      } else {
+        throw new Error("Lỗi không xác định khi lấy dịch vụ theo tai_khoan_id");
+      }
+    }
+  },
 
-        try {
-            const [result] = await connection.execute<ResultSetHeader>(query, values);
-            return result.affectedRows; // Trả về số lượng hàng đã bị xóa
-        } catch (error) {
-            if (error instanceof Error) {
-                console.error('Lỗi khi xóa dịch vụ:', error.message);
-            } else {
-                console.error('Lỗi không xác định khi xóa dịch vụ:', error);
-            }
-            throw error; // Throw lại lỗi để đảm bảo hàm trả về Promise bị reject
-        }
-    };
+  // Xóa dịch vụ theo dich_vu_id
+  async xoaDichVu(dichVuId: number) {
+    const query = `DELETE FROM dich_vu WHERE dich_vu_id = ?`;
+    try {
+      const [result] = await connection.execute(query, [dichVuId]);
+      return result;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        throw new Error(`Lỗi khi xóa dịch vụ: ${err.message}`);
+      } else {
+        throw new Error("Lỗi không xác định khi xóa dịch vụ");
+      }
+    }
+  },
+
+  // Tìm dịch vụ theo tên gần đúng
+  async timDichVuTheoTen(tenDichVu: string) {
+    const query = `SELECT * FROM dich_vu WHERE ten_dich_vu LIKE ?`;
+    try {
+      // Sử dụng dấu `%` để tìm kiếm tên gần đúng (tên chứa chuỗi tìm kiếm)
+      const [rows] = await connection.execute(query, [`%${tenDichVu}%`]);
+      return rows;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        throw new Error(`Lỗi khi tìm dịch vụ: ${err.message}`);
+      } else {
+        throw new Error("Lỗi không xác định khi tìm dịch vụ");
+      }
+    }
+  },
+  // Lấy danh sách dịch vụ theo điều kiện
+  async getDichVuTheoDieuKien() {
+    const query = `
+          SELECT dv.*, tk.vai_tro
+          FROM dich_vu dv
+          INNER JOIN tai_khoan tk ON dv.tai_khoan_id = tk.tai_khoan_id
+          WHERE dv.trang_thai = 1
+            AND dv.xet_duyet = 'đã duyệt'
+            AND tk.vai_tro = 'nha_cung_cap'
+            AND tk.trang_thai = 'hoat_dong'
+            AND tk.trang_thai_xet_duyet = 'đã duyệt'
+        `;
+
+    try {
+      const [rows] = await connection.execute(query);
+      return rows as RowDataPacket[];
+    } catch (err: unknown) {
+      throw new Error(
+        "Lỗi khi lấy danh sách dịch vụ: " +
+          (err instanceof Error ? err.message : "Lỗi không xác định")
+      );
+    }
+  },
+};

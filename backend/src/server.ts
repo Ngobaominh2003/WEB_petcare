@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import userRoutes from './routes/userRoutes';
+import userRoutes from './routes/taikhoanRoutes';
 import nguoidungRoutes from './routes/nguoidungRoutes';
 import nhacungcapRoutes from './routes/nhacungcapRoutes';
 import dichvuRoutes from './routes/dichvuRoutes';  

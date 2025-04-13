@@ -1,68 +1,141 @@
-import { Request, Response } from 'express';
-import { hienThiTatCaDichVu, timKiemDichVu, themDichVu, suaDichVu, xoaDichVu } from '../models/DichVu';  // Đảm bảo bạn nhập đúng đường dẫn
+import { Request, Response } from "express";
+import { dichVuModel } from "../models/DichVu";
 
-
-export const getAllDichVu = async (req: Request, res: Response): Promise<void> => {
+  // Controller thêm dịch vụ
+  export const themDichVu = async (req: Request, res: Response) => {
     try {
-        const dichVuList = await hienThiTatCaDichVu();
-        res.status(200).json(dichVuList);
-    } catch (error) {
-        res.status(500).json({ message: 'Lỗi khi lấy danh sách dịch vụ.', error: error instanceof Error ? error.message : error });
+      const dichVu = req.body;
+
+      // Kiểm tra nếu có logo được upload
+      const logoPath = req.file ? req.file.filename : null; // Lưu đường dẫn ảnh
+
+      // Cập nhật logo vào dữ liệu dịch vụ
+      const dichVuWithLogo = { ...dichVu, logo: logoPath };
+
+      const result = await dichVuModel.themDichVu(dichVuWithLogo);
+      res.status(200).json({ message: "Dịch vụ đã được thêm", result });
+    } catch (err) {
+      res.status(500).json({ message: "Lỗi khi thêm dịch vụ" });
     }
+  };
+
+// Controller cập nhật dịch vụ
+export const capNhatDichVu = async (req: Request, res: Response) => {
+  const dichVuId = parseInt(req.params.id, 10);
+  const dichVu = req.body;
+
+  try {
+    let logoPath: string | null = null;
+
+    // Kiểm tra nếu có logo mới được upload
+    if (req.file) {
+      logoPath = req.file.filename; // Cập nhật đường dẫn logo nếu có
+    }
+
+    // Cập nhật dịch vụ (với hoặc không có logo mới)
+    const dichVuWithLogo = { ...dichVu, logo: logoPath };
+
+    const result = await dichVuModel.capNhatDichVu(dichVuId, dichVuWithLogo);
+
+    res.status(200).json({ message: "Dịch vụ đã được cập nhật thành công", result });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: `Lỗi khi cập nhật dịch vụ: ${err.message}` });
+    } else {
+      res.status(500).json({ message: "Lỗi không xác định khi cập nhật dịch vụ" });
+    }
+  }
 };
 
-export const searchDichVu = async (req: Request, res: Response): Promise<void> => {
-    const { tenDichVu } = req.query as { tenDichVu: string };
 
-    try {
-        const ketQua = await timKiemDichVu(tenDichVu);
-        res.status(200).json(ketQua);
-    } catch (error) {
-        res.status(500).json({ message: 'Lỗi khi tìm kiếm dịch vụ.', error: error instanceof Error ? error.message : error });
+// Controller lấy danh sách tất cả dịch vụ
+export const getDanhSachDichVu = async (req: Request, res: Response) => {
+  try {
+    const result = await dichVuModel.getDanhSachDichVu();
+    res.status(200).json(result);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res
+        .status(500)
+        .json({
+          message: `Lỗi khi hiển thị danh sách dịch vụ: ${err.message}`,
+        });
+    } else {
+      res
+        .status(500)
+        .json({ message: "Lỗi không xác định khi hiển thị danh sách dịch vụ" });
     }
+  }
 };
 
-export const addDichVu = async (req: Request, res: Response): Promise<void> => {
-    const { tenDichVu, moTa, gia } = req.body;
-    const logo = req.file ? req.file.filename : null;
-
-    try {
-        const newDichVuId = await themDichVu(tenDichVu, moTa, logo, gia);
-        res.status(201).json({ message: 'Dịch vụ mới đã được thêm.', dichVuId: newDichVuId });
-    } catch (error) {
-        res.status(500).json({ message: 'Lỗi khi thêm dịch vụ.', error: error instanceof Error ? error.message : error });
+// Controller lấy dịch vụ theo tai_khoan_id
+export const getDichVuTheoTaiKhoanId = async (req: Request, res: Response) => {
+  const taiKhoanId = parseInt(req.params.taiKhoanId, 10);
+  try {
+    const result = await dichVuModel.getDichVuTheoTaiKhoanId(taiKhoanId);
+    res.status(200).json(result);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res
+        .status(500)
+        .json({
+          message: `Lỗi khi lấy dịch vụ theo tai_khoan_id: ${err.message}`,
+        });
+    } else {
+      res
+        .status(500)
+        .json({
+          message: "Lỗi không xác định khi lấy dịch vụ theo tai_khoan_id",
+        });
     }
+  }
 };
 
-
-export const updateDichVu = async (req: Request, res: Response): Promise<void> => {
-    const { dichVuId } = req.params;
-    const { tenDichVu, moTa, gia } = req.body;
-    const logo = req.file ? req.file.filename : null;
-
-    try {
-        const affectedRows = await suaDichVu(Number(dichVuId), tenDichVu, moTa, logo, gia);
-        if (affectedRows > 0) {
-            res.status(200).json({ message: `Dịch vụ với ID ${dichVuId} đã được cập nhật thành công.` });
-        } else {
-            res.status(404).json({ message: `Không tìm thấy dịch vụ với ID ${dichVuId}.` });
-        }
-    } catch (error) {
-        res.status(500).json({ message: 'Lỗi khi cập nhật dịch vụ.', error: error instanceof Error ? error.message : error });
+// Controller xóa dịch vụ
+export const xoaDichVu = async (req: Request, res: Response) => {
+  const dichVuId = parseInt(req.params.id, 10);
+  try {
+    const result = await dichVuModel.xoaDichVu(dichVuId);
+    res.status(200).json({ message: "Dịch vụ đã được xóa", result });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: `Lỗi khi xóa dịch vụ: ${err.message}` });
+    } else {
+      res.status(500).json({ message: "Lỗi không xác định khi xóa dịch vụ" });
     }
+  }
 };
 
-export const deleteDichVu = async (req: Request, res: Response): Promise<void> => {
-    const { dichVuId } = req.params;
-
-    try {
-        const affectedRows = await xoaDichVu(Number(dichVuId));
-        if (affectedRows > 0) {
-            res.status(200).json({ message: `Dịch vụ với ID ${dichVuId} đã bị xóa.` });
-        } else {
-            res.status(404).json({ message: `Không tìm thấy dịch vụ với ID ${dichVuId}.` });
-        }
-    } catch (error) {
-        res.status(500).json({ message: 'Lỗi khi xóa dịch vụ.', error: error instanceof Error ? error.message : error });
+// Controller tìm dịch vụ theo tên gần đúng
+export const timDichVuTheoTen = async (req: Request, res: Response) => {
+  const { tenDichVu } = req.query;
+  if (!tenDichVu || typeof tenDichVu !== "string") {
+    return res
+      .status(400)
+      .json({ message: "Vui lòng cung cấp từ khóa tìm kiếm hợp lệ" });
+  }
+  try {
+    const result = await dichVuModel.timDichVuTheoTen(tenDichVu);
+    res.status(200).json(result);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: `Lỗi khi tìm dịch vụ: ${err.message}` });
+    } else {
+      res.status(500).json({ message: "Lỗi không xác định khi tìm dịch vụ" });
     }
+  }
+  
 };
+// Controller lấy danh sách dịch vụ theo điều kiện
+export const getDichVuTheoDieuKien = async (req: Request, res: Response) => {
+    try {
+      const result = await dichVuModel.getDichVuTheoDieuKien();
+      res.status(200).json(result); // Trả về danh sách dịch vụ
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        res.status(500).json({ message: `Lỗi khi lấy danh sách dịch vụ: ${err.message}` });
+      } else {
+        res.status(500).json({ message: 'Lỗi không xác định khi lấy danh sách dịch vụ' });
+      }
+    }
+  };

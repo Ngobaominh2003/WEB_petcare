@@ -19,7 +19,7 @@ export const createNhaCungCap = async (
   tai_khoan_id: number,
   ten_nha_cung_cap: string,
   ma_so_thue: string,
-  giay_phep_kinh_doanh: string,
+  giay_phep_kinh_doanh: string, // Không cho phép null
   dia_chi: string,
   loai_hinh: string,
   mo_ta: string | null
@@ -30,7 +30,7 @@ export const createNhaCungCap = async (
       tai_khoan_id,
       ten_nha_cung_cap,
       ma_so_thue,
-      giay_phep_kinh_doanh,
+      giay_phep_kinh_doanh,  // Truyền một giá trị hợp lệ (không phải null)
       dia_chi,
       loai_hinh,
       mo_ta
@@ -139,4 +139,18 @@ export const getNhaCungCapByName = async (
     [ten_nha_cung_cap]
   );
   return rows.length > 0 ? (rows[0] as NhaCungCap) : null;
+};
+
+export const getDanhSachNhaCungCap = async () => {
+  const query = `SELECT * FROM nha_cung_cap`;  
+  try {
+    const [rows] = await connection.execute(query);
+    return rows;  
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      throw new Error(`Lỗi khi lấy danh sách nhà cung cấp: ${err.message}`);
+    } else {
+      throw new Error('Lỗi không xác định khi lấy danh sách nhà cung cấp');
+    }
+  }
 };

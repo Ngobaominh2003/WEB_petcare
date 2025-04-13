@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import * as UserModel from '../models/User';
+import * as UserModel from '../models/TaiKhoan';
 
 // Thêm tài khoản người dùng
 export const createUser = async (req: Request, res: Response): Promise<void> => {

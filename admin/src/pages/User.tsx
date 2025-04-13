@@ -41,7 +41,7 @@ const Users: React.FC = () => {
   // Xóa người dùng
   const deleteUser = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:5000/api/users/${id}`);
+      await axios.delete(`http://localhost:5000/api/delete/${id}`);
       alert("Xóa người dùng thành công");
       fetchUsers(); 
     } catch (error) {
