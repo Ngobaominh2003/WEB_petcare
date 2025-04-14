@@ -17,6 +17,7 @@ interface DichVuType {
   luot_dung: number;
   trang_thai: number;
   xet_duyet: "chờ duyệt" | "đã duyệt" | "không duyệt";
+  thoi_gian_hoan_thanh: string;
 }
 
 const DichVu: React.FC = () => {
@@ -102,6 +103,7 @@ const DichVu: React.FC = () => {
                   <th>Giá</th>
                   <th>Logo</th>
                   <th>Trạng thái</th>
+                  <th>Thời gian hoàn thành</th>
                   <th>Lượt dùng</th>
                   <th>Ngày tạo</th>
                   <th>Xét duyệt</th>
@@ -128,6 +130,7 @@ const DichVu: React.FC = () => {
                       </td>
                       <td>{dichVu.trang_thai === 1 ? "Hoạt động" : "Ẩn"}</td>{" "}
                       {/* Đảm bảo hiển thị trạng thái */}
+                      <td>{dichVu.thoi_gian_hoan_thanh }</td>
                       <td>{dichVu.luot_dung}</td> {/* Hiển thị lượt dùng */}
                       <td>{new Date(dichVu.ngay_tao).toLocaleString()}</td>{" "}
                       {/* Hiển thị ngày tạo */}

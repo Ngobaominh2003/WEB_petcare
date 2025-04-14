@@ -1,23 +1,27 @@
 import { Request, Response } from "express";
 import { dichVuModel } from "../models/DichVu";
 
-  // Controller thêm dịch vụ
-  export const themDichVu = async (req: Request, res: Response) => {
-    try {
-      const dichVu = req.body;
+// Controller thêm dịch vụ
+export const themDichVu = async (req: Request, res: Response) => {
+  try {
+    const dichVu = req.body;
 
-      // Kiểm tra nếu có logo được upload
-      const logoPath = req.file ? req.file.filename : null; // Lưu đường dẫn ảnh
+    console.log("Received data:", dichVu);  // In ra dữ liệu nhận được từ client
 
-      // Cập nhật logo vào dữ liệu dịch vụ
-      const dichVuWithLogo = { ...dichVu, logo: logoPath };
+    // Kiểm tra nếu có logo được upload
+    const logoPath = req.file ? req.file.filename : null;
 
-      const result = await dichVuModel.themDichVu(dichVuWithLogo);
-      res.status(200).json({ message: "Dịch vụ đã được thêm", result });
-    } catch (err) {
-      res.status(500).json({ message: "Lỗi khi thêm dịch vụ" });
-    }
-  };
+    // Cập nhật logo vào dữ liệu dịch vụ
+    const dichVuWithLogo = { ...dichVu, logo: logoPath };
+
+    const result = await dichVuModel.themDichVu(dichVuWithLogo);
+    res.status(200).json({ message: "Dịch vụ đã được thêm", result });
+  } catch (err) {
+    console.error("Error when adding service:", err);  // In ra lỗi để kiểm tra
+    res.status(500).json({ message: "Lỗi khi thêm dịch vụ" });
+  }
+};
+
 
 // Controller cập nhật dịch vụ
 export const capNhatDichVu = async (req: Request, res: Response) => {
@@ -25,16 +29,21 @@ export const capNhatDichVu = async (req: Request, res: Response) => {
   const dichVu = req.body;
 
   try {
+    // Biến lưu đường dẫn logo
     let logoPath: string | null = null;
 
     // Kiểm tra nếu có logo mới được upload
     if (req.file) {
-      logoPath = req.file.filename; // Cập nhật đường dẫn logo nếu có
+      logoPath = req.file.filename; // Nếu có logo mới, lưu đường dẫn logo mới
+    } else {
+      // Nếu không có logo mới (req.file là null), giữ nguyên logo cũ
+      logoPath = dichVu.logo || null; // Nếu không có logo cũ trong dichVu, sẽ gán là null
     }
 
-    // Cập nhật dịch vụ (với hoặc không có logo mới)
+    // Cập nhật dịch vụ với hoặc không có logo mới
     const dichVuWithLogo = { ...dichVu, logo: logoPath };
 
+    // Gọi model để cập nhật dịch vụ
     const result = await dichVuModel.capNhatDichVu(dichVuId, dichVuWithLogo);
 
     res.status(200).json({ message: "Dịch vụ đã được cập nhật thành công", result });
@@ -47,7 +56,6 @@ export const capNhatDichVu = async (req: Request, res: Response) => {
   }
 };
 
-
 // Controller lấy danh sách tất cả dịch vụ
 export const getDanhSachDichVu = async (req: Request, res: Response) => {
   try {
@@ -55,11 +63,9 @@ export const getDanhSachDichVu = async (req: Request, res: Response) => {
     res.status(200).json(result);
   } catch (err: unknown) {
     if (err instanceof Error) {
-      res
-        .status(500)
-        .json({
-          message: `Lỗi khi hiển thị danh sách dịch vụ: ${err.message}`,
-        });
+      res.status(500).json({
+        message: `Lỗi khi hiển thị danh sách dịch vụ: ${err.message}`,
+      });
     } else {
       res
         .status(500)
@@ -76,17 +82,13 @@ export const getDichVuTheoTaiKhoanId = async (req: Request, res: Response) => {
     res.status(200).json(result);
   } catch (err: unknown) {
     if (err instanceof Error) {
-      res
-        .status(500)
-        .json({
-          message: `Lỗi khi lấy dịch vụ theo tai_khoan_id: ${err.message}`,
-        });
+      res.status(500).json({
+        message: `Lỗi khi lấy dịch vụ theo tai_khoan_id: ${err.message}`,
+      });
     } else {
-      res
-        .status(500)
-        .json({
-          message: "Lỗi không xác định khi lấy dịch vụ theo tai_khoan_id",
-        });
+      res.status(500).json({
+        message: "Lỗi không xác định khi lấy dịch vụ theo tai_khoan_id",
+      });
     }
   }
 };
@@ -124,18 +126,21 @@ export const timDichVuTheoTen = async (req: Request, res: Response) => {
       res.status(500).json({ message: "Lỗi không xác định khi tìm dịch vụ" });
     }
   }
-  
 };
 // Controller lấy danh sách dịch vụ theo điều kiện
 export const getDichVuTheoDieuKien = async (req: Request, res: Response) => {
-    try {
-      const result = await dichVuModel.getDichVuTheoDieuKien();
-      res.status(200).json(result); // Trả về danh sách dịch vụ
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        res.status(500).json({ message: `Lỗi khi lấy danh sách dịch vụ: ${err.message}` });
-      } else {
-        res.status(500).json({ message: 'Lỗi không xác định khi lấy danh sách dịch vụ' });
-      }
+  try {
+    const result = await dichVuModel.getDichVuTheoDieuKien();
+    res.status(200).json(result); // Trả về danh sách dịch vụ
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res
+        .status(500)
+        .json({ message: `Lỗi khi lấy danh sách dịch vụ: ${err.message}` });
+    } else {
+      res
+        .status(500)
+        .json({ message: "Lỗi không xác định khi lấy danh sách dịch vụ" });
     }
-  };
+  }
+};

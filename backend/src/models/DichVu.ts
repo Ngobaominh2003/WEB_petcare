@@ -13,24 +13,27 @@ interface DichVu extends RowDataPacket {
   luot_dung: number;
   trang_thai: number;
   xet_duyet: "chờ duyệt" | "đã duyệt" | "không duyệt";
+  thoi_gian_hoan_thanh?: string; // Khoảng thời gian hoàn thành dịch vụ
 }
 
 export const dichVuModel = {
   // Thêm mới dịch vụ
+  // Thêm mới dịch vụ
   async themDichVu(dichVu: DichVu) {
     const query = `
-        INSERT INTO dich_vu (ten_dich_vu, mo_ta, logo, gia, tai_khoan_id, luot_dung, trang_thai, xet_duyet)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      `;
+    INSERT INTO dich_vu (ten_dich_vu, mo_ta, logo, gia, tai_khoan_id, luot_dung, trang_thai, xet_duyet, thoi_gian_hoan_thanh)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
     const values = [
       dichVu.ten_dich_vu,
       dichVu.mo_ta,
-      dichVu.logo || null, // Nếu không có logo, để null
+      dichVu.logo || null,
       dichVu.gia,
       dichVu.tai_khoan_id,
       dichVu.luot_dung || 0,
       dichVu.trang_thai || 1,
-      dichVu.xet_duyet || "chờ duyệt", // Nếu không có giá trị xet_duyet, mặc định là 'chờ duyệt'
+      dichVu.xet_duyet || "chờ duyệt",
+      dichVu.thoi_gian_hoan_thanh || null, // Nếu không có thoi_gian_hoan_thanh, để null
     ];
 
     try {
@@ -49,7 +52,7 @@ export const dichVuModel = {
   async capNhatDichVu(dichVuId: number, dichVu: Partial<DichVu>) {
     const fieldsToUpdate = [];
     const values = [];
-  
+
     // Kiểm tra nếu có các trường cần cập nhật
     if (dichVu.ten_dich_vu) {
       fieldsToUpdate.push("ten_dich_vu = ?");
@@ -79,34 +82,33 @@ export const dichVuModel = {
       fieldsToUpdate.push("xet_duyet = ?");
       values.push(dichVu.xet_duyet);
     }
-    
-    // Thêm phần xử lý cho tai_khoan_id
-    if (dichVu.tai_khoan_id !== undefined) {
-      fieldsToUpdate.push("tai_khoan_id = ?");
-      values.push(dichVu.tai_khoan_id);
+    // Kiểm tra thoi_gian_hoan_thanh
+    if (dichVu.thoi_gian_hoan_thanh !== undefined) {
+      fieldsToUpdate.push("thoi_gian_hoan_thanh = ?");
+      values.push(dichVu.thoi_gian_hoan_thanh);
     }
-  
+
     // Nếu không có trường nào để cập nhật
     if (fieldsToUpdate.length === 0) {
       throw new Error("Không có trường nào để cập nhật");
     }
-  
+
     // Truy vấn SQL để cập nhật dữ liệu
     const query = `
-      UPDATE dich_vu
-      SET ${fieldsToUpdate.join(", ")}
-      WHERE dich_vu_id = ?
-    `;
+    UPDATE dich_vu
+    SET ${fieldsToUpdate.join(", ")}
+    WHERE dich_vu_id = ?
+  `;
     values.push(dichVuId);
-  
+
     try {
       // Ghi log để kiểm tra các giá trị truyền vào
       console.log("Câu truy vấn:", query);
       console.log("Giá trị truyền vào:", values);
-  
+
       // Thực thi truy vấn
       const [result] = await connection.execute(query, values);
-  
+
       // Kiểm tra nếu affectedRows > 0 thì cập nhật thành công
       const affectedRows = (result as { affectedRows: number }).affectedRows;
       if (affectedRows === 0) {
@@ -120,10 +122,8 @@ export const dichVuModel = {
         throw new Error("Lỗi không xác định khi cập nhật dịch vụ");
       }
     }
-  }
-,  
-  
-  
+  },
+
   // Hiển thị danh sách tất cả dịch vụ
   async getDanhSachDichVu() {
     const query = `SELECT * FROM dich_vu`;

@@ -1,36 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const DichVuAdd: React.FC = () => {
   const [formData, setFormData] = useState({
-    ten_dich_vu: '',
-    mo_ta: '',
+    ten_dich_vu: "",
+    mo_ta: "",
     gia: 0,
-    tai_khoan_id: '',
+    tai_khoan_id: "",
     luot_dung: 0,
     trang_thai: 1,
-    xet_duyet: 'chờ duyệt',
+    xet_duyet: "chờ duyệt",
     logo: null as File | null,
+    thoi_gian_hoan_thanh: "",
   });
+
   const [nhaCungCapList, setNhaCungCapList] = useState<any[]>([]);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Lấy danh sách nhà cung cấp từ API
   useEffect(() => {
     axios
-      .get('http://localhost:5000/api/dsnhacungcap')
+      .get("http://localhost:5000/api/dsnhacungcap")
       .then((response) => {
         setNhaCungCapList(response.data);
       })
       .catch((error) => {
-        console.error('Lỗi khi lấy danh sách nhà cung cấp:', error);
-        setError('Lỗi khi lấy danh sách nhà cung cấp');
+        console.error("Lỗi khi lấy danh sách nhà cung cấp:", error);
+        setError("Lỗi khi lấy danh sách nhà cung cấp");
       });
   }, []);
 
   // Xử lý thay đổi dữ liệu form
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -38,17 +44,16 @@ const DichVuAdd: React.FC = () => {
     }));
   };
 
-  
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files && files[0]) { // Check if files is not null and has at least one file
+    if (files && files[0]) {
+      // Check if files is not null and has at least one file
       setFormData((prevData) => ({
         ...prevData,
         logo: files[0], // Safely access the first file
       }));
     }
   };
-  
 
   // Xử lý gửi form
   const handleSubmit = async (e: React.FormEvent) => {
@@ -56,31 +61,39 @@ const DichVuAdd: React.FC = () => {
     setIsSubmitting(true);
 
     const formDataToSend = new FormData();
-    formDataToSend.append('ten_dich_vu', formData.ten_dich_vu);
-    formDataToSend.append('mo_ta', formData.mo_ta);
-    formDataToSend.append('gia', formData.gia.toString());
-    formDataToSend.append('tai_khoan_id', formData.tai_khoan_id);
-    formDataToSend.append('luot_dung', formData.luot_dung.toString());
-    formDataToSend.append('trang_thai', formData.trang_thai.toString());
-    formDataToSend.append('xet_duyet', formData.xet_duyet);
-    if (formData.logo) formDataToSend.append('logo', formData.logo);
+    formDataToSend.append("ten_dich_vu", formData.ten_dich_vu);
+    formDataToSend.append("mo_ta", formData.mo_ta);
+    formDataToSend.append("gia", formData.gia.toString());
+    formDataToSend.append("tai_khoan_id", formData.tai_khoan_id);
+    formDataToSend.append("luot_dung", formData.luot_dung.toString());
+    formDataToSend.append("trang_thai", formData.trang_thai.toString());
+    formDataToSend.append("xet_duyet", formData.xet_duyet);
+    formDataToSend.append(
+      "thoi_gian_hoan_thanh",
+      formData.thoi_gian_hoan_thanh
+    ); // Đảm bảo thoi_gian_hoan_thanh được thêm vào đây
+    if (formData.logo) formDataToSend.append("logo", formData.logo);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/dich-vu/them', formDataToSend);
-      alert('Dịch vụ đã được thêm thành công!');
+      const response = await axios.post(
+        "http://localhost:5000/api/dich-vu/them",
+        formDataToSend
+      );
+      alert("Dịch vụ đã được thêm thành công!");
       window.location.reload();
       setFormData({
-        ten_dich_vu: '',
-        mo_ta: '',
+        ten_dich_vu: "",
+        mo_ta: "",
         gia: 0,
-        tai_khoan_id: '',
+        tai_khoan_id: "",
         luot_dung: 0,
         trang_thai: 1,
-        xet_duyet: 'chờ duyệt',
+        xet_duyet: "chờ duyệt",
         logo: null,
+        thoi_gian_hoan_thanh: "", // Đặt lại thoi_gian_hoan_thanh khi reset form
       });
     } catch (error) {
-      setError('Lỗi khi thêm dịch vụ');
+      setError("Lỗi khi thêm dịch vụ");
     } finally {
       setIsSubmitting(false);
     }
@@ -143,7 +156,10 @@ const DichVuAdd: React.FC = () => {
             >
               <option value="">Chọn nhà cung cấp</option>
               {nhaCungCapList.map((nhaCungCap) => (
-                <option key={nhaCungCap.tai_khoan_id} value={nhaCungCap.tai_khoan_id}>
+                <option
+                  key={nhaCungCap.tai_khoan_id}
+                  value={nhaCungCap.tai_khoan_id}
+                >
                   {nhaCungCap.ten_nha_cung_cap}
                 </option>
               ))}
@@ -158,6 +174,18 @@ const DichVuAdd: React.FC = () => {
               name="luot_dung"
               placeholder="Nhập lượt dùng"
               value={formData.luot_dung}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="thoi_gian_hoan_thanh">Thời Gian Hoàn Thành:</label>
+            <input
+              type="text"
+              id="thoi_gian_hoan_thanh"
+              name="thoi_gian_hoan_thanh"
+              placeholder="Nhập thời gian hoàn thành dịch vụ (vd: 60 phút,2-8 tuần)"
+              value={formData.thoi_gian_hoan_thanh}
               onChange={handleChange}
               required
             />
@@ -202,7 +230,7 @@ const DichVuAdd: React.FC = () => {
           </div>
 
           <button type="submit" className="btn" disabled={isSubmitting}>
-            {isSubmitting ? 'Đang Xử Lý...' : 'Thêm Dịch Vụ'}
+            {isSubmitting ? "Đang Xử Lý..." : "Thêm Dịch Vụ"}
           </button>
 
           {error && <p className="error-message">{error}</p>}

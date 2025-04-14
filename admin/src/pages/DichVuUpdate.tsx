@@ -11,6 +11,7 @@ interface DichVu {
   trang_thai: number;
   xet_duyet: string;
   tai_khoan_id: number;
+  thoi_gian_hoan_thanh: string; // Thêm thoi_gian_hoan_thanh
 }
 
 interface NhaCungCap {
@@ -33,6 +34,7 @@ const DichVuUpdate: React.FC<DichVuUpdateProps> = ({ dichVuChon }) => {
     trang_thai: 1,
     xet_duyet: "chờ duyệt",
     tai_khoan_id: 0,
+    thoi_gian_hoan_thanh: "", // Thêm thoi_gian_hoan_thanh
   });
   const [nhaCungCapList, setNhaCungCapList] = useState<NhaCungCap[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false); // Trạng thái gửi form
@@ -75,21 +77,21 @@ const DichVuUpdate: React.FC<DichVuUpdateProps> = ({ dichVuChon }) => {
       }));
     }
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData) {
       alert("Dữ liệu không hợp lệ!");
       return;
     }
-  
+
     setIsSubmitting(true);
     setError(null); // Reset lỗi
-  
+
     const formDataToSend = new FormData();
     Object.keys(formData).forEach((key) => {
       const value = formData[key as keyof DichVu];
-  
+
       if (value !== undefined) {
         if (value instanceof File) {
           formDataToSend.append(key, value);
@@ -98,7 +100,7 @@ const DichVuUpdate: React.FC<DichVuUpdateProps> = ({ dichVuChon }) => {
         }
       }
     });
-  
+
     try {
       await axios.put(
         `http://localhost:5000/api/dich-vu/cap-nhat/${formData.dich_vu_id}`,
@@ -113,7 +115,6 @@ const DichVuUpdate: React.FC<DichVuUpdateProps> = ({ dichVuChon }) => {
       setIsSubmitting(false); 
     }
   };
-  
 
   return (
     <div className="details">
@@ -224,6 +225,20 @@ const DichVuUpdate: React.FC<DichVuUpdateProps> = ({ dichVuChon }) => {
               <option value="đã duyệt">Đã duyệt</option>
               <option value="không duyệt">Không duyệt</option>
             </select>
+          </div>
+
+          {/* Thời gian hoàn thành */}
+          <div className="form-group">
+            <label htmlFor="thoi_gian_hoan_thanh">Thời Gian Hoàn Thành:</label>
+            <input
+              type="text"
+              id="thoi_gian_hoan_thanh"
+              name="thoi_gian_hoan_thanh"
+              value={formData.thoi_gian_hoan_thanh}
+              onChange={handleInputChange}
+              placeholder="Nhập thời gian hoàn thành dịch vụ (vd: 60 phút,2-8 tuần)"
+              required
+            />
           </div>
 
           {/* Logo */}

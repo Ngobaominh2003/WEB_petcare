@@ -1456,3 +1456,44 @@ textarea {
   margin-right: 5px;
 }
 
+/* Xét duyệt trạng thái */
+.status-waiting {
+  background-color: yellow;  /* Màu vàng cho "chờ duyệt" */
+  color: black;
+  padding: 5px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.status-approved {
+  background-color: green;  /* Màu xanh cho "đã duyệt" */
+  color: white;
+  padding: 5px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.status-rejected {
+  background-color: red;  /* Màu đỏ cho "không duyệt" */
+  color: white;
+  padding: 5px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+/* Trạng thái hoạt động */
+.status-active {
+  background-color: #4CAF50;  /* Màu xanh cho "Hoạt động" */
+  color: white;
+  padding: 5px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.status-inactive {
+  background-color: #93908fe1;  /* Màu đỏ cho "Ẩn" */
+  color: white;
+  padding: 5px;
+  border-radius: 4px;
+  text-align: center;
+}
