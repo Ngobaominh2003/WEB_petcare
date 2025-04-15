@@ -11,12 +11,18 @@ interface DichVu {
   trang_thai: number;
   xet_duyet: string;
   tai_khoan_id: number;
-  thoi_gian_hoan_thanh: string; // Thêm thoi_gian_hoan_thanh
+  thoi_gian_hoan_thanh: string;
+  danh_muc_id: number; //  Thêm trường danh mục
 }
 
 interface NhaCungCap {
   tai_khoan_id: number;
   ten_nha_cung_cap: string;
+}
+
+interface DanhMuc {
+  danh_muc_id: number;
+  ten_danh_muc: string;
 }
 
 interface DichVuUpdateProps {
@@ -34,26 +40,28 @@ const DichVuUpdate: React.FC<DichVuUpdateProps> = ({ dichVuChon }) => {
     trang_thai: 1,
     xet_duyet: "chờ duyệt",
     tai_khoan_id: 0,
-    thoi_gian_hoan_thanh: "", // Thêm thoi_gian_hoan_thanh
+    thoi_gian_hoan_thanh: "",
+    danh_muc_id: 0, // 
   });
-  const [nhaCungCapList, setNhaCungCapList] = useState<NhaCungCap[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false); // Trạng thái gửi form
-  const [error, setError] = useState<string | null>(null); // Thông báo lỗi
 
-  // Lấy danh sách nhà cung cấp
+  const [nhaCungCapList, setNhaCungCapList] = useState<NhaCungCap[]>([]);
+  const [danhMucList, setDanhMucList] = useState<DanhMuc[]>([]); // 🆕
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/dsnhacungcap")
-      .then((response) => {
-        setNhaCungCapList(response.data);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi lấy danh sách nhà cung cấp:", error);
-        setError("Lỗi khi lấy danh sách nhà cung cấp");
-      });
+    // Lấy danh sách nhà cung cấp
+    axios.get("http://localhost:5000/api/dsnhacungcap")
+      .then((res) => setNhaCungCapList(res.data))
+      .catch(() => setError("Lỗi khi lấy danh sách nhà cung cấp"));
+
+    //  Lấy danh sách danh mục
+    axios.get("http://localhost:5000/api/danh-muc")
+      .then((res) => setDanhMucList(res.data))
+      .catch(() => setError("Lỗi khi lấy danh sách danh mục"));
 
     if (dichVuChon) {
-      setFormData(dichVuChon); // Nếu có dịch vụ được chọn, cập nhật formData
+      setFormData(dichVuChon);
     }
   }, [dichVuChon]);
 
@@ -61,10 +69,9 @@ const DichVuUpdate: React.FC<DichVuUpdateProps> = ({ dichVuChon }) => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-
     setFormData((prev) => ({
       ...prev,
-      [name]: value,  // Cập nhật giá trị khi thay đổi trường
+      [name]: value,
     }));
   };
 
@@ -73,25 +80,19 @@ const DichVuUpdate: React.FC<DichVuUpdateProps> = ({ dichVuChon }) => {
     if (file) {
       setFormData((prev) => ({
         ...prev,
-        logo: file,  // Lưu tệp vào logo
+        logo: file,
       }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData) {
-      alert("Dữ liệu không hợp lệ!");
-      return;
-    }
-
     setIsSubmitting(true);
-    setError(null); // Reset lỗi
+    setError(null);
 
     const formDataToSend = new FormData();
     Object.keys(formData).forEach((key) => {
       const value = formData[key as keyof DichVu];
-
       if (value !== undefined) {
         if (value instanceof File) {
           formDataToSend.append(key, value);
@@ -108,11 +109,11 @@ const DichVuUpdate: React.FC<DichVuUpdateProps> = ({ dichVuChon }) => {
       );
       alert("Dịch vụ đã được cập nhật thành công");
       window.location.reload();
-    } catch (error) {
+    } catch (err) {
       setError("Lỗi khi cập nhật dịch vụ");
-      console.error("Lỗi khi cập nhật dịch vụ:", error);
+      console.error(err);
     } finally {
-      setIsSubmitting(false); 
+      setIsSubmitting(false);
     }
   };
 
@@ -124,7 +125,6 @@ const DichVuUpdate: React.FC<DichVuUpdateProps> = ({ dichVuChon }) => {
         </div>
 
         <form className="add-user-form" onSubmit={handleSubmit}>
-          {/* Tên dịch vụ */}
           <div className="form-group">
             <label htmlFor="ten_dich_vu">Tên dịch vụ:</label>
             <input
@@ -133,12 +133,10 @@ const DichVuUpdate: React.FC<DichVuUpdateProps> = ({ dichVuChon }) => {
               name="ten_dich_vu"
               value={formData.ten_dich_vu}
               onChange={handleInputChange}
-              placeholder="Nhập tên dịch vụ"
               required
             />
           </div>
 
-          {/* Mô tả */}
           <div className="form-group">
             <label htmlFor="mo_ta">Mô tả:</label>
             <textarea
@@ -146,12 +144,10 @@ const DichVuUpdate: React.FC<DichVuUpdateProps> = ({ dichVuChon }) => {
               name="mo_ta"
               value={formData.mo_ta}
               onChange={handleInputChange}
-              placeholder="Nhập mô tả dịch vụ"
               required
             />
           </div>
 
-          {/* Giá */}
           <div className="form-group">
             <label htmlFor="gia">Giá:</label>
             <input
@@ -160,14 +156,31 @@ const DichVuUpdate: React.FC<DichVuUpdateProps> = ({ dichVuChon }) => {
               name="gia"
               value={formData.gia}
               onChange={handleInputChange}
-              placeholder="Nhập giá dịch vụ"
               required
             />
           </div>
 
-          {/* Nhà cung cấp */}
+          {/*  Chọn danh mục */}
           <div className="form-group">
-            <label htmlFor="tai_khoan_id">Tài khoản ID:</label>
+            <label htmlFor="danh_muc_id">Danh mục:</label>
+            <select
+              id="danh_muc_id"
+              name="danh_muc_id"
+              value={formData.danh_muc_id}
+              onChange={handleInputChange}
+              required
+            >
+              <option value="">-- Chọn danh mục --</option>
+              {danhMucList.map((dm) => (
+                <option key={dm.danh_muc_id} value={dm.danh_muc_id}>
+                  {dm.ten_danh_muc}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="tai_khoan_id">Nhà cung cấp:</label>
             <select
               id="tai_khoan_id"
               name="tai_khoan_id"
@@ -175,16 +188,15 @@ const DichVuUpdate: React.FC<DichVuUpdateProps> = ({ dichVuChon }) => {
               onChange={handleInputChange}
               required
             >
-              <option value="">Chọn nhà cung cấp</option>
-              {nhaCungCapList.map((nhaCungCap) => (
-                <option key={nhaCungCap.tai_khoan_id} value={nhaCungCap.tai_khoan_id}>
-                  {nhaCungCap.ten_nha_cung_cap}
+              <option value="">-- Chọn nhà cung cấp --</option>
+              {nhaCungCapList.map((ncc) => (
+                <option key={ncc.tai_khoan_id} value={ncc.tai_khoan_id}>
+                  {ncc.ten_nha_cung_cap}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Lượt dùng */}
           <div className="form-group">
             <label htmlFor="luot_dung">Lượt dùng:</label>
             <input
@@ -193,12 +205,23 @@ const DichVuUpdate: React.FC<DichVuUpdateProps> = ({ dichVuChon }) => {
               name="luot_dung"
               value={formData.luot_dung}
               onChange={handleInputChange}
-              placeholder="Nhập lượt dùng"
               required
             />
           </div>
 
-          {/* Trạng thái */}
+          <div className="form-group">
+            <label htmlFor="thoi_gian_hoan_thanh">Thời gian hoàn thành:</label>
+            <input
+              type="text"
+              id="thoi_gian_hoan_thanh"
+              name="thoi_gian_hoan_thanh"
+              value={formData.thoi_gian_hoan_thanh}
+              onChange={handleInputChange}
+              required
+              placeholder="VD: 60 phút, 2-8 tuần"
+            />
+          </div>
+
           <div className="form-group">
             <label htmlFor="trang_thai">Trạng thái:</label>
             <select
@@ -212,7 +235,6 @@ const DichVuUpdate: React.FC<DichVuUpdateProps> = ({ dichVuChon }) => {
             </select>
           </div>
 
-          {/* Xét duyệt */}
           <div className="form-group">
             <label htmlFor="xet_duyet">Xét duyệt:</label>
             <select
@@ -227,21 +249,6 @@ const DichVuUpdate: React.FC<DichVuUpdateProps> = ({ dichVuChon }) => {
             </select>
           </div>
 
-          {/* Thời gian hoàn thành */}
-          <div className="form-group">
-            <label htmlFor="thoi_gian_hoan_thanh">Thời Gian Hoàn Thành:</label>
-            <input
-              type="text"
-              id="thoi_gian_hoan_thanh"
-              name="thoi_gian_hoan_thanh"
-              value={formData.thoi_gian_hoan_thanh}
-              onChange={handleInputChange}
-              placeholder="Nhập thời gian hoàn thành dịch vụ (vd: 60 phút,2-8 tuần)"
-              required
-            />
-          </div>
-
-          {/* Logo */}
           <div className="form-group">
             <label htmlFor="logo">Logo:</label>
             <input
@@ -252,17 +259,14 @@ const DichVuUpdate: React.FC<DichVuUpdateProps> = ({ dichVuChon }) => {
               onChange={handleFileChange}
             />
             {formData.logo && typeof formData.logo === "string" && (
-              <div>
-                <img
-                  src={`http://localhost:5000/img/${formData.logo}`}
-                  alt="Logo hiện tại"
-                  width="50"
-                />
-              </div>
+              <img
+                src={`http://localhost:5000/img/${formData.logo}`}
+                alt="logo"
+                width="60"
+              />
             )}
           </div>
 
-          {/* Submit */}
           <button type="submit" className="btn" disabled={isSubmitting}>
             {isSubmitting ? "Đang xử lý..." : "Cập nhật dịch vụ"}
           </button>

@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import About from "./pages/About";
 import Service from "./pages/Service";
@@ -20,7 +20,9 @@ import QLTaiKhoan from "./TaiKhoan/QLTaiKhoan";
 import QLNhaCC from "./TaiKhoan/QLNhaCC";
 import DatLich from "./TaiKhoan/DatLich";
 import ThuCung from "./TaiKhoan/ThuCung";
-import QLDichVu from "./TaiKhoan/QLDichVu";
+import DichVuQL from "./TaiKhoan/DichVuQL";
+import DichVuAdd from "./TaiKhoan/DichVuAdd";
+import DichVuUpdate from "./TaiKhoan/DichVuUpdate";
 
 const App: React.FC = () => {
   return (
@@ -46,8 +48,9 @@ const App: React.FC = () => {
           <Route path="/QLNhaCC" element={<QLNhaCC />} />
           <Route path="/DatLich" element={<DatLich />} />
           <Route path="/ThuCung" element={<ThuCung />} />
-          <Route path="/QLDichVu" element={<QLDichVu />} />
-          
+          <Route path="/DichVuQL" element={<DichVuQL />} />
+          <Route path="/DichVuAdd" element={<DichVuAdd />} />
+          <Route path="/DichVuUpdate/:id" element={<DichVuUpdate />} />        
         </Routes>
       </div>
     </Router>

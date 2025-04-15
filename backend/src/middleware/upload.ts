@@ -5,7 +5,7 @@
   // Cấu hình nơi lưu ảnh
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, 'D:/DoAnTotNghiep/backend/src/img');  // Đường dẫn lưu file
+      cb(null, 'D:/DoAnToNghiep01/backend/src/img');  // Đường dẫn lưu file
     },
     filename: function (req, file, cb) {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -39,7 +39,7 @@
 
   // Hàm để kiểm tra và sử dụng lại ảnh
   export const handleImageUpload = (file: Express.Multer.File) => {
-    const filePath = path.join('D:/DoAnTotNghiep/backend/src/img', file.originalname);
+    const filePath = path.join('D:/DoAnToNghiep01/backend/src/img', file.originalname);
 
     // Kiểm tra xem file đã tồn tại chưa
     if (fs.existsSync(filePath)) {
@@ -49,7 +49,7 @@
       // Nếu file chưa tồn tại, lưu file và trả về đường dẫn của file mới
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
       const newFileName = uniqueSuffix + '-' + file.originalname;
-      const newFilePath = path.join('D/DoAnTotNghiep/backend/src/img', newFileName);
+      const newFilePath = path.join('D:/DoAnToNghiep01/backend/src/img', newFileName);
       fs.renameSync(file.path, newFilePath); // Di chuyển file đến vị trí mới
       return newFileName;
     }

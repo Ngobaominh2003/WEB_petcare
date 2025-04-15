@@ -4,6 +4,7 @@ import userRoutes from './routes/taikhoanRoutes';
 import nguoidungRoutes from './routes/nguoidungRoutes';
 import nhacungcapRoutes from './routes/nhacungcapRoutes';
 import dichvuRoutes from './routes/dichvuRoutes';  
+import danhmucRoutes from './routes/danhmucRoutes'; 
 import goidichvuRoutes from './routes/goidichvuRoutes'; 
 import baivietRoutes from './routes/baivietRoutes'; 
 import datlichtRoutes from './routes/datlichRouter'; 
@@ -23,7 +24,7 @@ app.use(express.json());  // Parse request body dưới dạng JSON
 
 
 // Định nghĩa route để phục vụ các file tĩnh từ thư mục img
-app.use('/img', express.static(path.join('D:/DoAnTotNghiep/backend/src/img')));
+app.use('/img', express.static(path.join('D:/DoAnToNghiep01/backend/src/img')));
 
 
  // Sử dụng các route từ file userRoutes
@@ -31,6 +32,7 @@ app.use('/api', userRoutes);
 app.use('/api', nguoidungRoutes); 
 app.use('/api', nhacungcapRoutes);
 app.use('/api', dichvuRoutes);
+app.use('/api', danhmucRoutes);
 app.use('/api', goidichvuRoutes);
 app.use('/api', baivietRoutes);
 app.use('/api', datlichtRoutes); 

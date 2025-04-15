@@ -12,11 +12,24 @@ const DichVuAdd: React.FC = () => {
     xet_duyet: "chờ duyệt",
     logo: null as File | null,
     thoi_gian_hoan_thanh: "",
+    danh_muc_id: "", 
   });
 
   const [nhaCungCapList, setNhaCungCapList] = useState<any[]>([]);
+  const [danhMucList, setDanhMucList] = useState<any[]>([]); //  Danh sách danh mục
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  //  Lấy danh sách danh mục
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/danh-muc")
+      .then((res) => setDanhMucList(res.data))
+      .catch((err) => {
+        console.error("Lỗi khi lấy danh mục:", err);
+        setError("Lỗi khi lấy danh mục");
+      });
+  }, []);
 
   // Lấy danh sách nhà cung cấp từ API
   useEffect(() => {
@@ -31,7 +44,7 @@ const DichVuAdd: React.FC = () => {
       });
   }, []);
 
-  // Xử lý thay đổi dữ liệu form
+  // Xử lý thay đổi form
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -47,15 +60,14 @@ const DichVuAdd: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files[0]) {
-      // Check if files is not null and has at least one file
       setFormData((prevData) => ({
         ...prevData,
-        logo: files[0], // Safely access the first file
+        logo: files[0],
       }));
     }
   };
 
-  // Xử lý gửi form
+  // Gửi form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -68,30 +80,15 @@ const DichVuAdd: React.FC = () => {
     formDataToSend.append("luot_dung", formData.luot_dung.toString());
     formDataToSend.append("trang_thai", formData.trang_thai.toString());
     formDataToSend.append("xet_duyet", formData.xet_duyet);
-    formDataToSend.append(
-      "thoi_gian_hoan_thanh",
-      formData.thoi_gian_hoan_thanh
-    ); // Đảm bảo thoi_gian_hoan_thanh được thêm vào đây
+    formDataToSend.append("thoi_gian_hoan_thanh", formData.thoi_gian_hoan_thanh);
+    formDataToSend.append("danh_muc_id", formData.danh_muc_id); // 🆕 Gửi danh_muc_id
+
     if (formData.logo) formDataToSend.append("logo", formData.logo);
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/dich-vu/them",
-        formDataToSend
-      );
+      await axios.post("http://localhost:5000/api/dich-vu/them", formDataToSend);
       alert("Dịch vụ đã được thêm thành công!");
       window.location.reload();
-      setFormData({
-        ten_dich_vu: "",
-        mo_ta: "",
-        gia: 0,
-        tai_khoan_id: "",
-        luot_dung: 0,
-        trang_thai: 1,
-        xet_duyet: "chờ duyệt",
-        logo: null,
-        thoi_gian_hoan_thanh: "", // Đặt lại thoi_gian_hoan_thanh khi reset form
-      });
     } catch (error) {
       setError("Lỗi khi thêm dịch vụ");
     } finally {
@@ -113,7 +110,6 @@ const DichVuAdd: React.FC = () => {
               type="text"
               id="ten_dich_vu"
               name="ten_dich_vu"
-              placeholder="Nhập tên dịch vụ"
               value={formData.ten_dich_vu}
               onChange={handleChange}
               required
@@ -125,7 +121,6 @@ const DichVuAdd: React.FC = () => {
             <textarea
               id="mo_ta"
               name="mo_ta"
-              placeholder="Nhập mô tả dịch vụ"
               value={formData.mo_ta}
               onChange={handleChange}
               required
@@ -138,11 +133,29 @@ const DichVuAdd: React.FC = () => {
               type="number"
               id="gia"
               name="gia"
-              placeholder="Nhập giá dịch vụ"
               value={formData.gia}
               onChange={handleChange}
               required
             />
+          </div>
+
+          {/* Chọn danh mục */}
+          <div className="form-group">
+            <label htmlFor="danh_muc_id">Danh Mục:</label>
+            <select
+              id="danh_muc_id"
+              name="danh_muc_id"
+              value={formData.danh_muc_id}
+              onChange={handleChange}
+              required
+            >
+              <option value="">-- Chọn danh mục --</option>
+              {danhMucList.map((dm) => (
+                <option key={dm.danh_muc_id} value={dm.danh_muc_id}>
+                  {dm.ten_danh_muc}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="form-group">
@@ -155,12 +168,9 @@ const DichVuAdd: React.FC = () => {
               required
             >
               <option value="">Chọn nhà cung cấp</option>
-              {nhaCungCapList.map((nhaCungCap) => (
-                <option
-                  key={nhaCungCap.tai_khoan_id}
-                  value={nhaCungCap.tai_khoan_id}
-                >
-                  {nhaCungCap.ten_nha_cung_cap}
+              {nhaCungCapList.map((ncc) => (
+                <option key={ncc.tai_khoan_id} value={ncc.tai_khoan_id}>
+                  {ncc.ten_nha_cung_cap}
                 </option>
               ))}
             </select>
@@ -172,22 +182,22 @@ const DichVuAdd: React.FC = () => {
               type="number"
               id="luot_dung"
               name="luot_dung"
-              placeholder="Nhập lượt dùng"
               value={formData.luot_dung}
               onChange={handleChange}
               required
             />
           </div>
+
           <div className="form-group">
             <label htmlFor="thoi_gian_hoan_thanh">Thời Gian Hoàn Thành:</label>
             <input
               type="text"
               id="thoi_gian_hoan_thanh"
               name="thoi_gian_hoan_thanh"
-              placeholder="Nhập thời gian hoàn thành dịch vụ (vd: 60 phút,2-8 tuần)"
               value={formData.thoi_gian_hoan_thanh}
               onChange={handleChange}
               required
+              placeholder="VD: 60 phút, 2-8 tuần"
             />
           </div>
 
@@ -230,7 +240,7 @@ const DichVuAdd: React.FC = () => {
           </div>
 
           <button type="submit" className="btn" disabled={isSubmitting}>
-            {isSubmitting ? "Đang Xử Lý..." : "Thêm Dịch Vụ"}
+            {isSubmitting ? "Đang xử lý..." : "Thêm Dịch Vụ"}
           </button>
 
           {error && <p className="error-message">{error}</p>}

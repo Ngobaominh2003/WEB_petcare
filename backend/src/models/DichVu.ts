@@ -1,7 +1,7 @@
 import { RowDataPacket } from "mysql2/promise";
 import connection from "../config/db"; // Kết nối database
 
-// Định nghĩa interface cho dịch vụ
+
 interface DichVu extends RowDataPacket {
   dich_vu_id: number;
   ten_dich_vu: string;
@@ -13,17 +13,19 @@ interface DichVu extends RowDataPacket {
   luot_dung: number;
   trang_thai: number;
   xet_duyet: "chờ duyệt" | "đã duyệt" | "không duyệt";
-  thoi_gian_hoan_thanh?: string; // Khoảng thời gian hoàn thành dịch vụ
+  thoi_gian_hoan_thanh?: string;
+  danh_muc_id: number; 
 }
 
+
 export const dichVuModel = {
-  // Thêm mới dịch vụ
+  
   // Thêm mới dịch vụ
   async themDichVu(dichVu: DichVu) {
     const query = `
-    INSERT INTO dich_vu (ten_dich_vu, mo_ta, logo, gia, tai_khoan_id, luot_dung, trang_thai, xet_duyet, thoi_gian_hoan_thanh)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
+      INSERT INTO dich_vu (ten_dich_vu, mo_ta, logo, gia, tai_khoan_id, luot_dung, trang_thai, xet_duyet, thoi_gian_hoan_thanh, danh_muc_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
     const values = [
       dichVu.ten_dich_vu,
       dichVu.mo_ta,
@@ -33,9 +35,10 @@ export const dichVuModel = {
       dichVu.luot_dung || 0,
       dichVu.trang_thai || 1,
       dichVu.xet_duyet || "chờ duyệt",
-      dichVu.thoi_gian_hoan_thanh || null, // Nếu không có thoi_gian_hoan_thanh, để null
+      dichVu.thoi_gian_hoan_thanh || null,
+      dichVu.danh_muc_id, // thêm danh_muc_id
     ];
-
+  
     try {
       const [result] = await connection.execute(query, values);
       return result;
@@ -47,13 +50,12 @@ export const dichVuModel = {
       }
     }
   },
-
-  // Cập nhật dịch vụ chỉ với các trường có thay đổi
+  
+  
   async capNhatDichVu(dichVuId: number, dichVu: Partial<DichVu>) {
     const fieldsToUpdate = [];
     const values = [];
 
-    // Kiểm tra nếu có các trường cần cập nhật
     if (dichVu.ten_dich_vu) {
       fieldsToUpdate.push("ten_dich_vu = ?");
       values.push(dichVu.ten_dich_vu);
@@ -74,6 +76,11 @@ export const dichVuModel = {
       fieldsToUpdate.push("luot_dung = ?");
       values.push(dichVu.luot_dung);
     }
+    if (dichVu.danh_muc_id !== undefined) {
+      fieldsToUpdate.push("danh_muc_id = ?");
+      values.push(dichVu.danh_muc_id);
+    }
+    
     if (dichVu.trang_thai !== undefined) {
       fieldsToUpdate.push("trang_thai = ?");
       values.push(dichVu.trang_thai);
@@ -186,6 +193,21 @@ export const dichVuModel = {
       }
     }
   },
+  
+  async getDichVuTheoDanhMucId(danhMucId: number) {
+    const query = `SELECT * FROM dich_vu WHERE danh_muc_id = ?`;
+    try {
+      const [rows] = await connection.execute(query, [danhMucId]);
+      return rows;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        throw new Error(`Lỗi khi lấy dịch vụ theo danh_muc_id: ${err.message}`);
+      } else {
+        throw new Error("Lỗi không xác định khi lấy dịch vụ theo danh_muc_id");
+      }
+    }
+  },
+  
   // Lấy danh sách dịch vụ theo điều kiện
   async getDichVuTheoDieuKien() {
     const query = `

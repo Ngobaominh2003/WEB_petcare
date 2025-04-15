@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
@@ -12,6 +13,16 @@ const QLDichVu: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const taiKhoanId = localStorage.getItem("tai_khoan_id");
+  const navigate = useNavigate();
+
+  const handleAdd = () => {
+    navigate("/DichVuAdd");
+  };
+
+  const handleEdit = (dichVu: any) => {
+    navigate(`/DichVuUpdate/${dichVu.dich_vu_id}`, { state: dichVu });
+  };
+  
 
   // Lấy danh sách dịch vụ
   useEffect(() => {
@@ -87,7 +98,7 @@ const QLDichVu: React.FC = () => {
                   <h1>Quản lý dịch vụ</h1>
                   <p>Quản lý các dịch vụ chăm sóc thú cưng của bạn</p>
                 </div>
-                <button className="btn btn-primary">
+                <button className="btn btn-primary" onClick={handleAdd}>
                   <i className="fas fa-plus-circle" />
                   Thêm dịch vụ mới
                 </button>
@@ -109,13 +120,7 @@ const QLDichVu: React.FC = () => {
                           <p>{dichVu.mo_ta}</p>
                         </div>
                         {/* Hiển thị trạng thái xét duyệt với màu sắc */}
-                        <div
-                          className={`service-status ${getXetDuyetClass(
-                            dichVu.xet_duyet
-                          )}`}
-                        >
-                          {dichVu.xet_duyet}
-                        </div>
+
                         {/* Hiển thị trạng thái hoạt động với màu sắc */}
                         <div
                           className={`service-status ${getTrangThaiClass(
@@ -127,7 +132,7 @@ const QLDichVu: React.FC = () => {
                       </div>
                       <div className="service-card-body">
                         <div className="service-info">
-                        <img
+                          <img
                             src={`http://localhost:5000/img/${dichVu.logo}`}
                             alt={dichVu.ten_dich_vu}
                             className="service-image"
@@ -135,7 +140,7 @@ const QLDichVu: React.FC = () => {
                               width: "150px",
                               height: "150px",
                               objectFit: "cover",
-                            }} 
+                            }}
                           />
                           <div className="service-details">
                             <p>{dichVu.mo_ta}</p>
@@ -149,6 +154,10 @@ const QLDichVu: React.FC = () => {
                                 <span>{dichVu.thoi_gian_hoan_thanh}</span>
                               </div>
                             </div>
+                            <div className="service-meta-item">
+                              <i className="fas fa-eye" />
+                              <span>{dichVu.luot_dung} Lượt dùng</span>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -158,7 +167,10 @@ const QLDichVu: React.FC = () => {
                             <i className="fas fa-eye" />
                             Xem
                           </button>
-                          <button className="btn btn-outline btn-sm">
+                          <button
+                            className="btn btn-outline btn-sm"
+                            onClick={() => handleEdit(dichVu)}
+                          >
                             <i className="fas fa-edit" />
                             Chỉnh sửa
                           </button>

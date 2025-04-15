@@ -6,7 +6,7 @@ export const themDichVu = async (req: Request, res: Response) => {
   try {
     const dichVu = req.body;
 
-    console.log("Received data:", dichVu);  // In ra dữ liệu nhận được từ client
+    console.log("Received data:", dichVu); // In ra dữ liệu nhận được từ client
 
     // Kiểm tra nếu có logo được upload
     const logoPath = req.file ? req.file.filename : null;
@@ -17,11 +17,10 @@ export const themDichVu = async (req: Request, res: Response) => {
     const result = await dichVuModel.themDichVu(dichVuWithLogo);
     res.status(200).json({ message: "Dịch vụ đã được thêm", result });
   } catch (err) {
-    console.error("Error when adding service:", err);  // In ra lỗi để kiểm tra
+    console.error("Error when adding service:", err); // In ra lỗi để kiểm tra
     res.status(500).json({ message: "Lỗi khi thêm dịch vụ" });
   }
 };
-
 
 // Controller cập nhật dịch vụ
 export const capNhatDichVu = async (req: Request, res: Response) => {
@@ -30,28 +29,39 @@ export const capNhatDichVu = async (req: Request, res: Response) => {
 
   try {
     // Biến lưu đường dẫn logo
+    // Lấy logo cũ từ form data nếu có
+    const logoCuTuBody = req.body.logo;
+
     let logoPath: string | null = null;
 
-    // Kiểm tra nếu có logo mới được upload
     if (req.file) {
-      logoPath = req.file.filename; // Nếu có logo mới, lưu đường dẫn logo mới
+      // Nếu có upload ảnh mới
+      logoPath = req.file.filename;
+    } else if (logoCuTuBody) {
+      // Nếu không upload ảnh mới, nhưng có logo cũ được gửi lên
+      logoPath = logoCuTuBody;
     } else {
-      // Nếu không có logo mới (req.file là null), giữ nguyên logo cũ
-      logoPath = dichVu.logo || null; // Nếu không có logo cũ trong dichVu, sẽ gán là null
+      // Không có ảnh nào → null
+      logoPath = null;
     }
-
     // Cập nhật dịch vụ với hoặc không có logo mới
     const dichVuWithLogo = { ...dichVu, logo: logoPath };
 
     // Gọi model để cập nhật dịch vụ
     const result = await dichVuModel.capNhatDichVu(dichVuId, dichVuWithLogo);
 
-    res.status(200).json({ message: "Dịch vụ đã được cập nhật thành công", result });
+    res
+      .status(200)
+      .json({ message: "Dịch vụ đã được cập nhật thành công", result });
   } catch (err: unknown) {
     if (err instanceof Error) {
-      res.status(500).json({ message: `Lỗi khi cập nhật dịch vụ: ${err.message}` });
+      res
+        .status(500)
+        .json({ message: `Lỗi khi cập nhật dịch vụ: ${err.message}` });
     } else {
-      res.status(500).json({ message: "Lỗi không xác định khi cập nhật dịch vụ" });
+      res
+        .status(500)
+        .json({ message: "Lỗi không xác định khi cập nhật dịch vụ" });
     }
   }
 };
@@ -127,6 +137,26 @@ export const timDichVuTheoTen = async (req: Request, res: Response) => {
     }
   }
 };
+
+export const getDichVuTheoDanhMucId = async (req: Request, res: Response) => {
+  try {
+    const danhMucId = parseInt(req.params.danhMucId, 10);
+
+    if (isNaN(danhMucId)) {
+      return res.status(400).json({ message: "danh_muc_id không hợp lệ" });
+    }
+
+    const result = await dichVuModel.getDichVuTheoDanhMucId(danhMucId);
+
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("Lỗi khi lấy danh sách dịch vụ theo danh_muc_id:", err);
+    res
+      .status(500)
+      .json({ message: "Lỗi máy chủ khi lấy danh sách dịch vụ theo danh mục" });
+  }
+};
+
 // Controller lấy danh sách dịch vụ theo điều kiện
 export const getDichVuTheoDieuKien = async (req: Request, res: Response) => {
   try {

@@ -1,5 +1,5 @@
 import { RowDataPacket } from 'mysql2/promise';
-import connection from '../config/db'; // Cấu hình kết nối tới MySQL
+import connection from '../config/db'; 
 
 // Interface cho HoaDon
 export interface HoaDon extends RowDataPacket {

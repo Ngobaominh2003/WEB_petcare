@@ -4,12 +4,16 @@ import { upload } from '../middleware/upload';
 
 const router = express.Router();
 
+// === Thêm – Cập nhật – Xoá ===
 router.post('/dich-vu/them', upload.single('logo'), DichVuController.themDichVu);
 router.put('/dich-vu/cap-nhat/:id', upload.single('logo'), DichVuController.capNhatDichVu);
-router.get('/dich-vu', DichVuController.getDanhSachDichVu);
-router.get('/dich-vu/tai-khoan/:taiKhoanId', DichVuController.getDichVuTheoTaiKhoanId);
 router.delete('/dich-vu/xoa/:id', DichVuController.xoaDichVu);
+
+// === Hiển thị danh sách ===
+router.get('/dich-vu', DichVuController.getDanhSachDichVu);
+router.get('/dich-vu/danhsach/:danhMucId', DichVuController.getDichVuTheoDanhMucId);
+router.get('/dich-vu/tai-khoan/:taiKhoanId', DichVuController.getDichVuTheoTaiKhoanId);
 router.get('/dich-vu/tim', DichVuController.timDichVuTheoTen);
-router.get('/user/danhsach/dich-vu', DichVuController.getDichVuTheoDieuKien);
+router.get('/dich-vu/dieu-kien', DichVuController.getDichVuTheoDieuKien); // tên endpoint rõ hơn
 
 export default router;

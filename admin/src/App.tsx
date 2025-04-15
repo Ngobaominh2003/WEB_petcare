@@ -5,6 +5,7 @@ import UserAdd from './pages/UserAdd';
 import UserUpdate from './pages/UserUpdate';
 import UserCT from './pages/UserCT';
 import BaiViet from './pages/BaiViet';
+import DanhMuc from './pages/DanhMuc';
 
 import LichHen from './pages/LichHen';
 import DichVu from './pages/DichVu';
@@ -35,6 +36,7 @@ const App: React.FC = () => {
           <Route path="/UserCT/:id" element={<UserCT />} />
           <Route path="/UserUpdate" element={<UserUpdate user={selectedUser} />} />
           <Route path="/BaiViet" element={<BaiViet />} />
+          <Route path="/DanhMuc" element={<DanhMuc />} />
           
           <Route path="/LichHen" element={<LichHen />} />
           <Route path="/DichVu" element={<DichVu />} />
