@@ -1,5 +1,7 @@
 import React from "react";
 import { HashRouter as Router, Route, Routes } from "react-router-dom";
+
+// --- Trang chính ---
 import HomePage from "./pages/HomePage";
 import About from "./pages/About";
 import Service from "./pages/Service";
@@ -9,9 +11,12 @@ import Blog from "./pages/Blog";
 import Blog2 from "./pages/Blog2";
 import BlogDetail from "./phanchinh/BlogDetail";
 import Contact from "./pages/Contact";
-
+import DSDichVu from "./pages/DSDichVu";
 import DatLich1 from "./pages/DatLich1";
+import DatDichVu from "./pages/DatDichVu";
 import ThanhToan from "./pages/ThanhToan";
+
+// --- Tài khoản ---
 import Login from "./TaiKhoan/login";
 import Register from "./TaiKhoan/register";
 import NguoiDung from "./TaiKhoan/NguoiDung";
@@ -20,6 +25,10 @@ import QLTaiKhoan from "./TaiKhoan/QLTaiKhoan";
 import QLNhaCC from "./TaiKhoan/QLNhaCC";
 import DatLich from "./TaiKhoan/DatLich";
 import ThuCung from "./TaiKhoan/ThuCung";
+import ThuCungAdd from "./TaiKhoan/ThuCungAdd";
+import ThuCungUpdate from "./TaiKhoan/ThuCungUpdate";
+
+// --- Quản lý dịch vụ ---
 import DichVuQL from "./TaiKhoan/DichVuQL";
 import DichVuAdd from "./TaiKhoan/DichVuAdd";
 import DichVuUpdate from "./TaiKhoan/DichVuUpdate";
@@ -27,32 +36,41 @@ import DichVuUpdate from "./TaiKhoan/DichVuUpdate";
 const App: React.FC = () => {
   return (
     <Router>
-      <div>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/HomePage" element={<HomePage />} />
-          <Route path="/About" element={<About />} />
-          <Route path="/Service" element={<Service />} />
-          <Route path="/Price" element={<Price />} />
-          <Route path="/Booking" element={<Booking />} />
-          <Route path="/Blog" element={<Blog />} />
-          <Route path="/Blog2/:id" element={<Blog2 />} />
-          <Route path="/Contact" element={<Contact />} />
-          <Route path="/DatLich1" element={<DatLich1 />} />
-          <Route path="/ThanhToan" element={<ThanhToan />} />
-          <Route path="/Login" element={<Login />} />
-          <Route path="/Register" element={<Register />} />
-          <Route path="/NguoiDung" element={<NguoiDung />} />
-          <Route path="/NhaCC" element={<NhaCC />} />
-          <Route path="/QLTaiKhoan" element={<QLTaiKhoan />} />
-          <Route path="/QLNhaCC" element={<QLNhaCC />} />
-          <Route path="/DatLich" element={<DatLich />} />
-          <Route path="/ThuCung" element={<ThuCung />} />
-          <Route path="/DichVuQL" element={<DichVuQL />} />
-          <Route path="/DichVuAdd" element={<DichVuAdd />} />
-          <Route path="/DichVuUpdate/:id" element={<DichVuUpdate />} />        
-        </Routes>
-      </div>
+      <Routes>
+        {/* --- Trang chính --- */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/HomePage" element={<HomePage />} />
+        <Route path="/About" element={<About />} />
+        <Route path="/Service" element={<Service />} />
+        <Route path="/Price" element={<Price />} />
+        <Route path="/Booking" element={<Booking />} />
+        <Route path="/Blog" element={<Blog />} />
+        <Route path="/Blog2/:id" element={<Blog2 />} />
+        <Route path="/BlogDetail/:id" element={<BlogDetail />} />
+        <Route path="/Contact" element={<Contact />} />
+        <Route path="/DSDichVu" element={<DSDichVu />} />
+        <Route path="/DatLich1" element={<DatLich1 />} />
+        <Route path="/DatDichVu" element={<DatDichVu />} />
+        <Route path="/ThanhToan" element={<ThanhToan />} />
+
+        {/* --- Tài khoản --- */}
+        <Route path="/Login" element={<Login />} />
+        <Route path="/Register" element={<Register />} />
+        <Route path="/NguoiDung" element={<NguoiDung />} />
+        <Route path="/NhaCC" element={<NhaCC />} />
+        <Route path="/QLTaiKhoan" element={<QLTaiKhoan />} />
+        <Route path="/QLNhaCC" element={<QLNhaCC />} />
+        <Route path="/DatLich" element={<DatLich />} />
+        <Route path="/ThuCung" element={<ThuCung />} />
+        <Route path="/thu-cung/add" element={<ThuCungAdd />} />
+        <Route path="/thu-cung/update/:id" element={<ThuCungUpdate />} />
+
+
+        {/* --- Quản lý dịch vụ --- */}
+        <Route path="/DichVuQL" element={<DichVuQL />} />
+        <Route path="/DichVuAdd" element={<DichVuAdd />} />
+        <Route path="/DichVuUpdate/:id" element={<DichVuUpdate />} />
+      </Routes>
     </Router>
   );
 };

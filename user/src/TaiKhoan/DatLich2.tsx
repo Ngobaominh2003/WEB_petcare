@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import './style/styles.css';
 
-//Lịch đặt dịch vụ đã hoàn thànhthành
-const DatLich1: React.FC = () => {
+
+const DatLich2: React.FC = () => {
 
   return (
     <div>
@@ -98,4 +98,4 @@ const DatLich1: React.FC = () => {
   );
 };
 
-export default DatLich1;
+export default DatLich2;

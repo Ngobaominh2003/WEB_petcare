@@ -14,6 +14,6 @@ router.get('/dich-vu', DichVuController.getDanhSachDichVu);
 router.get('/dich-vu/danhsach/:danhMucId', DichVuController.getDichVuTheoDanhMucId);
 router.get('/dich-vu/tai-khoan/:taiKhoanId', DichVuController.getDichVuTheoTaiKhoanId);
 router.get('/dich-vu/tim', DichVuController.timDichVuTheoTen);
-router.get('/dich-vu/dieu-kien', DichVuController.getDichVuTheoDieuKien); // tên endpoint rõ hơn
+router.get('/dich-vu/dieu-kien', DichVuController.getDichVuTheoDieuKien); 
 
 export default router;

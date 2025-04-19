@@ -7,7 +7,7 @@ const Navbar: React.FC = () => {
   const menuItems = [
     { path: "/HomePage", label: "Trang Chủ" },
     { path: "/About", label: "Giới Thiệu" },
-    { path: "/Service", label: "Dịch Vụ" },
+    { path: "/DSDichVu", label: "Dịch Vụ" },
     { path: "/Price", label: "Giá" },
     { path: "/Booking", label: "Đặt Phòng" },
     { path: "/Contact", label: "Liên Hệ" },

@@ -1,7 +1,6 @@
 import { RowDataPacket } from "mysql2/promise";
 import connection from "../config/db"; // Kết nối database
 
-
 interface DichVu extends RowDataPacket {
   dich_vu_id: number;
   ten_dich_vu: string;
@@ -14,12 +13,10 @@ interface DichVu extends RowDataPacket {
   trang_thai: number;
   xet_duyet: "chờ duyệt" | "đã duyệt" | "không duyệt";
   thoi_gian_hoan_thanh?: string;
-  danh_muc_id: number; 
+  danh_muc_id: number;
 }
 
-
 export const dichVuModel = {
-  
   // Thêm mới dịch vụ
   async themDichVu(dichVu: DichVu) {
     const query = `
@@ -38,7 +35,7 @@ export const dichVuModel = {
       dichVu.thoi_gian_hoan_thanh || null,
       dichVu.danh_muc_id, // thêm danh_muc_id
     ];
-  
+
     try {
       const [result] = await connection.execute(query, values);
       return result;
@@ -50,8 +47,7 @@ export const dichVuModel = {
       }
     }
   },
-  
-  
+
   async capNhatDichVu(dichVuId: number, dichVu: Partial<DichVu>) {
     const fieldsToUpdate = [];
     const values = [];
@@ -80,7 +76,7 @@ export const dichVuModel = {
       fieldsToUpdate.push("danh_muc_id = ?");
       values.push(dichVu.danh_muc_id);
     }
-    
+
     if (dichVu.trang_thai !== undefined) {
       fieldsToUpdate.push("trang_thai = ?");
       values.push(dichVu.trang_thai);
@@ -193,7 +189,7 @@ export const dichVuModel = {
       }
     }
   },
-  
+
   async getDichVuTheoDanhMucId(danhMucId: number) {
     const query = `SELECT * FROM dich_vu WHERE danh_muc_id = ?`;
     try {
@@ -207,18 +203,24 @@ export const dichVuModel = {
       }
     }
   },
-  
+
   // Lấy danh sách dịch vụ theo điều kiện
   async getDichVuTheoDieuKien() {
     const query = `
-          SELECT dv.*, tk.vai_tro
-          FROM dich_vu dv
-          INNER JOIN tai_khoan tk ON dv.tai_khoan_id = tk.tai_khoan_id
-          WHERE dv.trang_thai = 1
-            AND dv.xet_duyet = 'đã duyệt'
-            AND tk.vai_tro = 'nha_cung_cap'
-            AND tk.trang_thai = 'hoat_dong'
-            AND tk.trang_thai_xet_duyet = 'đã duyệt'
+          SELECT dv.*, 
+       nc.ten_nha_cung_cap, 
+       nd.avata, 
+       tk.vai_tro
+FROM dich_vu dv
+INNER JOIN tai_khoan tk ON dv.tai_khoan_id = tk.tai_khoan_id
+INNER JOIN nha_cung_cap nc ON dv.tai_khoan_id = nc.tai_khoan_id  -- Thêm bảng nha_cung_cap
+INNER JOIN nguoi_dung nd ON dv.tai_khoan_id = nd.tai_khoan_id  -- Thêm bảng nguoi_dung
+WHERE dv.trang_thai = 1
+  AND dv.xet_duyet = 'đã duyệt'
+  AND tk.vai_tro = 'nha_cung_cap'
+  AND tk.trang_thai = 'hoat_dong'
+  AND tk.trang_thai_xet_duyet = 'đã duyệt'
+
         `;
 
     try {
