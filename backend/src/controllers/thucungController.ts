@@ -12,10 +12,6 @@ export const themThuCung = async (req: Request, res: Response) => {
     const thuCung = req.body;
     const hinh_anh = extractHinhAnh(req, thuCung);
 
-    if (!hinh_anh) {
-      return res.status(400).json({ message: "Vui lòng tải lên hình ảnh hoặc cung cấp đường dẫn hình ảnh" });
-    }
-
     const thuCungWithImage = { ...thuCung, hinh_anh };
     const result = await thuCungModel.themThuCung(thuCungWithImage);
 

@@ -966,18 +966,5 @@
       width: 100%;
     }
   }
-  .datdichvu-content-row {
-    display: flex;
-    gap: 24px; /* khoảng cách giữa 2 phần */
-    align-items: flex-start;
-  }
-  
-  /* Tuỳ chọn: set độ rộng cho từng khối */
-  .datdichvu-service-selection {
-    flex: 2; /* hoặc width: 60% */
-  }
-  
-  .datdichvu-booking-summary {
-    flex: 1; /* hoặc width: 40% */
-  }
+ 
   

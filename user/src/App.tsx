@@ -1,5 +1,7 @@
 import React from "react";
 import { HashRouter as Router, Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // --- Trang chính ---
 import HomePage from "./pages/HomePage";
@@ -13,8 +15,8 @@ import BlogDetail from "./phanchinh/BlogDetail";
 import Contact from "./pages/Contact";
 import DSDichVu from "./pages/DSDichVu";
 import DatLich1 from "./pages/DatLich1";
-import DatDichVu from "./pages/DatDichVu";
-import ThanhToan from "./pages/ThanhToan";
+import DatDichVu from "./pages/DatDichVu/DatDichVu";
+
 
 // --- Tài khoản ---
 import Login from "./TaiKhoan/login";
@@ -51,7 +53,7 @@ const App: React.FC = () => {
         <Route path="/DSDichVu" element={<DSDichVu />} />
         <Route path="/DatLich1" element={<DatLich1 />} />
         <Route path="/DatDichVu" element={<DatDichVu />} />
-        <Route path="/ThanhToan" element={<ThanhToan />} />
+      
 
         {/* --- Tài khoản --- */}
         <Route path="/Login" element={<Login />} />
@@ -65,12 +67,14 @@ const App: React.FC = () => {
         <Route path="/thu-cung/add" element={<ThuCungAdd />} />
         <Route path="/thu-cung/update/:id" element={<ThuCungUpdate />} />
 
-
         {/* --- Quản lý dịch vụ --- */}
         <Route path="/DichVuQL" element={<DichVuQL />} />
         <Route path="/DichVuAdd" element={<DichVuAdd />} />
         <Route path="/DichVuUpdate/:id" element={<DichVuUpdate />} />
       </Routes>
+
+      {/* ✅ Hiển thị Toast ở cuối app */}
+      <ToastContainer position="top-right" autoClose={3000} />
     </Router>
   );
 };

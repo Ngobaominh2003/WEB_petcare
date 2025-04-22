@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { showSuccess, showError } from "../utils/toast";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import NguoiDungMenu from "../components/NguoiDungMenu";
@@ -38,7 +39,7 @@ const ThuCungUpdate: React.FC = () => {
         .then((res) => setFormData(res.data))
         .catch((err) => {
           console.error("Không thể lấy dữ liệu thú cưng:", err);
-          alert("Không tìm thấy thú cưng");
+          showError("Không tìm thấy thú cưng");
           navigate("/ThuCung");
         });
     }
@@ -61,39 +62,34 @@ const ThuCungUpdate: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     const form = new FormData();
-  
+
     form.append("ten", formData.ten);
     form.append("loai", formData.loai);
     form.append("gioi_tinh", formData.gioi_tinh);
     form.append("tuoi", formData.tuoi.toString());
     form.append("can_nang", formData.can_nang.toString());
-  
+
     if (formData.hinh_anh instanceof File) {
       form.append("hinh_anh", formData.hinh_anh); // Ảnh mới
     } else if (typeof formData.hinh_anh === "string") {
       form.append("hinh_anh", formData.hinh_anh); // Ảnh cũ
     }
-  
+
     try {
-      await axios.put(
-        `http://localhost:5000/api/thu-cung/update/${id}`,
-        form,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      alert("Cập nhật thú cưng thành công");
+      await axios.put(`http://localhost:5000/api/thu-cung/update/${id}`, form, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      showSuccess("🎉 Cập nhật thú cưng thành công!");
       navigate("/ThuCung");
     } catch (err) {
       console.error("Lỗi khi gửi yêu cầu cập nhật:", err);
-      alert("Lỗi khi cập nhật thú cưng");
+      showError("❌ Lỗi khi cập nhật thú cưng. Vui lòng thử lại.");
     }
   };
-  
 
   return (
     <div>

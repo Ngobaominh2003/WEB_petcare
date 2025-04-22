@@ -3,6 +3,7 @@ import axios from "axios";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import NguoiDungMenu from "../components/NguoiDungMenu";
+import { showSuccess, showError, showWarn } from "../utils/toast"; 
 import "./style/styles.css";
 
 const ThuCungAdd: React.FC = () => {
@@ -49,12 +50,12 @@ const ThuCungAdd: React.FC = () => {
     e.preventDefault();
 
     if (!taiKhoanId) {
-      alert("Không tìm thấy tài khoản. Vui lòng đăng nhập lại.");
+      showError("Không tìm thấy tài khoản. Vui lòng đăng nhập lại.");
       return;
     }
 
     if (formData.tuoi < 0 || formData.can_nang < 0) {
-      alert("Tuổi và cân nặng không được âm.");
+      showWarn("Tuổi và cân nặng không được âm.");
       return;
     }
 
@@ -69,7 +70,7 @@ const ThuCungAdd: React.FC = () => {
     if (formData.hinh_anh) {
       data.append("hinh_anh", formData.hinh_anh);
     } else {
-      alert("Vui lòng tải lên hình ảnh");
+      showWarn("Vui lòng tải lên hình ảnh.");
       return;
     }
 
@@ -77,11 +78,11 @@ const ThuCungAdd: React.FC = () => {
       await axios.post("http://localhost:5000/api/thu-cung/them", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      alert(" Thêm thú cưng thành công!");
+      showSuccess("🎉 Thêm thú cưng thành công!");
       resetForm();
     } catch (err) {
-      console.error(" Error when adding pet:", err);
-      alert(" Lỗi khi thêm thú cưng. Vui lòng kiểm tra lại dữ liệu.");
+      console.error("Error when adding pet:", err);
+      showError(" Lỗi khi thêm thú cưng. Vui lòng kiểm tra lại dữ liệu.");
     }
   };
 
@@ -178,7 +179,7 @@ const ThuCungAdd: React.FC = () => {
                         name="hinh_anh"
                         accept="image/*"
                         onChange={handleFileChange}
-                        required
+                        
                       />
                     </div>
 

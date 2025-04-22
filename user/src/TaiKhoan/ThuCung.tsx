@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import NguoiDungMenu from "../components/NguoiDungMenu";
+import axios from "axios";
 import "./style/styles.css";
 
 const ThuCung: React.FC = () => {
@@ -16,17 +17,31 @@ const ThuCung: React.FC = () => {
   // Hàm lấy danh sách thú cưng
   const fetchPets = async () => {
     try {
-      const response = await fetch(
+      const response = await axios.get(
         `http://localhost:5000/api/thu-cung/tai-khoan/${taiKhoanId}`
       );
-      const data = await response.json();
-      setPets(data); // Cập nhật danh sách thú cưng
+      setPets(response.data);
     } catch (err) {
       console.error("Error fetching pets:", err);
     } finally {
-      setLoading(false); // Đổi state loading khi lấy dữ liệu xong
+      setLoading(false);
     }
   };
+ // Xử lý xóa dịch vụ
+ const handleDelete = async (petId: number) => {
+  if (window.confirm("Bạn có chắc chắn muốn xóa thú cưng này?")) {
+    try {
+      await axios.delete(`http://localhost:5000/api/thu-cung/xoa/${petId}`);
+      setPets((prevPets) =>
+        prevPets.filter((pet) => pet.thu_cung_id !== petId)
+      );
+      alert("Thú cưng đã được xóa thành công!");
+    } catch (error) {
+      console.error("Lỗi khi xóa thú cưng:", error);
+      alert("Đã xảy ra lỗi khi xóa thú cưng!");
+    }
+  }
+};
 
   // Gọi fetchPets khi component được mount
   useEffect(() => {
@@ -113,10 +128,14 @@ const ThuCung: React.FC = () => {
                           Chỉnh sửa
                         </button>
 
-                        <button className="btn btn-outline btn-sm btn-danger">
-                          <i className="fas fa-trash" />
-                          Xóa
-                        </button>
+                        <button
+  className="btn btn-outline btn-sm btn-danger"
+  onClick={() => handleDelete(pet.thu_cung_id)}
+>
+  <i className="fas fa-trash" />
+  Xóa
+</button>
+
                       </div>
                     </div>
                   ))
