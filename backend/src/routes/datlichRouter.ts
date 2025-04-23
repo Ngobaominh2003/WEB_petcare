@@ -1,17 +1,15 @@
-// src/routes/datLichRouter.ts
-
-import express from 'express';
-import * as DatLichController from '../controllers/datlichController';
+import express from "express";
+import * as datLichController from "../controllers/datlichController";
 
 const router = express.Router();
 
-// Định nghĩa các route
-router.get('/datlich', DatLichController.getAllDatLich);
-router.get('/datlich/nguoidung/:nguoi_dung_id', DatLichController.getDatLichByNguoiDungId);
-router.get('/datlich/thoi_gian_trong', DatLichController.getAvailableTimes);
-router.post('/datlich', DatLichController.createDatLich);
-router.put('/datlich/:dat_lich_id', DatLichController.updateDatLich);
-router.delete('/datlich/:dat_lich_id', DatLichController.deleteDatLich);
 
+router.post("/dat-lich", datLichController.taoDatLich);
+router.get("/dat-lich", datLichController.getTatCaDatLich);
+router.get("/dat-lich/:id", datLichController.getDatLichTheoId);
+router.get("/dat-lich/tai-khoan/:id", datLichController.getDatLichTheoTaiKhoanId);
+router.put("/dat-lich/:id", datLichController.capNhatDatLich);
+router.patch("/dat-lich/:id/trang-thai", datLichController.capNhatTrangThai);
+router.delete("/dat-lich/:id", datLichController.xoaDatLich);
 
 export default router;

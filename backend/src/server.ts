@@ -1,18 +1,19 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import userRoutes from './routes/taikhoanRoutes';
-import nguoidungRoutes from './routes/nguoidungRoutes';
-import nhacungcapRoutes from './routes/nhacungcapRoutes';
-import dichvuRoutes from './routes/dichvuRoutes';  
-import danhmucRoutes from './routes/danhmucRoutes'; 
-import goidichvuRoutes from './routes/goidichvuRoutes'; 
-import baivietRoutes from './routes/baivietRoutes'; 
-import datlichtRoutes from './routes/datlichRouter'; 
-import phongRoutes from './routes/phongRouter'; 
-import thucungRoutes from './routes/thucungRoutes'; 
-import datphongRoutes from './routes/datphongRouter'; 
-import hoadonRoutes from './routes/hoadonRouter'; 
-import thongkeRouters from './routes/thongkeRouter'; 
+import userRouter from './routes/taikhoanRouter';
+import nguoidungRouter from './routes/nguoidungRouter';
+import nhacungcapRouter from './routes/nhacungcapRouter';
+import dichvuRouter from './routes/dichvuRouter';  
+import danhmucRouter from './routes/daivietRouter'; 
+import goidichvuRouter from './routes/goidichvuRouter'; 
+import baivietRouter from './routes/baivietRouter'; 
+import datlichtRouter from './routes/datlichRouter'; 
+import phongRouter from './routes/phongRouter'; 
+import thucungRouter from './routes/thucungRouter'; 
+import datphongRouter from './routes/datphongRouter'; 
+import hoadonRouter from './routes/hoadonRouter'; 
+import thongkeRouterr from './routes/thongkeRouter'; 
+import sudungdichvuRouterr from './routes/sudungdichvuRouter'; 
 
 import path from 'path';
 
@@ -29,19 +30,20 @@ app.use('/img', express.static(path.join('D:/DoAnToNghiep01/backend/src/img')));
 
 
  // Sử dụng các route từ file userRoutes
-app.use('/api', userRoutes);
-app.use('/api', nguoidungRoutes); 
-app.use('/api', nhacungcapRoutes);
-app.use('/api', dichvuRoutes);
-app.use('/api', thucungRoutes);
-app.use('/api', danhmucRoutes);
-app.use('/api', goidichvuRoutes);
-app.use('/api', baivietRoutes);
-app.use('/api', datlichtRoutes); 
-app.use('/api', phongRoutes);
-app.use('/api', datphongRoutes);
-app.use('/api', hoadonRoutes);
-app.use('/api', thongkeRouters);
+app.use('/api', userRouter);
+app.use('/api', nguoidungRouter); 
+app.use('/api', nhacungcapRouter);
+app.use('/api', dichvuRouter);
+app.use('/api', thucungRouter);
+app.use('/api', danhmucRouter);
+app.use('/api', goidichvuRouter);
+app.use('/api', baivietRouter);
+app.use('/api', datlichtRouter); 
+app.use('/api', phongRouter);
+app.use('/api', datphongRouter);
+app.use('/api', hoadonRouter);
+app.use('/api', thongkeRouterr);
+app.use('/api', sudungdichvuRouterr);
 // Route kiểm tra server hoạt động
 
 

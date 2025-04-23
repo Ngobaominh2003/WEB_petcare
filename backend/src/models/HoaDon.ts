@@ -1,63 +1,71 @@
-import { RowDataPacket } from 'mysql2/promise';
-import { OkPacket } from 'mysql2'; // OkPacket là kiểu trả về của các câu lệnh INSERT, UPDATE, DELETE
-import connection from '../config/db'; // Đảm bảo rằng connection đã được cấu hình đúng
+import { RowDataPacket } from "mysql2/promise";
+import connection from "../config/db";
 
-// Định nghĩa interface cho Hóa Đơn (HoaDon)
 export interface HoaDon extends RowDataPacket {
   hoa_don_id: number;
-  nguoi_dung_id: number;
-  dat_phong_id: number | null;
-  dat_lich_id: number | null;
-  tong_tien: number;
-  trang_thai: string;
-  ngay_tao: string;
+  dat_lich_id: number;
+  tai_khoan_id: number;
+  so_tien: number;
+  phuong_thuc: "tiền mặt" | "chuyển khoản" | "momo" | "zalo_pay" | null;
+  thoi_gian_tt?: Date;
+  trang_thai: "đã thanh toán" | "chưa thanh toán" | "hủy";
 }
 
-// Hàm lấy tất cả hóa đơn
-export const getAllInvoices = async (): Promise<HoaDon[]> => {
-  try {
-    const [rows] = await connection.execute(
-      'SELECT hoa_don_id, nguoi_dung_id, dat_phong_id, dat_lich_id, tong_tien, trang_thai, ngay_tao FROM hoa_don'
-    );
-    return rows as HoaDon[];
-  } catch (error) {
-    console.error('Lỗi khi lấy tất cả hóa đơn:', error);
-    throw new Error('Không thể lấy danh sách hóa đơn');
-  }
-};
+export const hoaDonModel = {
+  // Tạo mới hóa đơn
+  async taoHoaDon(hoaDon: Omit<HoaDon, "hoa_don_id" | "thoi_gian_tt">) {
+    const query = `
+      INSERT INTO hoa_don (dat_lich_id, tai_khoan_id, so_tien, phuong_thuc, trang_thai)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+    const values = [
+      hoaDon.dat_lich_id,
+      hoaDon.tai_khoan_id,
+      hoaDon.so_tien,
+      hoaDon.phuong_thuc ?? null,
+      hoaDon.trang_thai ?? "chưa thanh toán",
+    ];
+    const [result] = await connection.execute(query, values);
+    return result;
+  },
 
-// Hàm lấy hóa đơn theo nguoi_dung_id và ngày tạo
-export const getInvoicesByUserIdAndDate = async (nguoiDungId: number, ngayTao: string): Promise<HoaDon[]> => {
-  try {
-    const [rows] = await connection.execute(
-      'SELECT hoa_don_id, nguoi_dung_id, dat_phong_id, dat_lich_id, tong_tien, trang_thai, ngay_tao FROM hoa_don WHERE nguoi_dung_id = ? AND DATE(ngay_tao) = ?',
-      [nguoiDungId, ngayTao]
-    );
-    return rows as HoaDon[];
-  } catch (error) {
-    console.error('Lỗi khi lấy hóa đơn theo ID người dùng và ngày tạo:', error);
-    throw new Error('Không thể lấy hóa đơn theo ID người dùng và ngày tạo');
-  }
-};
+  // Lấy danh sách hóa đơn, có thể lọc theo tài khoản và trạng thái
+  async getDanhSachHoaDon(tai_khoan_id?: number, trang_thai?: string) {
+    let query = `SELECT * FROM hoa_don WHERE 1=1`;
+    const values: any[] = [];
 
-
-
-// Hàm xóa hóa đơn theo ID
-export const deleteInvoice = async (hoaDonId: number): Promise<void> => {
-  try {
-    const [result] = await connection.execute(
-      'DELETE FROM hoa_don WHERE hoa_don_id = ?',
-      [hoaDonId]
-    );
-
-    // Kiểm tra số lượng bản ghi bị ảnh hưởng
-    const affectedRows = (result as OkPacket).affectedRows;
-
-    if (affectedRows === 0) {
-      throw new Error('Hóa đơn không tồn tại hoặc không thể xóa');
+    if (tai_khoan_id !== undefined) {
+      query += ` AND tai_khoan_id = ?`;
+      values.push(tai_khoan_id);
     }
-  } catch (error) {
-    console.error('Lỗi khi xóa hóa đơn:', error);
-    throw new Error('Không thể xóa hóa đơn');
-  }
+
+    if (trang_thai !== undefined) {
+      query += ` AND trang_thai = ?`;
+      values.push(trang_thai);
+    }
+
+    const [rows] = await connection.execute<HoaDon[]>(query, values);
+    return rows;
+  },
+
+  // Lấy chi tiết hóa đơn theo ID
+  async getHoaDonTheoId(id: number) {
+    const query = `SELECT * FROM hoa_don WHERE hoa_don_id = ?`;
+    const [rows] = await connection.execute<HoaDon[]>(query, [id]);
+    return rows[0];
+  },
+
+  // Cập nhật trạng thái hóa đơn
+  async capNhatTrangThai(id: number, trang_thai: HoaDon["trang_thai"]) {
+    const query = `UPDATE hoa_don SET trang_thai = ? WHERE hoa_don_id = ?`;
+    const [result] = await connection.execute(query, [trang_thai, id]);
+    return result;
+  },
+
+  // Xóa hóa đơn
+  async xoaHoaDon(id: number) {
+    const query = `DELETE FROM hoa_don WHERE hoa_don_id = ?`;
+    const [result] = await connection.execute(query, [id]);
+    return result;
+  },
 };
