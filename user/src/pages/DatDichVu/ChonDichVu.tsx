@@ -1,13 +1,60 @@
 //src/pages/DatDichVu/ChonDichVu.tsx
 import { useNavigate } from "react-router-dom";
-
+import { useEffect, useState } from "react";
 type Props = {
   onNext: () => void;
+  setChonDichVuInfo: React.Dispatch<React.SetStateAction<any>>;
 };
 
-const ChonDichVu: React.FC<Props> = ({ onNext }) => {
-  const navigate = useNavigate();
+const ChonDichVu: React.FC<Props> = ({ onNext, setChonDichVuInfo }) => {
 
+  const [dichVu, setDichVu] = useState<any | null>(null);
+  const [ghiChu, setGhiChu] = useState<string>("");
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    const data = localStorage.getItem("dichVuDaChon");
+    if (data) {
+      setDichVu(JSON.parse(data));
+    }
+  }, []);
+
+  useEffect(() => {
+    const data = localStorage.getItem("dichVuDaChon");
+    if (data) {
+      const dichVu = JSON.parse(data);
+      console.log("Dịch vụ đã chọn:", dichVu); // dùng dữ liệu ở đây
+      // bạn có thể setState để hiển thị tên, giá, mô tả...
+    }
+  }, []);
+  const handleNext = () => {
+    if (dichVu) {
+      const taiKhoanId = localStorage.getItem("tai_khoan_id");
+  
+      // 1. Lưu vào localStorage
+      localStorage.setItem(
+        "chonDichVuInfo",
+        JSON.stringify({
+          dich_vu_id: dichVu.dich_vu_id,
+          tai_khoan_id: taiKhoanId ? parseInt(taiKhoanId) : null,
+          so_tien: dichVu.gia,
+          ghi_chu: ghiChu,
+        })
+      );
+  
+      // 2. Cập nhật state cha
+      setChonDichVuInfo({
+        dich_vu_id: dichVu.dich_vu_id,
+        tai_khoan_id: taiKhoanId ? parseInt(taiKhoanId) : null,
+        so_tien: dichVu.gia,
+        ghi_chu: ghiChu,
+      });
+  
+      // 3. Chuyển bước
+      onNext();
+    }
+  };
+  
   return (
     <div className="datdichvu-booking-form">
       <div className="datdichvu-booking-step active" id="step-1">
@@ -18,48 +65,49 @@ const ChonDichVu: React.FC<Props> = ({ onNext }) => {
 
         <div className="datdichvu-content-row">
           <div className="datdichvu-service-selection">
-            <div className="datdichvu-service-card selected">
-              <div className="datdichvu-service-image">
-                <img
-                  src="https://placehold.co/400x300/4CAF50/ffffff?text=Tắm+và+cắt+tỉa+lông"
-                  alt="Tắm và cắt tỉa lông cho chó"
-                />
-              </div>
-              <div className="datdichvu-service-details">
-                <h3>Tắm và cắt tỉa lông cho chó</h3>
-                <div className="datdichvu-service-provider">
+            {dichVu && (
+              <div className="datdichvu-service-card selected">
+                <div className="datdichvu-service-image">
                   <img
-                    src="https://placehold.co/50x50/4CAF50/ffffff?text=HP"
-                    alt="Happy Pets"
-                    className="datdichvu-provider-avatar"
+                    src={`http://localhost:5000/img/${dichVu.logo}`}
+                    alt={dichVu.ten_dich_vu}
                   />
-                  <span>Happy Pets</span>
                 </div>
-                <div className="datdichvu-service-rating">
-                  <div className="datdichvu-stars">
-                    <i className="fas fa-star" />
-                    <i className="fas fa-star" />
-                    <i className="fas fa-star" />
-                    <i className="fas fa-star" />
-                    <i className="fas fa-star-half-alt" />
+                <div className="datdichvu-service-details">
+                  <h3>{dichVu.ten_dich_vu}</h3>
+                  <div className="datdichvu-service-provider">
+                    <img
+                      src={
+                        dichVu.avata
+                          ? `http://localhost:5000/img/${dichVu.avata}`
+                          : "https://placehold.co/50x50"
+                      }
+                      alt="Provider"
+                      className="datdichvu-provider-avatar"
+                    />
+                    <span>{dichVu.ten_nha_cung_cap || "Không rõ"}</span>
                   </div>
-                  <span>4.5 (120 đánh giá)</span>
+                  <div className="datdichvu-service-rating">
+                    <div className="datdichvu-stars">
+                      <i className="fas fa-star" />
+                      <i className="fas fa-star" />
+                      <i className="fas fa-star" />
+                      <i className="fas fa-star" />
+                      <i className="fas fa-star-half-alt" />
+                    </div>
+                    <span>{dichVu.luot_dung} đánh giá</span>
+                  </div>
+                  <div className="datdichvu-service-price">
+                    <span className="datdichvu-price">
+                      {dichVu.gia.toLocaleString()} VNĐ
+                    </span>
+                  </div>
                 </div>
-                <div className="datdichvu-service-price">
-                  <span className="datdichvu-price">250.000 - 500.000 VNĐ</span>
+                <div className="datdichvu-service-select">
+                  <label>Đã chọn</label>
                 </div>
               </div>
-              <div className="datdichvu-service-select">
-                <input
-                  type="radio"
-                  name="service"
-                  id="service-1"
-                  value="service-1"
-                  defaultChecked
-                />
-                <label htmlFor="service-1">Đã chọn</label>
-              </div>
-            </div>
+            )}
 
             <div className="datdichvu-service-options">
               <div className="datdichvu-form-group">
@@ -105,7 +153,8 @@ const ChonDichVu: React.FC<Props> = ({ onNext }) => {
                   name="service-note"
                   rows={3}
                   placeholder="Nhập yêu cầu đặc biệt hoặc ghi chú cho nhà cung cấp dịch vụ"
-                  defaultValue=""
+                  value={ghiChu}
+                  onChange={(e) => setGhiChu(e.target.value)}
                 />
               </div>
             </div>
@@ -122,7 +171,7 @@ const ChonDichVu: React.FC<Props> = ({ onNext }) => {
           </button>
           <button
             type="button"
-            onClick={onNext}
+            onClick={handleNext}
             className="datdichvu-btn datdichvu-btn-primary"
           >
             Tiếp tục

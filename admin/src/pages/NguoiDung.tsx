@@ -8,7 +8,9 @@ interface NguoiDungProps {
     sdt?: string;
     gioi_tinh: "nam" | "nu" | "khac" | null;
     avata?: File | string;
+    dia_chi?: string; // thêm dòng này
   };
+  
   setNguoiDung: React.Dispatch<React.SetStateAction<any>>;
 }
 
@@ -49,6 +51,10 @@ const NguoiDung: React.FC<NguoiDungProps> = ({
     formDataToSend.append("ho_ten", nguoiDung.ho_ten || "");
     formDataToSend.append("gioi_tinh", nguoiDung.gioi_tinh || "");
     if (nguoiDung.sdt) formDataToSend.append("sdt", nguoiDung.sdt);
+    if (nguoiDung.dia_chi) {
+      formDataToSend.append("dia_chi", nguoiDung.dia_chi);
+    }
+    
     if (nguoiDung.avata && typeof nguoiDung.avata !== "string") {
       formDataToSend.append("avata", nguoiDung.avata);
     }
@@ -124,6 +130,15 @@ const NguoiDung: React.FC<NguoiDungProps> = ({
           <option value="khac">Khác</option>
         </select>
       </div>
+      <div className="form-group">
+  <label>Địa chỉ:</label>
+  <input
+    type="text"
+    name="dia_chi"
+    value={nguoiDung?.dia_chi || ""}
+    onChange={handleChange}
+  />
+</div>
 
       <div className="form-group">
         <label>Avatar:</label>

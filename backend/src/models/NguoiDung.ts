@@ -10,7 +10,9 @@ export interface NguoiDung extends RowDataPacket {
   sdt?: string;
   gioi_tinh: "nam" | "nu" | "khac" | null;
   avata?: string;
+  dia_chi?: string; // thêm dòng này
 }
+
 
 // Thêm người dùng
 export const createNguoiDung = async (
@@ -18,13 +20,15 @@ export const createNguoiDung = async (
   ho_ten: string,
   sdt: string | null,
   gioi_tinh: "nam" | "nu" | "khac" | null,
-  avata: string | null
+  avata: string | null,
+  dia_chi: string | null // thêm tham số này
 ): Promise<void> => {
   await connection.execute(
-    "INSERT INTO nguoi_dung (tai_khoan_id, ho_ten, sdt, gioi_tinh, avata) VALUES (?, ?, ?, ?, ?)",
-    [tai_khoan_id, ho_ten, sdt, gioi_tinh, avata]
+    "INSERT INTO nguoi_dung (tai_khoan_id, ho_ten, sdt, gioi_tinh, avata, dia_chi) VALUES (?, ?, ?, ?, ?, ?)",
+    [tai_khoan_id, ho_ten, sdt, gioi_tinh, avata, dia_chi]
   );
 };
+
 
 // Cập nhật thông tin người dùng
 export const updateNguoiDung = async (
@@ -32,7 +36,8 @@ export const updateNguoiDung = async (
   ho_ten?: string,
   sdt?: string | null,
   gioi_tinh?: 'nam' | 'nu' | 'khac' | null,
-  avata?: string | null
+  avata?: string | null,
+  dia_chi?: string | null // thêm tham số này
 ): Promise<void> => {
   let query = 'UPDATE nguoi_dung SET ';
   const values: (string | number | null)[] = [];
@@ -57,14 +62,16 @@ export const updateNguoiDung = async (
     values.push(avata);
   }
 
+  if (dia_chi !== undefined) {
+    query += 'dia_chi = ?, ';
+    values.push(dia_chi);
+  }
+
   if (values.length === 0) {
     throw new Error('Không có thông tin nào để cập nhật');
   }
 
-  // Xóa dấu phẩy thừa cuối cùng
-  query = query.slice(0, -2);
-
-  // Sử dụng điều kiện chỉ với tai_khoan_id
+  query = query.slice(0, -2); // Xóa dấu phẩy cuối
   query += ' WHERE tai_khoan_id = ?';
   values.push(tai_khoan_id);
 

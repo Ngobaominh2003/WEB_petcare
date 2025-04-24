@@ -28,9 +28,10 @@ export const datLichModel = {
       datLich.ghi_chu ?? null,
       datLich.trang_thai ?? "chờ xác nhận"
     ];
-    const [result] = await connection.execute(query, values);
-    return result;
+    const [result]: any = await connection.execute(query, values);
+    return result; // result.insertId sẽ có ở đây
   },
+  
 
   // Lấy toàn bộ lịch hẹn
   async getTatCaDatLich() {

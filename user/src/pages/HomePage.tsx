@@ -22,7 +22,7 @@ const HomePage: React.FC = () => {
     const fetchServices = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:5000/api/dichvu");
+        const response = await fetch("http://localhost:5000/api/dich-vu/dieu-kien");
         if (!response.ok) {
           throw new Error("Failed to fetch services data");
         }

@@ -4,16 +4,19 @@ import * as NguoiDungModel from "../models/NguoiDung";
 // Thêm người dùng
 export const createNguoiDung = async (req: Request, res: Response) => {
   try {
-    const { tai_khoan_id, ho_ten, sdt, gioi_tinh } = req.body;
+    const { tai_khoan_id, ho_ten, sdt, gioi_tinh, dia_chi } = req.body;
+
     const avata = req.file ? req.file.filename : null;
 
     await NguoiDungModel.createNguoiDung(
-      parseInt(tai_khoan_id),
+      tai_khoan_id,
       ho_ten,
-      sdt || null,
-      gioi_tinh || null,
-      avata
+      sdt,
+      gioi_tinh,
+      avata,
+      dia_chi // <== BẠN PHẢI TRUYỀN THÊM THAM SỐ NÀY
     );
+    
 
     res.status(201).json({ message: "Người dùng đã được thêm thành công!" });
   } catch (error) {
@@ -24,10 +27,9 @@ export const createNguoiDung = async (req: Request, res: Response) => {
 
 // Cập nhật thông tin người dùng
 export const updateNguoiDung = async (req: Request, res: Response): Promise<void> => {
-  const { tai_khoan_id, ho_ten, sdt, gioi_tinh } = req.body;
-  const avata = req.file ? req.file.filename : null; // Lấy tên file ảnh từ multer
+  const { tai_khoan_id, ho_ten, sdt, gioi_tinh, dia_chi } = req.body;
+  const avata = req.file ? req.file.filename : null;
 
-  // Nếu gioi_tinh không hợp lệ, gán là null
   const validGioiTinhValues = ['nam', 'nu', 'khac'];
   const gioiTinhValue = validGioiTinhValues.includes(gioi_tinh) ? gioi_tinh : null;
 
@@ -37,7 +39,8 @@ export const updateNguoiDung = async (req: Request, res: Response): Promise<void
       ho_ten,
       sdt,
       gioiTinhValue,
-      avata
+      avata,
+      dia_chi // ➕ THÊM vào đây
     );
     res.status(200).json({ message: "Cập nhật người dùng thành công!" });
   } catch (error) {
@@ -45,6 +48,7 @@ export const updateNguoiDung = async (req: Request, res: Response): Promise<void
     res.status(500).json({ message: "Lỗi khi cập nhật người dùng", error });
   }
 };
+
 
 
 // Xóa người dùng theo nguoi_dung_id

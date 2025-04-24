@@ -10,10 +10,11 @@ import baivietRouter from './routes/baivietRouter';
 import datlichtRouter from './routes/datlichRouter'; 
 import phongRouter from './routes/phongRouter'; 
 import thucungRouter from './routes/thucungRouter'; 
-import datphongRouter from './routes/datphongRouter'; 
+
 import hoadonRouter from './routes/hoadonRouter'; 
 import thongkeRouterr from './routes/thongkeRouter'; 
 import sudungdichvuRouterr from './routes/sudungdichvuRouter'; 
+import danhgiaRouterr from './routes/danhgiaRouter'; 
 
 import path from 'path';
 
@@ -40,10 +41,11 @@ app.use('/api', goidichvuRouter);
 app.use('/api', baivietRouter);
 app.use('/api', datlichtRouter); 
 app.use('/api', phongRouter);
-app.use('/api', datphongRouter);
+
 app.use('/api', hoadonRouter);
 app.use('/api', thongkeRouterr);
 app.use('/api', sudungdichvuRouterr);
+app.use('/api', danhgiaRouterr);
 // Route kiểm tra server hoạt động
 
 

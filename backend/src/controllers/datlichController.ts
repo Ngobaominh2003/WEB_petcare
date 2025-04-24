@@ -5,8 +5,11 @@ import { datLichModel } from "../models/DatLich";
 export const taoDatLich = async (req: Request, res: Response) => {
   try {
     const datLich = req.body;
-    const result = await datLichModel.taoDatLich(datLich);
-    res.status(201).json({ message: "Đặt lịch thành công", result });
+    const result: any = await datLichModel.taoDatLich(datLich);
+    res.status(201).json({
+      insertId: result.insertId,
+      message: "Đặt lịch thành công"
+    });
   } catch (err) {
     console.error("Lỗi khi tạo lịch hẹn:", err);
     res.status(500).json({ message: "Lỗi khi tạo lịch hẹn" });

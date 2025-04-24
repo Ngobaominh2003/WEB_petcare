@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
 
-
 const XacNhan: React.FC = () => {
-     useEffect(() => {
-            window.scrollTo(0, 0);
-          }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div className="datdichvu-booking-form">
       <div className="datdichvu-booking-step active" id="step-4">
@@ -49,7 +48,9 @@ const XacNhan: React.FC = () => {
               <span className="datdichvu-detail-value">365.000 VNĐ</span>
             </div>
             <div className="datdichvu-booking-detail-item">
-              <span className="datdichvu-detail-label">Phương thức thanh toán:</span>
+              <span className="datdichvu-detail-label">
+                Phương thức thanh toán:
+              </span>
               <span className="datdichvu-detail-value">
                 Thanh toán khi sử dụng dịch vụ
               </span>
@@ -58,8 +59,9 @@ const XacNhan: React.FC = () => {
 
           <div className="datdichvu-confirmation-message">
             <p>
-              Chúng tôi đã gửi thông tin chi tiết về lịch đặt dịch vụ đến email của bạn. Bạn
-              cũng có thể xem lịch đặt dịch vụ trong mục "Lịch đặt dịch vụ" trong tài khoản của mình.
+              Chúng tôi đã gửi thông tin chi tiết về lịch đặt dịch vụ đến email
+              của bạn. Bạn cũng có thể xem lịch đặt dịch vụ trong mục "Lịch đặt
+              dịch vụ" trong tài khoản của mình.
             </p>
           </div>
 

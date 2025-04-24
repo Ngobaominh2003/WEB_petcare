@@ -1,14 +1,108 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 type Props = {
   onNext: () => void;
   onBack: () => void;
+  setDatLichInfo: React.Dispatch<React.SetStateAction<any>>;
 };
 
-const ThongTinDatLich: React.FC<Props> = ({ onNext, onBack }) => {
-     useEffect(() => {
-            window.scrollTo(0, 0);
-          }, []);
+const ThongTinDatLich: React.FC<Props> = ({
+  onNext,
+  onBack,
+  setDatLichInfo,
+}) => {
+  const [thuCungList, setThuCungList] = useState<any[]>([]);
+  const [nguoiDung, setNguoiDung] = useState<any | null>(null);
+  const [selectedPetId, setSelectedPetId] = useState<number | null>(null);
+  const storedEmail = localStorage.getItem("email");
+  const [formInfo, setFormInfo] = useState({
+    ho_ten: "",
+    sdt: "",
+
+    dia_chi: "",
+  });
+  useEffect(() => {
+    if (nguoiDung) {
+      setFormInfo({
+        ho_ten: nguoiDung.ho_ten || "",
+        sdt: nguoiDung.sdt || "",
+
+        dia_chi: nguoiDung.dia_chi || "",
+      });
+    }
+  }, [nguoiDung]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const taiKhoanId = localStorage.getItem("tai_khoan_id");
+
+    if (taiKhoanId) {
+      axios
+        .get(`http://localhost:5000/api/thu-cung/tai-khoan/${taiKhoanId}`)
+
+        .then((res) => {
+          console.log("Danh sách thú cưng:", res.data);
+          setThuCungList(res.data);
+        });
+
+      axios
+        .get(`http://localhost:5000/api/nguoidung/tai-khoan/${taiKhoanId}`)
+        .then((res) => {
+          setNguoiDung(res.data);
+        });
+    }
+  }, []);
+
+  const handleNext = () => {
+    const ngay = (document.getElementById("booking-date") as HTMLInputElement)
+      .value;
+    const gio = (
+      document.querySelector(
+        "input[name='time-slot']:checked"
+      ) as HTMLInputElement
+    )?.value;
+    const ngayGio = `${ngay} ${gio}:00`;
+
+    const note = (
+      document.getElementById("service-note") as HTMLTextAreaElement
+    )?.value;
+    const selectedPackage = (
+      document.getElementById("service-package") as HTMLSelectElement
+    )?.value;
+    const selectedThuCung = thuCungList.find(
+      (pet) => pet.thu_cung_id === selectedPetId
+    );
+
+    localStorage.setItem(
+      "datLichInfo",
+      JSON.stringify({
+        thu_cung_id: selectedPetId,
+        ten_thu_cung: selectedThuCung?.ten || "",
+        ngay_gio: ngayGio,
+        ghi_chu: note,
+        goi_dich_vu: selectedPackage,
+        ho_ten: formInfo.ho_ten,
+        sdt: formInfo.sdt,
+
+        dia_chi: formInfo.dia_chi,
+      })
+    );
+    setDatLichInfo({
+      thu_cung_id: selectedPetId,
+      ten_thu_cung: selectedThuCung?.ten || "",
+      ngay_gio: ngayGio,
+      ghi_chu: note,
+      goi_dich_vu: selectedPackage,
+      ho_ten: nguoiDung?.ho_ten || "",
+      sdt: nguoiDung?.sdt || "",
+      dia_chi: nguoiDung?.dia_chi || "",
+      email: storedEmail || "",
+    });
+
+    onNext();
+  };
+
   return (
     <div className="datdichvu-booking-form">
       <div className="datdichvu-booking-step active" id="step-2">
@@ -22,50 +116,39 @@ const ThongTinDatLich: React.FC<Props> = ({ onNext, onBack }) => {
           <div className="datdichvu-form-section">
             <h3>Chọn thú cưng</h3>
             <div className="datdichvu-pet-selection">
-              <div className="datdichvu-pet-card selected">
-                <div className="datdichvu-pet-image">
-                  <img
-                    src="https://placehold.co/100x100/4CAF50/ffffff?text=Chó+Bông"
-                    alt="Chó Bông"
-                  />
-                </div>
-                <div className="datdichvu-pet-info">
-                  <h4>Chó Bông</h4>
-                  <p>Poodle - 3 tuổi</p>
-                </div>
-                <div className="datdichvu-pet-select">
-                  <input
-                    type="radio"
-                    name="pet"
-                    id="pet-1"
-                    value="pet-1"
-                    defaultChecked
-                  />
-                  <label htmlFor="pet-1" />
-                </div>
-              </div>
+              {thuCungList.length === 0 ? (
+                <p>Không có thú cưng nào được tìm thấy.</p>
+              ) : (
+                thuCungList.map((thuCung, idx) => (
+                  <div className="datdichvu-pet-card" key={thuCung.thu_cung_id}>
+                    <div className="datdichvu-pet-image">
+                      <img
+                        src={`http://localhost:5000/img/${
+                          thuCung.hinh_anh || "placeholder.png"
+                        }`}
+                        alt={thuCung.ten}
+                      />
+                    </div>
+                    <div className="datdichvu-pet-info">
+                      <h4>{thuCung.ten}</h4>
+                      <p>
+                        {thuCung.loai} - {thuCung.tuoi} tuổi
+                      </p>
+                    </div>
+                    <div className="datdichvu-pet-select">
+                      <input
+                        type="radio"
+                        name="pet"
+                        id={`pet-${idx}`}
+                        value={thuCung.thu_cung_id}
+                        onChange={() => setSelectedPetId(thuCung.thu_cung_id)}
+                      />
 
-              <div className="datdichvu-pet-card">
-                <div className="datdichvu-pet-image">
-                  <img
-                    src="https://placehold.co/100x100/4CAF50/ffffff?text=Mèo+Miu"
-                    alt="Mèo Miu"
-                  />
-                </div>
-                <div className="datdichvu-pet-info">
-                  <h4>Mèo Miu</h4>
-                  <p>Mèo Anh lông ngắn - 2 tuổi</p>
-                </div>
-                <div className="datdichvu-pet-select">
-                  <input
-                    type="radio"
-                    name="pet"
-                    id="pet-2"
-                    value="pet-2"
-                  />
-                  <label htmlFor="pet-2" />
-                </div>
-              </div>
+                      <label htmlFor={`pet-${idx}`} />
+                    </div>
+                  </div>
+                ))
+              )}
 
               <div className="datdichvu-pet-card datdichvu-add-pet">
                 <div className="datdichvu-add-pet-icon">
@@ -93,22 +176,26 @@ const ThongTinDatLich: React.FC<Props> = ({ onNext, onBack }) => {
               <div className="datdichvu-form-group">
                 <label>Thời gian có sẵn</label>
                 <div className="datdichvu-time-slots">
-                  {["09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00"].map((time, idx) => (
+                  {[
+                    "09:00",
+                    "10:00",
+                    "11:00",
+                    "13:00",
+                    "14:00",
+                    "15:00",
+                    "16:00",
+                  ].map((time, idx) => (
                     <div key={time} className="datdichvu-time-slot">
                       <input
                         type="radio"
                         name="time-slot"
                         id={`time-${idx}`}
-                        defaultValue={time}
+                        value={time}
                         defaultChecked={time === "14:00"}
                       />
                       <label htmlFor={`time-${idx}`}>{time}</label>
                     </div>
                   ))}
-                  <div className="datdichvu-time-slot disabled">
-                    <input type="radio" disabled id="time-8" />
-                    <label htmlFor="time-8">17:00</label>
-                  </div>
                 </div>
               </div>
             </div>
@@ -125,8 +212,13 @@ const ThongTinDatLich: React.FC<Props> = ({ onNext, onBack }) => {
                     type="text"
                     id="contact-name"
                     name="contact-name"
-                    defaultValue="Nguyễn Văn A"
-                    required
+                    value={formInfo.ho_ten}
+                    onChange={(e) =>
+                      setFormInfo((prev) => ({
+                        ...prev,
+                        ho_ten: e.target.value,
+                      }))
+                    }
                   />
                 </div>
                 <div className="datdichvu-form-group">
@@ -135,29 +227,28 @@ const ThongTinDatLich: React.FC<Props> = ({ onNext, onBack }) => {
                     type="tel"
                     id="contact-phone"
                     name="contact-phone"
-                    defaultValue="0912345678"
-                    required
+                    value={formInfo.sdt}
+                    onChange={(e) =>
+                      setFormInfo((prev) => ({ ...prev, sdt: e.target.value }))
+                    }
                   />
                 </div>
               </div>
               <div className="datdichvu-form-group">
-                <label htmlFor="contact-email">Email</label>
-                <input
-                  type="email"
-                  id="contact-email"
-                  name="contact-email"
-                  defaultValue="nguyenvana@example.com"
-                  required
-                />
+                <label>Email</label>
+                <input type="email" value={storedEmail || ""} readOnly />
               </div>
               <div className="datdichvu-form-group">
-                <label htmlFor="contact-address">Địa chỉ</label>
+                <label>Địa chỉ</label>
                 <input
                   type="text"
-                  id="contact-address"
-                  name="contact-address"
-                  defaultValue="123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh"
-                  required
+                  value={formInfo.dia_chi}
+                  onChange={(e) =>
+                    setFormInfo((prev) => ({
+                      ...prev,
+                      dia_chi: e.target.value,
+                    }))
+                  }
                 />
               </div>
             </div>
@@ -165,10 +256,16 @@ const ThongTinDatLich: React.FC<Props> = ({ onNext, onBack }) => {
         </div>
 
         <div className="datdichvu-step-actions">
-          <button onClick={onBack} className="datdichvu-btn datdichvu-btn-outline">
+          <button
+            onClick={onBack}
+            className="datdichvu-btn datdichvu-btn-outline"
+          >
             Quay lại
           </button>
-          <button onClick={onNext} className="datdichvu-btn datdichvu-btn-primary">
+          <button
+            onClick={handleNext}
+            className="datdichvu-btn datdichvu-btn-primary"
+          >
             Tiếp tục
           </button>
         </div>

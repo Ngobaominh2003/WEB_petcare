@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import './style/styles.css';
-
+import "./style/styles.css";
 
 const TKnguoidung: React.FC = () => {
   const [hoTen, setHoTen] = useState<string>("");
@@ -10,6 +9,8 @@ const TKnguoidung: React.FC = () => {
   const [avata, setAvata] = useState<string | null>(null); // dùng cho preview
   const [avatarFile, setAvatarFile] = useState<File | null>(null); // file thực tế
   const [email, setEmail] = useState<string | null>(null);
+  const [diaChi, setDiaChi] = useState<string>("");
+
   const [hasNguoiDung, setHasNguoiDung] = useState<boolean>(false);
 
   const taiKhoanId = localStorage.getItem("tai_khoan_id");
@@ -41,6 +42,8 @@ const TKnguoidung: React.FC = () => {
             setHoTen(userData.ho_ten || "");
             setSdt(userData.sdt || "");
             setGioiTinh(userData.gioi_tinh || null);
+            setDiaChi(userData.dia_chi || "");
+
             setAvata(
               userData.avata
                 ? `http://localhost:5000/img/${userData.avata}`
@@ -71,6 +74,8 @@ const TKnguoidung: React.FC = () => {
     formData.append("tai_khoan_id", taiKhoanId);
     formData.append("ho_ten", hoTen);
     formData.append("sdt", sdt);
+    formData.append("dia_chi", diaChi);
+
     formData.append("gioi_tinh", gioiTinh || "null"); // Nếu gioi_tinh là null, sẽ gửi giá trị "null"
     if (avatarFile) {
       formData.append("avata", avatarFile);
@@ -177,6 +182,20 @@ const TKnguoidung: React.FC = () => {
                     />
                   </div>
                 </div>
+                <div className="form-group">
+                  <label htmlFor="diaChi">Địa chỉ</label>
+                  <div className="input-icon">
+                    <i className="fas fa-map-marker-alt" />
+                    <input
+                      type="text"
+                      id="diaChi"
+                      value={diaChi}
+                      placeholder="Địa chỉ của bạn"
+                      onChange={(e) => setDiaChi(e.target.value)}
+                    />
+                  </div>
+                </div>
+
                 <div className="form-group">
                   <label htmlFor="gender">Giới tính</label>
                   <div className="gender-options">
