@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import Header from "../components/Header";
-import Navbar from "../components/Navbar";
-import NguoiDungMenu from "../components/NguoiDungMenu";
+import Header from "../../components/Header";
+import Navbar from "../../components/Navbar";
+import NguoiDungMenu from "../../components/NguoiDungMenu";
 import NguoiDung from "./NguoiDung";
-import NhaCC from "./NhaCC";
-import './style/styles.css';
-
+import NhaCC from "../QLNhaCC/NhaCC";
+import "../style/styles.css";
 
 const QLTaiKhoan: React.FC = () => {
   const [activeTab, setActiveTab] = useState("profile"); // Quản lý trạng thái của tab đang chọn
@@ -19,7 +18,7 @@ const QLTaiKhoan: React.FC = () => {
     <div>
       <Header />
       <Navbar />
-      <main className="main-content" style={{ marginTop: "225px" }}>
+      <main className="main-content">
         <div className="container">
           <div className="account-layout">
             {/* Sidebar */}

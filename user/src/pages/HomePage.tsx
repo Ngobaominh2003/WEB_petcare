@@ -43,7 +43,7 @@ const HomePage: React.FC = () => {
     <div>
       <Header />
       <Navbar />
-      <main style={{ marginTop: "225px" }}>
+      <main >
         <div className="container-fluid p-0">
           <div
             id="header-carousel"

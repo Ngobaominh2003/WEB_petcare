@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Header from "../components/Header";
-import Navbar from "../components/Navbar";
-import NhaCCMenu from "../components/NhaCCMenu";
-import "./style/styles.css";
+import Header from "../../components/Header";
+import Navbar from "../../components/Navbar";
+import NhaCCMenu from "../../components/NhaCCMenu";
+import "../style/styles.css";
 
 const QLDichVu: React.FC = () => {
   const [activeTab, setActiveTab] = useState("profile");
@@ -22,7 +22,6 @@ const QLDichVu: React.FC = () => {
   const handleEdit = (dichVu: any) => {
     navigate(`/DichVuUpdate/${dichVu.dich_vu_id}`, { state: dichVu });
   };
-  
 
   // Lấy danh sách dịch vụ
   useEffect(() => {
@@ -86,7 +85,7 @@ const QLDichVu: React.FC = () => {
     <div>
       <Header />
       <Navbar />
-      <main className="main-content" style={{ marginTop: "225px" }}>
+      <main className="main-content">
         <div className="container">
           <div className="account-layout">
             {/* Sidebar */}

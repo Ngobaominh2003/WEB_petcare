@@ -16,7 +16,7 @@ const ThanhToan: React.FC<Props> = ({ onNext, onBack }) => {
     cash: "tiền mặt",
     card: "chuyển khoản",
     momo: "momo",
-    banking: "zalo_pay", // hoặc "chuyển khoản" nếu bạn muốn ánh xạ vậy
+    banking: "zalo_pay",
   };
 
   useEffect(() => {
@@ -41,33 +41,51 @@ const ThanhToan: React.FC<Props> = ({ onNext, onBack }) => {
         dich_vu_id: chonDichVuInfo.dich_vu_id,
         thu_cung_id: datLichInfo.thu_cung_id,
         ngay_gio: datLichInfo.ngay_gio,
-        ghi_chu: datLichInfo.ghi_chu,
+        ghi_chu: chonDichVuInfo.ghi_chu,
         trang_thai: "chờ xác nhận",
       });
-
-      const datLichId = response1.data.insertId; // Lấy id lịch đặt vừa tạo
-
-      // 3. Ghi nhận sử dụng dịch vụ
-      const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-      await axios.post("http://localhost:5000/api/su-dung-dich-vu", {
-        dich_vu_id: chonDichVuInfo.dich_vu_id,
-        ngay_su_dung: today,
-      });
+  
+      const datLichId = response1.data.insertId; 
+  
       // 2. Tạo hóa đơn gắn với dat_lich_id
-      await axios.post("http://localhost:5000/api/hoa-don", {
+      const response2 = await axios.post("http://localhost:5000/api/hoa-don", {
         dat_lich_id: datLichId,
         tai_khoan_id: chonDichVuInfo.tai_khoan_id,
         so_tien: Number(chonDichVuInfo.so_tien || 0) + 15000,
         phuong_thuc: paymentMap[selectedPayment],
         trang_thai: "chưa thanh toán",
       });
-      // 4. Chuyển sang bước xác nhận
+  
+      
+      localStorage.setItem("hoa_don_id", response2.data.insertId.toString());
+  
+      // 3. Ghi nhận sử dụng dịch vụ
+      const today = new Date().toISOString().split("T")[0];
+      await axios.post("http://localhost:5000/api/su-dung-dich-vu", {
+        dich_vu_id: chonDichVuInfo.dich_vu_id,
+        ngay_su_dung: today,
+      });
+  
+      // 4. (Mới) Cập nhật lại thông tin người dùng nếu có chỉnh sửa
+      const taiKhoanId = localStorage.getItem("tai_khoan_id");
+      if (taiKhoanId) {
+        await axios.put("http://localhost:5000/api/nguoidung", {
+          tai_khoan_id: Number(taiKhoanId),
+          ho_ten: datLichInfo.ho_ten,     
+          sdt: datLichInfo.sdt,           
+          dia_chi: datLichInfo.dia_chi,   
+          
+        });
+      }
+  
+      // 5. Chuyển sang bước xác nhận
       onNext();
     } catch (err) {
       console.error("Lỗi khi hoàn tất thanh toán:", err);
       alert("Có lỗi xảy ra khi thanh toán. Vui lòng thử lại.");
     }
   };
+  
 
   return (
     <div className="datdichvu-booking-form">

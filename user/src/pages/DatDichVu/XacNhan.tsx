@@ -1,9 +1,30 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const XacNhan: React.FC = () => {
+  const [hoaDon, setHoaDon] = useState<any>(null);
+
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    // Lấy hoa_don_id vừa tạo xong từ localStorage
+    const hoaDonId = localStorage.getItem("hoa_don_id");
+    if (hoaDonId) {
+      axios
+        .get(`http://localhost:5000/api/hoa-don/${hoaDonId}`)
+        .then((res) => {
+          setHoaDon(res.data);
+        })
+        .catch((err) => {
+          console.error("Lỗi khi lấy hóa đơn:", err);
+        });
+    }
   }, []);
+
+  if (!hoaDon) {
+    return <div>Đang tải thông tin đặt lịch...</div>;
+  }
+
   return (
     <div className="datdichvu-booking-form">
       <div className="datdichvu-booking-step active" id="step-4">
@@ -17,59 +38,59 @@ const XacNhan: React.FC = () => {
           <div className="datdichvu-booking-details">
             <div className="datdichvu-booking-detail-item">
               <span className="datdichvu-detail-label">Mã đặt lịch:</span>
-              <span className="datdichvu-detail-value">PCC-2025051401</span>
+              <span className="datdichvu-detail-value">PCC-{hoaDon.hoa_don_id}</span>
             </div>
             <div className="datdichvu-booking-detail-item">
               <span className="datdichvu-detail-label">Dịch vụ:</span>
               <span className="datdichvu-detail-value">
-                Tắm và cắt tỉa lông cho chó (Gói tiêu chuẩn)
+                {hoaDon.ten_dich_vu} ({hoaDon.goi_dich_vu || "Gói tiêu chuẩn"})
               </span>
             </div>
             <div className="datdichvu-booking-detail-item">
               <span className="datdichvu-detail-label">Thú cưng:</span>
-              <span className="datdichvu-detail-value">Chó Bông (Poodle)</span>
+              <span className="datdichvu-detail-value">
+                {hoaDon.ten_thu_cung || "Chưa có"}
+              </span>
             </div>
             <div className="datdichvu-booking-detail-item">
               <span className="datdichvu-detail-label">Ngày và giờ:</span>
-              <span className="datdichvu-detail-value">15/05/2025, 14:00</span>
+              <span className="datdichvu-detail-value">
+                {new Date(hoaDon.ngay_gio).toLocaleString("vi-VN")}
+              </span>
             </div>
             <div className="datdichvu-booking-detail-item">
               <span className="datdichvu-detail-label">Nhà cung cấp:</span>
-              <span className="datdichvu-detail-value">Happy Pets</span>
+              <span className="datdichvu-detail-value">{hoaDon.ten_nha_cung_cap}</span>
             </div>
             <div className="datdichvu-booking-detail-item">
               <span className="datdichvu-detail-label">Địa chỉ:</span>
-              <span className="datdichvu-detail-value">
-                123 Đường ABC, Quận 1, TP. HCM
-              </span>
+              <span className="datdichvu-detail-value">{hoaDon.dia_chi}</span>
             </div>
             <div className="datdichvu-booking-detail-item">
               <span className="datdichvu-detail-label">Tổng thanh toán:</span>
-              <span className="datdichvu-detail-value">365.000 VNĐ</span>
+              <span className="datdichvu-detail-value">
+                {Number(hoaDon.so_tien).toLocaleString()} VNĐ
+              </span>
             </div>
             <div className="datdichvu-booking-detail-item">
-              <span className="datdichvu-detail-label">
-                Phương thức thanh toán:
-              </span>
-              <span className="datdichvu-detail-value">
-                Thanh toán khi sử dụng dịch vụ
-              </span>
+              <span className="datdichvu-detail-label">Phương thức thanh toán:</span>
+              <span className="datdichvu-detail-value">{hoaDon.phuong_thuc || "Không rõ"}</span>
+            </div>
+            <div className="datdichvu-booking-detail-item">
+              <span className="datdichvu-detail-label">Trạng thái thanh toán:</span>
+              <span className="datdichvu-detail-value">{hoaDon.trang_thai || "Không rõ"}</span>
             </div>
           </div>
 
           <div className="datdichvu-confirmation-message">
             <p>
-              Chúng tôi đã gửi thông tin chi tiết về lịch đặt dịch vụ đến email
-              của bạn. Bạn cũng có thể xem lịch đặt dịch vụ trong mục "Lịch đặt
-              dịch vụ" trong tài khoản của mình.
+              Chúng tôi đã gửi thông tin chi tiết về lịch đặt dịch vụ đến email của bạn.
+              Bạn cũng có thể xem trong mục "Lịch đặt dịch vụ" trong tài khoản của mình.
             </p>
           </div>
 
           <div className="datdichvu-confirmation-actions">
-            <a
-              href="user-account-bookings.html"
-              className="datdichvu-btn datdichvu-btn-outline"
-            >
+            <a href="/lich-dat" className="datdichvu-btn datdichvu-btn-outline">
               Xem lịch đặt dịch vụ
             </a>
             <a href="/" className="datdichvu-btn datdichvu-btn-primary">

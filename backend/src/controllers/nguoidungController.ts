@@ -28,27 +28,37 @@ export const createNguoiDung = async (req: Request, res: Response) => {
 // Cập nhật thông tin người dùng
 export const updateNguoiDung = async (req: Request, res: Response): Promise<void> => {
   const { tai_khoan_id, ho_ten, sdt, gioi_tinh, dia_chi } = req.body;
-  const avata = req.file ? req.file.filename : null;
+  const newAvata = req.file ? req.file.filename : null;
 
   const validGioiTinhValues = ['nam', 'nu', 'khac'];
   const gioiTinhValue = validGioiTinhValues.includes(gioi_tinh) ? gioi_tinh : null;
 
   try {
+    // Lấy thông tin người dùng hiện tại
+    const nguoiDungHienTai = await NguoiDungModel.getNguoiDungByTaiKhoanId(tai_khoan_id);
+
+    if (!nguoiDungHienTai) {
+      res.status(404).json({ message: "Không tìm thấy người dùng." });
+      return;
+    }
+
+    const avataToUpdate = newAvata || nguoiDungHienTai.avata; // Nếu không có file mới thì giữ avata cũ
+
     await NguoiDungModel.updateNguoiDung(
       tai_khoan_id,
       ho_ten,
       sdt,
       gioiTinhValue,
-      avata,
-      dia_chi // ➕ THÊM vào đây
+      avataToUpdate,
+      dia_chi
     );
+
     res.status(200).json({ message: "Cập nhật người dùng thành công!" });
   } catch (error) {
     console.error("Lỗi khi cập nhật người dùng:", error);
     res.status(500).json({ message: "Lỗi khi cập nhật người dùng", error });
   }
 };
-
 
 
 // Xóa người dùng theo nguoi_dung_id

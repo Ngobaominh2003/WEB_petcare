@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import "./style/styles.css";
+import "../style/styles.css";
 
 const TKnguoidung: React.FC = () => {
   const [hoTen, setHoTen] = useState<string>("");

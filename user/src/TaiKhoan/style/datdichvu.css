@@ -124,7 +124,7 @@
   
   .datdichvu-checkbox-group input[type="checkbox"] {
     width: auto;
-    margin-top: 0.25rem;
+    margin-top: rem;
   }
   
   /* Booking Header */

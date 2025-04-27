@@ -11,7 +11,7 @@ const Blog2: React.FC = () => {
             <Navbar />
             <>
                 {/* Detail Start */}
-                <div className="container py-5"style={{marginTop: "225px",}}>
+                <div className="container py-5">
                     <div className="row pt-5">
                         <BlogDetail/>
                         <div className="col-lg-4 mt-5 mt-lg-0">

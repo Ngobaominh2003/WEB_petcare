@@ -25,9 +25,11 @@ export const hoaDonModel = {
       hoaDon.phuong_thuc ?? null,
       hoaDon.trang_thai ?? "chưa thanh toán",
     ];
-    const [result] = await connection.execute(query, values);
+  
+    const [result]: any = await connection.execute(query, values); 
     return result;
   },
+  
 
   // Lấy danh sách hóa đơn, có thể lọc theo tài khoản và trạng thái
   async getDanhSachHoaDon(tai_khoan_id?: number, trang_thai?: string) {
@@ -50,10 +52,26 @@ export const hoaDonModel = {
 
   // Lấy chi tiết hóa đơn theo ID
   async getHoaDonTheoId(id: number) {
-    const query = `SELECT * FROM hoa_don WHERE hoa_don_id = ?`;
-    const [rows] = await connection.execute<HoaDon[]>(query, [id]);
+    const query = `
+      SELECT 
+        hd.*, 
+        dv.ten_dich_vu, 
+        tc.ten AS ten_thu_cung, 
+        dl.ngay_gio, 
+        ncc.ten_nha_cung_cap, 
+        ncc.dia_chi
+      FROM hoa_don hd
+      INNER JOIN dat_lich dl ON hd.dat_lich_id = dl.dat_lich_id
+      INNER JOIN dich_vu dv ON dl.dich_vu_id = dv.dich_vu_id
+      LEFT JOIN thu_cung tc ON dl.thu_cung_id = tc.thu_cung_id
+      INNER JOIN nha_cung_cap ncc ON dv.tai_khoan_id = ncc.tai_khoan_id
+      WHERE hd.hoa_don_id = ?
+    `;
+    
+    const [rows] = await connection.execute<any[]>(query, [id]);
     return rows[0];
   },
+  
 
   // Cập nhật trạng thái hóa đơn
   async capNhatTrangThai(id: number, trang_thai: HoaDon["trang_thai"]) {

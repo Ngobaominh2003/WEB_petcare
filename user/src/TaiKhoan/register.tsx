@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import axios from "axios";
-import './style/styles.css';
+import "./style/styles.css";
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -69,7 +69,7 @@ const Register: React.FC = () => {
     <div>
       <Header />
       <Navbar />
-      <main className="main-content" style={{ marginTop: "225px" }}>
+      <main className="main-content">
         <div className="container">
           <div className="auth-container">
             <div className="auth-card">

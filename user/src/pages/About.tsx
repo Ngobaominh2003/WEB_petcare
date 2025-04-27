@@ -11,7 +11,7 @@ const About: React.FC = () => {
             <Navbar />
             <>
                 {/* About Start */}
-                <div className="container py-5"style={{marginTop: "225px",}}>
+                <div className="container py-5"style={{marginTop: "0px",}}>
                     <div className="row py-5">
                         <div className="col-lg-7 pb-5 pb-lg-0 px-3 px-lg-5">
                             <h4 className="text-secondary mb-3">Về Chúng Tôi</h4>

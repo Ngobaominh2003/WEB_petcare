@@ -7,12 +7,29 @@ const NhaCCMenu: React.FC = () => {
   const menuItems = [
     { path: "/QLNhaCC", icon: "fa-user", label: "Thông tin cá nhân" },
     { path: "/DichVuQL", icon: "fa-briefcase", label: "Quản lý dịch vụ" },
-    { path: "/provider/dat-lich", icon: "fa-calendar-alt", label: "Quản lý đặt lịch" },
-    { path: "/provider/danh-gia", icon: "fa-star", label: "Đánh giá & xếp hạng" },
-    { path: "/provider/thu-nhap", icon: "fa-dollar-sign", label: "Thu nhập & thanh toán" },
+    {
+      path: "/DSLichDat",
+      icon: "fa-calendar-alt",
+      label: "Quản lý đặt lịch",
+    },
+    {
+      path: "/provider/danh-gia",
+      icon: "fa-star",
+      label: "Đánh giá & xếp hạng",
+    },
+    {
+      path: "/provider/thu-nhap",
+      icon: "fa-dollar-sign",
+      label: "Thu nhập & thanh toán",
+    },
     { path: "/provider/tin-nhan", icon: "fa-comment", label: "Tin nhắn" },
     { path: "/provider/cai-dat", icon: "fa-cog", label: "Cài đặt" },
-    { path: "/dang-xuat", icon: "fa-sign-out-alt", label: "Đăng xuất", className: "logout" },
+    {
+      path: "/dang-xuat",
+      icon: "fa-sign-out-alt",
+      label: "Đăng xuất",
+      className: "logout",
+    },
   ];
 
   return (
@@ -28,7 +45,10 @@ const NhaCCMenu: React.FC = () => {
               location.pathname === item.path ? "active" : ""
             }`}
           >
-            <Link to={item.path} className={`sidebar-link ${item.className || ""}`}>
+            <Link
+              to={item.path}
+              className={`sidebar-link ${item.className || ""}`}
+            >
               <i className={`fas ${item.icon}`}></i>
               <span>{item.label}</span>
             </Link>

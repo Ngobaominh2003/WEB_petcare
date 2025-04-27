@@ -80,7 +80,10 @@ const Header: React.FC = () => {
 
   return (
     <div>
-      <div className="container-fluid" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, backgroundColor: '#ffffff' }}>
+      <div className="container-fluid"  style={{
+     
+      padding: "10px 0", // thêm padding nếu cần
+    }}>
         <div className="row bg-secondary py-2 px-lg-5">
           <div className="col-lg-6 text-center text-lg-left mb-2 mb-lg-0">
             <div className="d-inline-flex align-items-center">

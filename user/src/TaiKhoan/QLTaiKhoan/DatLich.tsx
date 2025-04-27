@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import Header from "../components/Header";
-import Navbar from "../components/Navbar";
-import NguoiDungMenu from "../components/NguoiDungMenu";
+import Header from "../../components/Header";
+import Navbar from "../../components/Navbar";
+import NguoiDungMenu from "../../components/NguoiDungMenu";
 import DatLich1 from "./DatLich1";
 import DatLich2 from "./DatLich2";
-import './style/styles.css';
-
+import "../style/styles.css";
 
 const DatLich: React.FC = () => {
   const [activeTab, setActiveTab] = useState("DatLich1"); // Quản lý trạng thái của tab đang chọn
@@ -19,7 +18,7 @@ const DatLich: React.FC = () => {
     <div>
       <Header />
       <Navbar />
-      <main className="main-content" style={{ marginTop: "225px" }}>
+      <main className="main-content">
         <div className="container">
           <div className="account-layout">
             {/* Sidebar */}
@@ -50,7 +49,7 @@ const DatLich: React.FC = () => {
                     }`}
                     onClick={() => handleTabClick("DatLich2")}
                   >
-                    Đã hoàn thànhthành
+                    Đã hoàn thành
                   </button>
                 </div>
 

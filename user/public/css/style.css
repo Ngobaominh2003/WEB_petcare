@@ -28,7 +28,7 @@
   --light: #F2F2F4;
   --dark: #181818;
   --breakpoint-xs: 0;
-  --breakpoint-sm: 576px;
+  --breakpoint-sm: 200px;
   --breakpoint-md: 768px;
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1200px;
@@ -684,7 +684,7 @@ pre code {
   }
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 900px) {
 
   .container,
   .container-sm,
@@ -4876,6 +4876,7 @@ input[type="button"].btn-block {
 .navbar-expand>.container-xl {
   flex-wrap: nowrap;
 }
+
 
 .navbar-expand .navbar-collapse {
   display: flex !important;
@@ -11297,3 +11298,6 @@ h6 {
     width: 100%;
   }
 }
+
+
+

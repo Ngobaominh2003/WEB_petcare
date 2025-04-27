@@ -13,7 +13,7 @@ const defaultOptions: ToastOptions = {
 };
 
 // Các hàm gọi thông báo tái sử dụng
-export const showSuccess = (msg: string) => toast.success(msg, defaultOptions);
-export const showError = (msg: string) => toast.error(msg, defaultOptions);
-export const showInfo = (msg: string) => toast.info(msg, defaultOptions);
-export const showWarn = (msg: string) => toast.warn(msg, defaultOptions);
+export const showSuccess = (msg: string) => toast.success(msg, defaultOptions);//Thông báo thành công
+export const showError = (msg: string) => toast.error(msg, defaultOptions);//Thông báo lỗi
+export const showInfo = (msg: string) => toast.info(msg, defaultOptions);//Thông báo thông tin
+export const showWarn = (msg: string) => toast.warn(msg, defaultOptions);//Thông báo cảnh báo

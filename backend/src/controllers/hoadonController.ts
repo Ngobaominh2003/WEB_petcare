@@ -6,7 +6,10 @@ export const taoHoaDon = async (req: Request, res: Response) => {
   try {
     const hoaDon = req.body;
     const result = await hoaDonModel.taoHoaDon(hoaDon);
-    res.status(201).json({ message: "Tạo hóa đơn thành công", result });
+    res.status(201).json({
+      insertId: result.insertId,
+      message: "Tạo hóa đơn thành công"
+    });
   } catch (err) {
     console.error("Lỗi khi tạo hóa đơn:", err);
     res.status(500).json({ message: "Lỗi khi tạo hóa đơn" });

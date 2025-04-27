@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, useNavigate,useLocation } from "react-router-dom";
-import Header from "../components/Header";
-import Navbar from "../components/Navbar";
-import NhaCCMenu from "../components/NhaCCMenu";
-import "./style/styles.css";
+import Header from "../../components/Header";
+import Navbar from "../../components/Navbar";
+import NhaCCMenu from "../../components/NhaCCMenu";
+import "../style/styles.css";
 
-const DichVuUpdate: React.FC = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const dichVu = location.state;
-  
+const DichVuAdd: React.FC = () => {
   const [formData, setFormData] = useState({
     ten_dich_vu: "",
     mo_ta: "",
@@ -20,27 +14,23 @@ const DichVuUpdate: React.FC = () => {
     danh_muc_id: "",
     trang_thai: 1,
     xet_duyet: "chờ duyệt",
-    logo: null as File | string | null,
+    logo: null as File | null,
   });
 
   const [danhMucList, setDanhMucList] = useState<any[]>([]);
   const taiKhoanId = localStorage.getItem("tai_khoan_id");
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/danh-muc")
+    axios
+      .get("http://localhost:5000/api/danh-muc")
       .then((res) => setDanhMucList(res.data))
       .catch((err) => console.error("Lỗi khi lấy danh mục:", err));
-
-      if (dichVu) {
-        setFormData((prev) => ({ ...prev, ...dichVu }));
-      } else {
-        alert("Không có dữ liệu dịch vụ. Vui lòng quay lại trang danh sách.");
-        navigate("/DichVuQL");
-      }
-  }, [dichVu]);
+  }, []);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -63,18 +53,14 @@ const DichVuUpdate: React.FC = () => {
     data.append("trang_thai", formData.trang_thai.toString());
     data.append("xet_duyet", formData.xet_duyet);
     data.append("tai_khoan_id", taiKhoanId || "");
-    if (formData.logo instanceof File) {
-        data.append("logo", formData.logo);
-      } else if (typeof formData.logo === "string") {
-        // Gửi logo cũ nếu không có ảnh mới
-        data.append("logo", formData.logo);
-      }
+    if (formData.logo) data.append("logo", formData.logo);
+
     try {
-      await axios.put(`http://localhost:5000/api/dich-vu/cap-nhat/${id}`, data);
-      alert("Cập nhật dịch vụ thành công");
-      navigate("/DichVuQL");
+      await axios.post("http://localhost:5000/api/dich-vu/them", data);
+      alert("Thêm dịch vụ thành công");
+      window.location.reload();
     } catch (err) {
-      alert("Lỗi khi cập nhật dịch vụ");
+      alert("Lỗi khi thêm dịch vụ");
     }
   };
 
@@ -82,14 +68,16 @@ const DichVuUpdate: React.FC = () => {
     <div>
       <Header />
       <Navbar />
-      <main className="main-content" style={{ marginTop: "225px" }}>
+      <main className="main-content">
         <div className="container">
           <div className="account-layout">
+            {/* Sidebar */}
             <NhaCCMenu />
+            {/* Content Area */}
             <div className="account-content">
               <div className="page-header">
-                <h1>Cập nhật dịch vụ</h1>
-                <p>Chỉnh sửa thông tin dịch vụ hiện có</p>
+                <h1>Thêm dịch vụ mới</h1>
+                <p>Tạo một dịch vụ mới cho khách hàng của bạn</p>
               </div>
               <div className="card service-form-card">
                 <div className="card-body">
@@ -132,7 +120,7 @@ const DichVuUpdate: React.FC = () => {
                           value={formData.trang_thai}
                           onChange={handleChange}
                         >
-                          <option value={1}>Hoạt động</option>
+                          <option value={1}>Đang hoạt động</option>
                           <option value={0}>Tạm ngưng</option>
                         </select>
                       </div>
@@ -163,7 +151,9 @@ const DichVuUpdate: React.FC = () => {
                       </div>
 
                       <div className="form-group">
-                        <label htmlFor="thoi_gian_hoan_thanh">Thời gian hoàn thành *</label>
+                        <label htmlFor="thoi_gian_hoan_thanh">
+                          Thời gian hoàn thành *
+                        </label>
                         <input
                           type="text"
                           id="thoi_gian_hoan_thanh"
@@ -183,19 +173,13 @@ const DichVuUpdate: React.FC = () => {
                         name="logo"
                         accept="image/*"
                         onChange={handleFileChange}
+                        required
                       />
-                      {typeof formData.logo === "string" && (
-                        <img
-                          src={`http://localhost:5000/img/${formData.logo}`}
-                          alt="Logo preview"
-                          style={{ width: "120px", marginTop: "10px" }}
-                        />
-                      )}
                     </div>
 
                     <div className="form-actions">
                       <button type="submit" className="btn btn-primary">
-                        Cập nhật dịch vụ
+                        Tạo dịch vụ
                       </button>
                     </div>
                   </form>
@@ -209,4 +193,4 @@ const DichVuUpdate: React.FC = () => {
   );
 };
 
-export default DichVuUpdate;
+export default DichVuAdd;

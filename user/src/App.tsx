@@ -18,23 +18,23 @@ import DatLich1 from "./pages/DatLich1";
 import DatDichVu from "./pages/DatDichVu/DatDichVu";
 import ThongTinDatLich from "./pages/DatDichVu/ThongTinDatLich";
 
-
 // --- Tài khoản ---
 import Login from "./TaiKhoan/login";
 import Register from "./TaiKhoan/register";
-import NguoiDung from "./TaiKhoan/NguoiDung";
-import NhaCC from "./TaiKhoan/NhaCC";
-import QLTaiKhoan from "./TaiKhoan/QLTaiKhoan";
-import QLNhaCC from "./TaiKhoan/QLNhaCC";
-import DatLich from "./TaiKhoan/DatLich";
-import ThuCung from "./TaiKhoan/ThuCung";
-import ThuCungAdd from "./TaiKhoan/ThuCungAdd";
-import ThuCungUpdate from "./TaiKhoan/ThuCungUpdate";
+import NguoiDung from "./TaiKhoan/QLTaiKhoan/NguoiDung";
+import NhaCC from "./TaiKhoan/QLNhaCC/NhaCC";
+import QLTaiKhoan from "./TaiKhoan/QLTaiKhoan/QLTaiKhoan";
+import QLNhaCC from "./TaiKhoan/QLNhaCC/QLNhaCC";
+import DatLich from "./TaiKhoan/QLTaiKhoan/DatLich";
+import ThuCung from "./TaiKhoan/QLTaiKhoan/ThuCung";
+import ThuCungAdd from "./TaiKhoan/QLTaiKhoan/ThuCungAdd";
+import ThuCungUpdate from "./TaiKhoan/QLTaiKhoan/ThuCungUpdate";
 
 // --- Quản lý dịch vụ ---
-import DichVuQL from "./TaiKhoan/DichVuQL";
-import DichVuAdd from "./TaiKhoan/DichVuAdd";
-import DichVuUpdate from "./TaiKhoan/DichVuUpdate";
+import DichVuQL from "./TaiKhoan/QLNhaCC/DichVuQL";
+import DichVuAdd from "./TaiKhoan/QLNhaCC/DichVuAdd";
+import DichVuUpdate from "./TaiKhoan/QLNhaCC/DichVuUpdate";
+import DSLichDat from "./TaiKhoan/QLNhaCC/DSLichDat";
 
 const App: React.FC = () => {
   return (
@@ -54,7 +54,6 @@ const App: React.FC = () => {
         <Route path="/DSDichVu" element={<DSDichVu />} />
         <Route path="/DatLich1" element={<DatLich1 />} />
         <Route path="/DatDichVu" element={<DatDichVu />} />
-      
 
         {/* --- Tài khoản --- */}
         <Route path="/Login" element={<Login />} />
@@ -67,11 +66,12 @@ const App: React.FC = () => {
         <Route path="/ThuCung" element={<ThuCung />} />
         <Route path="/thu-cung/add" element={<ThuCungAdd />} />
         <Route path="/thu-cung/update/:id" element={<ThuCungUpdate />} />
-       
+
         {/* --- Quản lý dịch vụ --- */}
         <Route path="/DichVuQL" element={<DichVuQL />} />
         <Route path="/DichVuAdd" element={<DichVuAdd />} />
         <Route path="/DichVuUpdate/:id" element={<DichVuUpdate />} />
+        <Route path="/DSLichDat" element={<DSLichDat />} />
       </Routes>
 
       {/* ✅ Hiển thị Toast ở cuối app */}

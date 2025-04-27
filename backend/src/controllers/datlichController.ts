@@ -97,3 +97,19 @@ export const xoaDatLich = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Lỗi khi xoá lịch" });
   }
 };
+// Lấy danh sách lịch đặt sử dụng dịch vụ theo nhà cung cấp
+export const getDatLichTheoNhaCungCap = async (req: Request, res: Response) => {
+  try {
+    const taiKhoanId = parseInt(req.params.id, 10); // lấy ID từ params
+    if (isNaN(taiKhoanId)) {
+      return res.status(400).json({ message: "ID không hợp lệ" });
+    }
+
+    const result = await datLichModel.getDatLichTheoNhaCungCap(taiKhoanId);
+
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("Lỗi khi lấy lịch đặt theo nhà cung cấp:", err);
+    res.status(500).json({ message: "Lỗi server" });
+  }
+};

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
-import Header from "../components/Header";
-import Navbar from "../components/Navbar";
-import NguoiDungMenu from "../components/NguoiDungMenu";
+import Header from "../../components/Header";
+import Navbar from "../../components/Navbar";
+import NguoiDungMenu from "../../components/NguoiDungMenu";
+import { showSuccess, showError, showWarn } from "../../utils/toast";
 import axios from "axios";
-import "./style/styles.css";
+import "../style/styles.css";
 
 const ThuCung: React.FC = () => {
   const [pets, setPets] = useState<any[]>([]); // State để lưu danh sách thú cưng
@@ -27,21 +28,21 @@ const ThuCung: React.FC = () => {
       setLoading(false);
     }
   };
- // Xử lý xóa dịch vụ
- const handleDelete = async (petId: number) => {
-  if (window.confirm("Bạn có chắc chắn muốn xóa thú cưng này?")) {
-    try {
-      await axios.delete(`http://localhost:5000/api/thu-cung/xoa/${petId}`);
-      setPets((prevPets) =>
-        prevPets.filter((pet) => pet.thu_cung_id !== petId)
-      );
-      alert("Thú cưng đã được xóa thành công!");
-    } catch (error) {
-      console.error("Lỗi khi xóa thú cưng:", error);
-      alert("Đã xảy ra lỗi khi xóa thú cưng!");
+  // Xử lý xóa dịch vụ
+  const handleDelete = async (petId: number) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa thú cưng này?")) {
+      try {
+        await axios.delete(`http://localhost:5000/api/thu-cung/xoa/${petId}`);
+        setPets((prevPets) =>
+          prevPets.filter((pet) => pet.thu_cung_id !== petId)
+        );
+        showSuccess("🎉 Thú cưng đã được xóa thành công!");
+      } catch (error) {
+        console.error("Lỗi khi xóa thú cưng:", error);
+        showError("❌ Lỗi khi xóa thú cưng. Vui lòng thử lại.");
+      }
     }
-  }
-};
+  };
 
   // Gọi fetchPets khi component được mount
   useEffect(() => {
@@ -65,7 +66,7 @@ const ThuCung: React.FC = () => {
     <div>
       <Header />
       <Navbar />
-      <main className="main-content" style={{ marginTop: "225px" }}>
+      <main className="main-content" >
         <div className="container">
           <div className="account-layout">
             {/* Sidebar */}
@@ -129,13 +130,12 @@ const ThuCung: React.FC = () => {
                         </button>
 
                         <button
-  className="btn btn-outline btn-sm btn-danger"
-  onClick={() => handleDelete(pet.thu_cung_id)}
->
-  <i className="fas fa-trash" />
-  Xóa
-</button>
-
+                          className="btn btn-outline btn-sm btn-danger"
+                          onClick={() => handleDelete(pet.thu_cung_id)}
+                        >
+                          <i className="fas fa-trash" />
+                          Xóa
+                        </button>
                       </div>
                     </div>
                   ))

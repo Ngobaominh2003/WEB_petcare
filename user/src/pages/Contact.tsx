@@ -10,7 +10,7 @@ const Contact: React.FC = () => {
             <Navbar />
             <>
                 {/* Contact Start */}
-                <div className="container-fluid pt-5"style={{marginTop: "225px",}}>
+                <div className="container-fluid pt-5">
                     <div className="d-flex flex-column text-center mb-5 pt-5">
                         <h4 className="text-secondary mb-3">Contact Us</h4>
                         <h1 className="display-4 m-0">

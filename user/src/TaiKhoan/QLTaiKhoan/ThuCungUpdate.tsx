@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { showSuccess, showError } from "../utils/toast";
-import Header from "../components/Header";
-import Navbar from "../components/Navbar";
-import NguoiDungMenu from "../components/NguoiDungMenu";
-import "./style/styles.css";
+import { showSuccess, showError } from "../../utils/toast";
+import Header from "../../components/Header";
+import Navbar from "../../components/Navbar";
+import NguoiDungMenu from "../../components/NguoiDungMenu";
+import "../style/styles.css";
 
 const ThuCungUpdate: React.FC = () => {
   const { id } = useParams();
@@ -95,7 +95,7 @@ const ThuCungUpdate: React.FC = () => {
     <div>
       <Header />
       <Navbar />
-      <main className="main-content" style={{ marginTop: "225px" }}>
+      <main className="main-content">
         <div className="container">
           <div className="account-layout">
             <NguoiDungMenu />

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
-import Header from "../components/Header";
-import Navbar from "../components/Navbar";
-import NguoiDungMenu from "../components/NguoiDungMenu";
-import { showSuccess, showError, showWarn } from "../utils/toast"; 
-import "./style/styles.css";
+import Header from "../../components/Header";
+import Navbar from "../../components/Navbar";
+import NguoiDungMenu from "../../components/NguoiDungMenu";
+import { showSuccess, showError, showWarn } from "../../utils/toast";
+import "../style/styles.css";
 
 const ThuCungAdd: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -19,7 +19,9 @@ const ThuCungAdd: React.FC = () => {
   const taiKhoanId = localStorage.getItem("tai_khoan_id");
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -90,7 +92,7 @@ const ThuCungAdd: React.FC = () => {
     <div>
       <Header />
       <Navbar />
-      <main className="main-content" style={{ marginTop: "225px" }}>
+      <main className="main-content">
         <div className="container">
           <div className="account-layout">
             <NguoiDungMenu />
@@ -179,7 +181,6 @@ const ThuCungAdd: React.FC = () => {
                         name="hinh_anh"
                         accept="image/*"
                         onChange={handleFileChange}
-                        
                       />
                     </div>
 
