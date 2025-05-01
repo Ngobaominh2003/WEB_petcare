@@ -5,16 +5,21 @@ import { danhGiaModel } from "../models/DanhGia";
 export const themDanhGia = async (req: Request, res: Response) => {
   try {
     const { tai_khoan_id, dich_vu_id, diem, binh_luan } = req.body;
+    const hinh_anh = req.file ? req.file.filename : null;
+
+    console.log("req.file:", req.file);  // kiểm tra xem ảnh có được nhận
+    console.log("req.body:", req.body);  // kiểm tra các trường khác
 
     if (!tai_khoan_id || !dich_vu_id || !diem) {
       return res.status(400).json({ message: "Thiếu thông tin bắt buộc" });
     }
 
     const result = await danhGiaModel.themDanhGia({
-      tai_khoan_id,
-      dich_vu_id,
-      diem,
+      tai_khoan_id: parseInt(tai_khoan_id),
+      dich_vu_id: parseInt(dich_vu_id),
+      diem: parseInt(diem),
       binh_luan: binh_luan || "",
+      hinh_anh,
     });
 
     res.status(201).json({ message: "Đã tạo đánh giá", result });
@@ -23,6 +28,8 @@ export const themDanhGia = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Lỗi máy chủ khi tạo đánh giá" });
   }
 };
+
+
 
 // GET /api/danh-gia – Lấy tất cả đánh giá (có thể lọc)
 export const getDanhSachDanhGia = async (req: Request, res: Response) => {

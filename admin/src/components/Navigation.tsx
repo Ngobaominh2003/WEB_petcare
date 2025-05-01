@@ -82,7 +82,7 @@ const Navigation: React.FC = () => {
               <span className="icon">
                 <ion-icon name="document-outline"></ion-icon>
               </span>
-              <span className="title">Hóa đơn</span>
+              <span className="title">Báo Cáo</span>
             </Link>
           </li>
 

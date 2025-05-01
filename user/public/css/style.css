@@ -11299,5 +11299,213 @@ h6 {
   }
 }
 
+/* DichVuChiTiet */
 
+.dv-container {
+  padding: 30px;
+  max-width: 1000px;
+  margin: auto;
+  background: #fff;
+}
 
+.dv-grid {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 40px;
+}
+
+.dv-left img {
+  width: 300px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dv-right {
+  flex: 1;
+}
+
+.dv-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.dv-price {
+  font-size: 20px;
+  color: #e53935;
+  margin-bottom: 10px;
+}
+
+.dv-time {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.dv-description {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.dv-review-form {
+  border-top: 1px solid #eee;
+  padding-top: 30px;
+  margin-top: 20px;
+}
+
+.dv-input,
+.dv-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+
+.dv-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.dv-stars {
+  margin-bottom: 10px;
+}
+
+.star {
+  font-size: 24px;
+  cursor: pointer;
+  color: #ccc;
+}
+
+.star.active {
+  color: gold;
+}
+
+.dv-btn-blue {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+}
+
+.dv-btn-blue:hover {
+  background-color: #0056b3;
+}
+
+.dv-preview-img {
+  max-width: 120px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.dv-review-section {
+  margin-top: 40px;
+}
+
+.dv-review-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.dv-review-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.dv-review-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.dv-review-comment {
+  font-style: italic;
+  color: #444;
+  margin-bottom: 6px;
+}
+
+.dv-review-date {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 10px;
+}
+
+.dv-review-img {
+  max-width: 100px;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.dv-review-actions button {
+  margin-right: 10px;
+  background: none;
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.dv-review-actions button:hover {
+  background-color: #eee;
+}
+.dv-review-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.dv-review-actions button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.dv-review-actions button:nth-child(1) {
+  background-color: #ffc107; /* Sửa */
+  color: #fff;
+}
+
+.dv-review-actions button:nth-child(2) {
+  background-color: #dc3545; /* Xoá */
+  color: #fff;
+}
+
+.dv-review-actions button:nth-child(3) {
+  background-color: #6c757d; /* Báo cáo */
+  color: #fff;
+}
+
+.dv-review-actions button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+.dv-report-form {
+  background: #fff3cd;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 10px;
+  border: 1px solid #ffeeba;
+}
+
+.dv-select {
+  padding: 6px;
+  border-radius: 4px;
+  width: 100%;
+}
+/* DichVuChiTiet */

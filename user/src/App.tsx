@@ -13,10 +13,10 @@ import Blog from "./pages/Blog";
 import Blog2 from "./pages/Blog2";
 import BlogDetail from "./phanchinh/BlogDetail";
 import Contact from "./pages/Contact";
-import DSDichVu from "./pages/DSDichVu";
+import DSDichVu from "./pages/DichVuDS";
 import DatLich1 from "./pages/DatLich1";
 import DatDichVu from "./pages/DatDichVu/DatDichVu";
-import ThongTinDatLich from "./pages/DatDichVu/ThongTinDatLich";
+import DichVuChiTiet from "./pages/DichVuChiTiet";
 
 // --- Tài khoản ---
 import Login from "./TaiKhoan/login";
@@ -54,6 +54,7 @@ const App: React.FC = () => {
         <Route path="/DSDichVu" element={<DSDichVu />} />
         <Route path="/DatLich1" element={<DatLich1 />} />
         <Route path="/DatDichVu" element={<DatDichVu />} />
+        <Route path="/DichVuChiTiet/:id" element={<DichVuChiTiet />} />
 
         {/* --- Tài khoản --- */}
         <Route path="/Login" element={<Login />} />

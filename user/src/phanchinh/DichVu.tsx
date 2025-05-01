@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useEffect, useState, } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "../TaiKhoan/style/dichvu.module.css";
@@ -32,13 +32,13 @@ const DichVu: React.FC = () => {
 
   const handleDatLich = (dichVu: DichVu) => {
     const isLoggedIn = !!localStorage.getItem("token");
-  
+
     if (!isLoggedIn) {
       navigate("/login");
     } else {
       // Lưu dữ liệu dịch vụ vào localStorage (hoặc Context)
       localStorage.setItem("dichVuDaChon", JSON.stringify(dichVu));
-  
+
       // Chuyển sang trang đặt lịch
       navigate("/DatDichVu");
     }
@@ -95,6 +95,18 @@ const DichVu: React.FC = () => {
   }, []);
 
   if (loading) return <p>Đang tải dịch vụ...</p>;
+
+  const handleXemChiTiet = (dichVu: DichVu) => {
+    const diem = thongKeDanhGia[dichVu.dich_vu_id]?.diem_trung_binh || 0;
+
+    const dichVuFull = {
+      ...dichVu,
+      diem_trung_binh: diem,
+    };
+
+    localStorage.setItem("dichVuChiTiet", JSON.stringify(dichVuFull));
+    navigate(`/DichVuChiTiet/${dichVu.dich_vu_id}`);
+  };
 
   return (
     <div className={styles.grid}>
@@ -171,19 +183,19 @@ const DichVu: React.FC = () => {
                 </div>
 
                 <div className={styles.actions}>
-                  <a
-                    href="service-detail.html"
+                  <button
+                    onClick={() => handleXemChiTiet(dichVu)}
                     className={`${styles.btn} ${styles.btnOutline}`}
                   >
                     Xem chi tiết
-                  </a>
-                  <button
-  className={`${styles.btn} ${styles.btnPrimary}`}
-  onClick={() => handleDatLich(dichVu)}
->
-  Đặt lịch
-</button>
+                  </button>
 
+                  <button
+                    className={`${styles.btn} ${styles.btnPrimary}`}
+                    onClick={() => handleDatLich(dichVu)}
+                  >
+                    Đặt lịch
+                  </button>
                 </div>
               </div>
             </div>

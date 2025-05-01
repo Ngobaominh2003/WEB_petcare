@@ -1,25 +1,32 @@
-import type React from "react"
-import Header from "../components/Header"
-import Navbar from "../components/Navbar"
-import Footer from "../components/Footer"
-import DichVu from "../phanchinh/DichVu"
-import styles from '../TaiKhoan/style/dichvu.module.css';
+import type React from "react";
+import Header from "../components/Header";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import DichVu from "../phanchinh/DichVu";
+import styles from "../TaiKhoan/style/dichvu.module.css";
 
 const DSDichVu: React.FC = () => {
   return (
     <div>
       <Header />
       <Navbar />
-      <main >
+      <main>
         {/* Hero Section */}
         <section className={styles.servicesHero}>
           <div className={styles.container}>
             <div className={styles.servicesHeroContent}>
               <h1>Dịch vụ chăm sóc thú cưng</h1>
-              <p>Khám phá các dịch vụ chăm sóc thú cưng chất lượng cao từ các nhà cung cấp uy tín</p>
+              <p>
+                Khám phá các dịch vụ chăm sóc thú cưng chất lượng cao từ các nhà
+                cung cấp uy tín
+              </p>
               <div className={styles.searchContainer}>
                 <div className={styles.searchBox}>
-                  <input type="text" placeholder="Tìm kiếm dịch vụ..." id="service-search" />
+                  <input
+                    type="text"
+                    placeholder="Tìm kiếm dịch vụ..."
+                    id="service-search"
+                  />
                   <button className={styles.searchBtn}>
                     <i className="fas fa-search" />
                   </button>
@@ -37,29 +44,56 @@ const DSDichVu: React.FC = () => {
                 <div className={styles.filterCard}>
                   <div className={styles.filterHeader}>
                     <h3>Bộ lọc</h3>
-                    <button className={styles.btnClearFilter}>Xóa bộ lọc</button>
+                    <button className={styles.btnClearFilter}>
+                      Xóa bộ lọc
+                    </button>
                   </div>
                   <div className={styles.filterGroup}>
                     <h4>Danh mục</h4>
                     <div className={styles.filterOptions}>
                       <label className={styles.filterOption}>
-                        <input type="checkbox" id="category-grooming" name="category" defaultValue="grooming" />
+                        <input
+                          type="checkbox"
+                          id="category-grooming"
+                          name="category"
+                          defaultValue="grooming"
+                        />
                         <span>Làm đẹp</span>
                       </label>
                       <label className={styles.filterOption}>
-                        <input type="checkbox" id="category-spa" name="category" defaultValue="spa" />
+                        <input
+                          type="checkbox"
+                          id="category-spa"
+                          name="category"
+                          defaultValue="spa"
+                        />
                         <span>Spa</span>
                       </label>
                       <label className={styles.filterOption}>
-                        <input type="checkbox" id="category-health" name="category" defaultValue="health" />
+                        <input
+                          type="checkbox"
+                          id="category-health"
+                          name="category"
+                          defaultValue="health"
+                        />
                         <span>Sức khỏe</span>
                       </label>
                       <label className={styles.filterOption}>
-                        <input type="checkbox" id="category-training" name="category" defaultValue="training" />
+                        <input
+                          type="checkbox"
+                          id="category-training"
+                          name="category"
+                          defaultValue="training"
+                        />
                         <span>Huấn luyện</span>
                       </label>
                       <label className={styles.filterOption}>
-                        <input type="checkbox" id="category-boarding" name="category" defaultValue="boarding" />
+                        <input
+                          type="checkbox"
+                          id="category-boarding"
+                          name="category"
+                          defaultValue="boarding"
+                        />
                         <span>Trông giữ</span>
                       </label>
                     </div>
@@ -68,27 +102,57 @@ const DSDichVu: React.FC = () => {
                     <h4>Loại thú cưng</h4>
                     <div className={styles.filterOptions}>
                       <label className={styles.filterOption}>
-                        <input type="checkbox" id="pet-dog" name="pet" defaultValue="dog" />
+                        <input
+                          type="checkbox"
+                          id="pet-dog"
+                          name="pet"
+                          defaultValue="dog"
+                        />
                         <span>Chó</span>
                       </label>
                       <label className={styles.filterOption}>
-                        <input type="checkbox" id="pet-cat" name="pet" defaultValue="cat" />
+                        <input
+                          type="checkbox"
+                          id="pet-cat"
+                          name="pet"
+                          defaultValue="cat"
+                        />
                         <span>Mèo</span>
                       </label>
                       <label className={styles.filterOption}>
-                        <input type="checkbox" id="pet-bird" name="pet" defaultValue="bird" />
+                        <input
+                          type="checkbox"
+                          id="pet-bird"
+                          name="pet"
+                          defaultValue="bird"
+                        />
                         <span>Chim</span>
                       </label>
                       <label className={styles.filterOption}>
-                        <input type="checkbox" id="pet-small" name="pet" defaultValue="small" />
+                        <input
+                          type="checkbox"
+                          id="pet-small"
+                          name="pet"
+                          defaultValue="small"
+                        />
                         <span>Thú nhỏ</span>
                       </label>
                       <label className={styles.filterOption}>
-                        <input type="checkbox" id="pet-reptile" name="pet" defaultValue="reptile" />
+                        <input
+                          type="checkbox"
+                          id="pet-reptile"
+                          name="pet"
+                          defaultValue="reptile"
+                        />
                         <span>Bò sát</span>
                       </label>
                       <label className={styles.filterOption}>
-                        <input type="checkbox" id="pet-fish" name="pet" defaultValue="fish" />
+                        <input
+                          type="checkbox"
+                          id="pet-fish"
+                          name="pet"
+                          defaultValue="fish"
+                        />
                         <span>Cá</span>
                       </label>
                     </div>
@@ -97,11 +161,21 @@ const DSDichVu: React.FC = () => {
                     <h4>Khoảng giá</h4>
                     <div className={styles.priceRange}>
                       <div className={styles.priceInputs}>
-                        <input type="number" id="price-min" placeholder="Tối thiểu" />
+                        <input
+                          type="number"
+                          id="price-min"
+                          placeholder="Tối thiểu"
+                        />
                         <span>-</span>
-                        <input type="number" id="price-max" placeholder="Tối đa" />
+                        <input
+                          type="number"
+                          id="price-max"
+                          placeholder="Tối đa"
+                        />
                       </div>
-                      <button className={`${styles.btn} ${styles.btnOutline} ${styles.btnSm} ${styles.btnApplyPrice}`}>
+                      <button
+                        className={`${styles.btn} ${styles.btnOutline} ${styles.btnSm} ${styles.btnApplyPrice}`}
+                      >
                         Áp dụng
                       </button>
                     </div>
@@ -110,7 +184,12 @@ const DSDichVu: React.FC = () => {
                     <h4>Đánh giá</h4>
                     <div className={styles.filterOptions}>
                       <label className={styles.filterOption}>
-                        <input type="radio" id="rating-5" name="rating" defaultValue={5} />
+                        <input
+                          type="radio"
+                          id="rating-5"
+                          name="rating"
+                          defaultValue={5}
+                        />
                         <div className={styles.stars}>
                           <i className="fas fa-star" />
                           <i className="fas fa-star" />
@@ -120,7 +199,12 @@ const DSDichVu: React.FC = () => {
                         </div>
                       </label>
                       <label className={styles.filterOption}>
-                        <input type="radio" id="rating-4" name="rating" defaultValue={4} />
+                        <input
+                          type="radio"
+                          id="rating-4"
+                          name="rating"
+                          defaultValue={4}
+                        />
                         <div className={styles.stars}>
                           <i className="fas fa-star" />
                           <i className="fas fa-star" />
@@ -131,7 +215,12 @@ const DSDichVu: React.FC = () => {
                         </div>
                       </label>
                       <label className={styles.filterOption}>
-                        <input type="radio" id="rating-3" name="rating" defaultValue={3} />
+                        <input
+                          type="radio"
+                          id="rating-3"
+                          name="rating"
+                          defaultValue={3}
+                        />
                         <div className={styles.stars}>
                           <i className="fas fa-star" />
                           <i className="fas fa-star" />
@@ -144,7 +233,11 @@ const DSDichVu: React.FC = () => {
                     </div>
                   </div>
                   <div className={styles.filterActions}>
-                    <button className={`${styles.btn} ${styles.btnPrimary} ${styles.btnBlock}`}>Áp dụng bộ lọc</button>
+                    <button
+                      className={`${styles.btn} ${styles.btnPrimary} ${styles.btnBlock}`}
+                    >
+                      Áp dụng bộ lọc
+                    </button>
                   </div>
                 </div>
               </aside>
@@ -189,7 +282,10 @@ const DSDichVu: React.FC = () => {
                     className={styles.providerBanner}
                   />
                   <div className={styles.providerLogo}>
-                    <img src="https://placehold.co/80x80/4CAF50/ffffff?text=HP" alt="Happy Pets" />
+                    <img
+                      src="https://placehold.co/80x80/4CAF50/ffffff?text=HP"
+                      alt="Happy Pets"
+                    />
                   </div>
                 </div>
                 <div className={styles.providerCardBody}>
@@ -205,7 +301,8 @@ const DSDichVu: React.FC = () => {
                     <span>4.5 (250 đánh giá)</span>
                   </div>
                   <p className={styles.providerDescription}>
-                    Dịch vụ chăm sóc thú cưng chuyên nghiệp với hơn 5 năm kinh nghiệm.
+                    Dịch vụ chăm sóc thú cưng chuyên nghiệp với hơn 5 năm kinh
+                    nghiệm.
                   </p>
                   <div className={styles.providerServices}>
                     <span className={styles.providerServiceTag}>Làm đẹp</span>
@@ -228,7 +325,10 @@ const DSDichVu: React.FC = () => {
                     className={styles.providerBanner}
                   />
                   <div className={styles.providerLogo}>
-                    <img src="https://placehold.co/80x80/4CAF50/ffffff?text=PH" alt="PetHealth" />
+                    <img
+                      src="https://placehold.co/80x80/4CAF50/ffffff?text=PH"
+                      alt="PetHealth"
+                    />
                   </div>
                 </div>
                 <div className={styles.providerCardBody}>
@@ -244,12 +344,15 @@ const DSDichVu: React.FC = () => {
                     <span>4.8 (180 đánh giá)</span>
                   </div>
                   <p className={styles.providerDescription}>
-                    Phòng khám thú y chuyên nghiệp với đội ngũ bác sĩ giàu kinh nghiệm.
+                    Phòng khám thú y chuyên nghiệp với đội ngũ bác sĩ giàu kinh
+                    nghiệm.
                   </p>
                   <div className={styles.providerServices}>
                     <span className={styles.providerServiceTag}>Sức khỏe</span>
                     <span className={styles.providerServiceTag}>Khám bệnh</span>
-                    <span className={styles.providerServiceTag}>Tiêm phòng</span>
+                    <span className={styles.providerServiceTag}>
+                      Tiêm phòng
+                    </span>
                   </div>
                 </div>
                 <div className={styles.providerCardFooter}>
@@ -267,7 +370,10 @@ const DSDichVu: React.FC = () => {
                     className={styles.providerBanner}
                   />
                   <div className={styles.providerLogo}>
-                    <img src="https://placehold.co/80x80/4CAF50/ffffff?text=PT" alt="PetTraining" />
+                    <img
+                      src="https://placehold.co/80x80/4CAF50/ffffff?text=PT"
+                      alt="PetTraining"
+                    />
                   </div>
                 </div>
                 <div className={styles.providerCardBody}>
@@ -283,10 +389,13 @@ const DSDichVu: React.FC = () => {
                     <span>4.2 (120 đánh giá)</span>
                   </div>
                   <p className={styles.providerDescription}>
-                    Trung tâm huấn luyện thú cưng hàng đầu với các huấn luyện viên chuyên nghiệp.
+                    Trung tâm huấn luyện thú cưng hàng đầu với các huấn luyện
+                    viên chuyên nghiệp.
                   </p>
                   <div className={styles.providerServices}>
-                    <span className={styles.providerServiceTag}>Huấn luyện</span>
+                    <span className={styles.providerServiceTag}>
+                      Huấn luyện
+                    </span>
                     <span className={styles.providerServiceTag}>Hành vi</span>
                     <span className={styles.providerServiceTag}>Vâng lời</span>
                   </div>
@@ -303,7 +412,7 @@ const DSDichVu: React.FC = () => {
       </main>
       <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default DSDichVu
+export default DSDichVu;

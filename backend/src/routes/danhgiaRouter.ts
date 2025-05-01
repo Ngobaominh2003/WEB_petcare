@@ -1,10 +1,12 @@
 import express from "express";
 import * as danhGiaController from "../controllers/danhgiaController";
+import { upload } from '../middleware/upload';
 
 const router = express.Router();
 
 
-router.post("/danh-gia", danhGiaController.themDanhGia);
+router.post("/danh-gia", upload.single("hinh_anh"), danhGiaController.themDanhGia);
+
 // Lấy tất cả đánh giá (có thể lọc theo dich_vu_id hoặc tai_khoan_id)
 router.get("/danh-gia", danhGiaController.getDanhSachDanhGia);
 router.get("/danh-gia/:id", danhGiaController.getDanhGiaTheoId);

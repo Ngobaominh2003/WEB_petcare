@@ -1,18 +1,14 @@
 import { Request, Response } from 'express';
 import { thuCungModel } from '../models/ThuCung';
-import { handleImageUpload } from '../middleware/upload';
 
-const extractHinhAnh = (req: Request, thuCung: any): string | null => {
-  if (req.file) return handleImageUpload(req.file);
-  return thuCung.hinh_anh || null;
-};
 
 export const themThuCung = async (req: Request, res: Response) => {
   try {
     const thuCung = req.body;
-    const hinh_anh = extractHinhAnh(req, thuCung);
 
+    const hinh_anh = req.file ? req.file.filename : null;
     const thuCungWithImage = { ...thuCung, hinh_anh };
+
     const result = await thuCungModel.themThuCung(thuCungWithImage);
 
     res.status(200).json({ message: "Thú cưng đã được thêm", result });

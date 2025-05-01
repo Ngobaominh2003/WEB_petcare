@@ -50,7 +50,7 @@
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
       const newFileName = uniqueSuffix + '-' + file.originalname;
       const newFilePath = path.join('D:/DoAnToNghiep01/backend/src/img', newFileName);
-      fs.renameSync(file.path, newFilePath); // Di chuyển file đến vị trí mới
+     
       return newFileName;
     }
   };

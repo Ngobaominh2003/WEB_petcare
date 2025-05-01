@@ -212,21 +212,21 @@ export const dichVuModel = {
   async getDichVuTheoDieuKien() {
     const query = `
      SELECT 
-  dv.*, 
-  nc.ten_nha_cung_cap, 
-  nc.dia_chi,            
-  nd.sdt,                
-  nd.avata, 
-  tk.vai_tro
-  FROM dich_vu dv
-  INNER JOIN tai_khoan tk ON dv.tai_khoan_id = tk.tai_khoan_id
-  INNER JOIN nha_cung_cap nc ON dv.tai_khoan_id = nc.tai_khoan_id
-  INNER JOIN nguoi_dung nd ON dv.tai_khoan_id = nd.tai_khoan_id
-  WHERE dv.trang_thai = 1
-  AND dv.xet_duyet = 'đã duyệt'
-  AND tk.vai_tro = 'nha_cung_cap'
-  AND tk.trang_thai = 'hoat_dong'
-  AND tk.trang_thai_xet_duyet = 'đã duyệt'
+      dv.*, 
+      nc.ten_nha_cung_cap, 
+      nc.dia_chi,            
+      nd.sdt,                
+      nd.avata, 
+      tk.vai_tro
+      FROM dich_vu dv
+      INNER JOIN tai_khoan tk ON dv.tai_khoan_id = tk.tai_khoan_id
+      INNER JOIN nha_cung_cap nc ON dv.tai_khoan_id = nc.tai_khoan_id
+      INNER JOIN nguoi_dung nd ON dv.tai_khoan_id = nd.tai_khoan_id
+      WHERE dv.trang_thai = 1
+      AND dv.xet_duyet = 'đã duyệt'
+      AND tk.vai_tro = 'nha_cung_cap'
+      AND tk.trang_thai = 'hoat_dong'
+      AND tk.trang_thai_xet_duyet = 'đã duyệt'
 
 
         `;
