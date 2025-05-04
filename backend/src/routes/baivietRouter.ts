@@ -4,12 +4,20 @@ import { upload } from '../middleware/upload';
 
 const router = express.Router();
 
-// Định nghĩa các route
-router.get('/baiviet', BaiVietController.getAllBaiViet);
-router.get('/baiviet/nguoidung/:nguoi_dung_id', BaiVietController.getBaiVietByNguoiDung);
-router.get('/baiviet/:bai_viet_id', BaiVietController.getBaiVietById);
-router.post('/baiviet', upload.single('hinh_anh'), BaiVietController.createBaiViet);
-router.put('/baiviet/:bai_viet_id', upload.single('hinh_anh'), BaiVietController.updateBaiViet);
-router.delete('/baiviet/:bai_viet_id', BaiVietController.deleteBaiViet);
+// GET: Lấy tất cả bài viết
+router.get('/danh-sach-bai-viet', BaiVietController.getDanhSachBaiViet);
+router.get('/danh-sach-bai-viet-dk', BaiVietController.getDKBaiViet);
+
+// GET: Lấy chi tiết bài viết theo ID
+router.get('/chi-tiet-bai-viet/:id', BaiVietController.getChiTietBaiViet);
+
+// POST: Thêm bài viết mới (có hình)
+router.post('/them-bai-viet', upload.single('hinh_anh'), BaiVietController.themBaiViet);
+
+// PUT: Cập nhật bài viết (có thể có hình mới)
+router.put('/cap-nhat-bai-viet/:id', upload.single('hinh_anh'), BaiVietController.capNhatBaiViet);
+
+// DELETE: Xóa bài viết theo ID
+router.delete('/xoa-bai-viet/:id', BaiVietController.xoaBaiViet);
 
 export default router;

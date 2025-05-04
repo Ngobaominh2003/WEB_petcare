@@ -1,73 +1,80 @@
 import { Request, Response } from 'express';
 import * as ThongKeModel from '../models/ThongKe';
 
-// Controller: Lấy tổng doanh thu
-export const getTotalRevenueController = async (req: Request, res: Response) => {
+// 1. GET /api/thong-ke/tong-quan
+export const getTongQuan = async (req: Request, res: Response) => {
+  const { tai_khoan_id } = req.query;
+  if (!tai_khoan_id) return res.status(400).json({ message: 'Thiếu tai_khoan_id' });
+
   try {
-    const totalRevenue = await ThongKeModel.getTotalRevenue();
-    res.status(200).json({ totalRevenue });
+    const data = await ThongKeModel.getTongQuan(Number(tai_khoan_id));
+    res.json(data);
   } catch (error) {
-    console.error('Lỗi khi lấy tổng doanh thu:', error);
-    res.status(500).json({ message: 'Không thể lấy tổng doanh thu.' });
+    res.status(500).json({ message: 'Lỗi server', error });
   }
 };
 
-// Controller: Lấy tổng số hóa đơn
-export const getTotalOrdersController = async (req: Request, res: Response) => {
+// 2. GET /api/thong-ke/bieu-do
+export const getBieuDo = async (req: Request, res: Response) => {
+  const { tai_khoan_id } = req.query;
+  if (!tai_khoan_id) return res.status(400).json({ message: 'Thiếu tai_khoan_id' });
+
+  const data = await ThongKeModel.getBieuDoThuNhap(Number(tai_khoan_id)) as any[];
+res.json(data.reverse());
+
+};
+
+// 3. GET /api/thong-ke/lich-su
+export const getLichSu = async (req: Request, res: Response) => {
+  const { tai_khoan_id, loai = 'all' } = req.query;
+  if (!tai_khoan_id) return res.status(400).json({ message: 'Thiếu tai_khoan_id' });
+
   try {
-    const totalOrders = await ThongKeModel.getTotalOrders();
-    res.status(200).json({ totalOrders });
+    const data = await ThongKeModel.getLichSuGiaoDich(Number(tai_khoan_id), String(loai));
+    res.json(data);
   } catch (error) {
-    console.error('Lỗi khi lấy tổng số hóa đơn:', error);
-    res.status(500).json({ message: 'Không thể lấy tổng số hóa đơn.' });
+    res.status(500).json({ message: 'Lỗi server', error });
   }
 };
 
-// Controller: Lấy số hóa đơn chưa thanh toán
-export const getUnpaidOrdersController = async (req: Request, res: Response) => {
+// 4. POST /api/thong-ke
+export const createThongKe = async (req: Request, res: Response) => {
   try {
-    const unpaidOrders = await ThongKeModel.getUnpaidOrders();
-    res.status(200).json({ unpaidOrders });
+    const result = await ThongKeModel.addThongKe(req.body);
+    res.status(201).json({ message: 'Thêm thống kê thành công', insertId: (result as any).insertId });
   } catch (error) {
-    console.error('Lỗi khi lấy số hóa đơn chưa thanh toán:', error);
-    res.status(500).json({ message: 'Không thể lấy số hóa đơn chưa thanh toán.' });
+    res.status(500).json({ message: 'Lỗi khi thêm thống kê', error });
   }
 };
 
-// Controller: Lấy thống kê doanh thu hàng ngày
-export const getDailyRevenueController = async (req: Request, res: Response) => {
-    try {
-      const data = await ThongKeModel.getDailyRevenue(); // Hàm trả về dữ liệu
-      const sortedData = data.sort((a: { ngay: string }, b: { ngay: string }) =>
-        new Date(b.ngay).getTime() - new Date(a.ngay).getTime()
-      ); // Sắp xếp giảm dần
-      const last7Days = sortedData.slice(0, 7).reverse(); // Lấy 7 ngày gần nhất và đảo ngược để hiển thị từ cũ -> mới
-      res.status(200).json({ dailyRevenue: last7Days });
-    } catch (error) {
-      console.error('Lỗi khi lấy doanh thu 7 ngày gần nhất:', error);
-      res.status(500).json({ message: 'Không thể lấy dữ liệu doanh thu 7 ngày gần nhất.' });
-    }
-  };
-  
+// 5. PUT /api/thong-ke/:id
+export const updateThongKe = async (req: Request, res: Response) => {
+  const { id } = req.params;
 
-// Controller: Lấy thống kê doanh thu hàng tháng
-export const getMonthlyRevenueController = async (req: Request, res: Response) => {
   try {
-    const monthlyRevenue = await ThongKeModel.getMonthlyRevenue();
-    res.status(200).json({ monthlyRevenue });
+    await ThongKeModel.updateThongKe(Number(id), req.body);
+    res.json({ message: 'Cập nhật thống kê thành công' });
   } catch (error) {
-    console.error('Lỗi khi lấy doanh thu hàng tháng:', error);
-    res.status(500).json({ message: 'Không thể lấy doanh thu hàng tháng.' });
+    res.status(500).json({ message: 'Lỗi khi cập nhật', error });
   }
 };
 
-// Controller: Lấy thống kê doanh thu hàng năm
-export const getYearlyRevenueController = async (req: Request, res: Response) => {
+// 6. DELETE /api/thong-ke/:id
+export const deleteThongKe = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
   try {
-    const yearlyRevenue = await ThongKeModel.getYearlyRevenue();
-    res.status(200).json({ yearlyRevenue });
+    await ThongKeModel.deleteThongKe(Number(id));
+    res.json({ message: 'Xoá thống kê thành công' });
   } catch (error) {
-    console.error('Lỗi khi lấy doanh thu hàng năm:', error);
-    res.status(500).json({ message: 'Không thể lấy doanh thu hàng năm.' });
+    res.status(500).json({ message: 'Lỗi khi xoá', error });
+  }
+};
+export const autoThongKe = async (req: Request, res: Response) => {
+  try {
+    const result = await ThongKeModel.tinhThongKeTuDong();
+    res.json({ message: `Đã thống kê tự động cho ${result.inserted} dịch vụ.` });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi thống kê tự động', error });
   }
 };

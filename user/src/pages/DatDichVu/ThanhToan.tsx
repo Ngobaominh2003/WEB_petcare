@@ -12,6 +12,7 @@ const ThanhToan: React.FC<Props> = ({ onNext, onBack }) => {
   const [dichVu, setDichVu] = useState<any | null>(null);
   const datLichInfo = JSON.parse(localStorage.getItem("datLichInfo") || "{}");
   const [chonDichVuInfo, setChonDichVuInfo] = useState<any | null>(null);
+  
   const paymentMap: Record<string, string> = {
     cash: "tiền mặt",
     card: "chuyển khoản",
@@ -44,40 +45,40 @@ const ThanhToan: React.FC<Props> = ({ onNext, onBack }) => {
         ghi_chu: chonDichVuInfo.ghi_chu,
         trang_thai: "chờ xác nhận",
       });
-  
-      const datLichId = response1.data.insertId; 
-  
+
+      const datLichId = response1.data.insertId;
+
       // 2. Tạo hóa đơn gắn với dat_lich_id
       const response2 = await axios.post("http://localhost:5000/api/hoa-don", {
         dat_lich_id: datLichId,
         tai_khoan_id: chonDichVuInfo.tai_khoan_id,
         so_tien: Number(chonDichVuInfo.so_tien || 0) + 15000,
         phuong_thuc: paymentMap[selectedPayment],
-        trang_thai: "chưa thanh toán",
+        trang_thai: ["card", "momo", "banking"].includes(selectedPayment)
+          ? "đã thanh toán"
+          : "chưa thanh toán",
       });
-  
-      
+
       localStorage.setItem("hoa_don_id", response2.data.insertId.toString());
-  
+
       // 3. Ghi nhận sử dụng dịch vụ
       const today = new Date().toISOString().split("T")[0];
       await axios.post("http://localhost:5000/api/su-dung-dich-vu", {
         dich_vu_id: chonDichVuInfo.dich_vu_id,
         ngay_su_dung: today,
       });
-  
+
       // 4. (Mới) Cập nhật lại thông tin người dùng nếu có chỉnh sửa
       const taiKhoanId = localStorage.getItem("tai_khoan_id");
       if (taiKhoanId) {
         await axios.put("http://localhost:5000/api/nguoidung", {
           tai_khoan_id: Number(taiKhoanId),
-          ho_ten: datLichInfo.ho_ten,     
-          sdt: datLichInfo.sdt,           
-          dia_chi: datLichInfo.dia_chi,   
-          
+          ho_ten: datLichInfo.ho_ten,
+          sdt: datLichInfo.sdt,
+          dia_chi: datLichInfo.dia_chi,
         });
       }
-  
+
       // 5. Chuyển sang bước xác nhận
       onNext();
     } catch (err) {
@@ -85,7 +86,6 @@ const ThanhToan: React.FC<Props> = ({ onNext, onBack }) => {
       alert("Có lỗi xảy ra khi thanh toán. Vui lòng thử lại.");
     }
   };
-  
 
   return (
     <div className="datdichvu-booking-form">

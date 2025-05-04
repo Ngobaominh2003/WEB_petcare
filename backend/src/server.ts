@@ -10,12 +10,15 @@ import baivietRouter from './routes/baivietRouter';
 import datlichtRouter from './routes/datlichRouter'; 
 import phongRouter from './routes/phongRouter'; 
 import thucungRouter from './routes/thucungRouter'; 
+import thongbaoRouter from './routes/thongbaoRouter'; 
+import './cron/ThongKeCron';
 
 import hoadonRouter from './routes/hoadonRouter'; 
 import thongkeRouter from './routes/thongkeRouter'; 
 import sudungdichvuRouter from './routes/sudungdichvuRouter'; 
 import danhgiaRouterr from './routes/danhgiaRouter'; 
 import baocaodanhgiaRouter from './routes/baocaodanhgiaRouter'; 
+import binhluanbaivietRouter from './routes/binhluanbaivietRouter'; 
 
 import path from 'path';
 
@@ -33,6 +36,7 @@ app.use('/img', express.static(path.join('D:/DoAnToNghiep01/backend/src/img')));
 
  // Sử dụng các route từ file userRoutes
 app.use('/api', userRouter);
+app.use('/api', binhluanbaivietRouter);
 app.use('/api', nguoidungRouter); 
 app.use('/api', nhacungcapRouter);
 app.use('/api', dichvuRouter);
@@ -42,6 +46,7 @@ app.use('/api', goidichvuRouter);
 app.use('/api', baivietRouter);
 app.use('/api', datlichtRouter); 
 app.use('/api', phongRouter);
+app.use('/api', thongbaoRouter);
 
 app.use('/api', hoadonRouter);
 app.use('/api', thongkeRouter);

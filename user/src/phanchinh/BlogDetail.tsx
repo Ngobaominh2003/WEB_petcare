@@ -1,127 +1,227 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import Header from "../components/Header";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+
+interface BinhLuan {
+  binh_luan_id: number;
+  bai_viet_id: number;
+  tai_khoan_id: number;
+  ho_ten: string;
+  noi_dung: string;
+  thoi_gian_binh_luan: string;
+  so_luot_like: number;
+}
+
+interface BaiViet {
+  bai_viet_id: number;
+  tieu_de: string;
+  noi_dung: string;
+  ngay_dang: string;
+  nguoi_dung: string;
+  hinh_anh: string;
+  avata: string;
+}
 
 const BlogDetail: React.FC = () => {
-    const { id } = useParams<{ id: string }>();  // Get the ID from the URL
+  const { id } = useParams();
+  const [baiViet, setBaiViet] = useState<BaiViet | null>(null);
+  const [comments, setComments] = useState<BinhLuan[]>([]);
+  const [newComment, setNewComment] = useState("");
+  const [nguoiDung, setNguoiDung] = useState<any>(null);
 
-    const [post, setPost] = useState<any>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    const storedId = localStorage.getItem("tai_khoan_id");
+    if (storedId) {
+      setNguoiDung({ tai_khoan_id: Number(storedId) });
+    }
+  }, []);
 
-    // Static mock comments for demonstration
-    const mockComments = [
-        {
-            user: 'John Doe',
-            date: '01 Jan 2045 at 12:00pm',
-            content: 'This is a very informative post. Thank you for sharing!'
-        },
-        {
-            user: 'Jane Smith',
-            date: '02 Jan 2045 at 1:30pm',
-            content: 'I love the tips provided here, especially the ones about taking care of pets.'
-        },
-        {
-            user: 'Mark Lee',
-            date: '02 Jan 2045 at 2:15pm',
-            content: 'Great article! I think more people should read about this.'
-        },
-    ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/chi-tiet-bai-viet/${id}`
+        );
+        setBaiViet(res.data);
 
-    useEffect(() => {
-        const fetchPost = async () => {
-            try {
-                const response = await axios.get(`http://localhost:5000/api/baiviet/${id}`);
-                setPost(response.data);
-                setLoading(false);
-            } catch (err) {
-                setError('Lỗi khi tải bài viết.');
-                setLoading(false);
-            }
-        };
+        const blRes = await axios.get(
+          `http://localhost:5000/api/bai-viet/${id}`
+        );
+        setComments(blRes.data);
+      } catch (err) {
+        console.error("Lỗi khi tải bài viết hoặc bình luận:", err);
+      }
+    };
 
-        if (id) {
-            fetchPost();
-        }
-    }, [id]);
+    if (id) fetchData();
+  }, [id]);
 
-    if (loading) {
-        return <p>Đang tải bài viết...</p>;
+  const handleCommentSubmit = async () => {
+    if (!newComment.trim()) return;
+
+    const storedId = localStorage.getItem("tai_khoan_id");
+    const tai_khoan_id = storedId ? Number(storedId) : null;
+
+    if (!tai_khoan_id) {
+      alert("Bạn cần đăng nhập để bình luận.");
+      return;
     }
 
-    if (error) {
-        return <p>{error}</p>;
-    }
+    try {
+      await axios.post("http://localhost:5000/api/binh-luan", {
+        bai_viet_id: id,
+        tai_khoan_id,
+        noi_dung: newComment,
+      });
+      setNewComment("");
 
-    if (!post) {
-        return <p>Bài viết không tồn tại.</p>;
+      window.location.reload();
+    } catch (err) {
+      console.error("Lỗi khi gửi bình luận:", err);
     }
+  };
 
-    return (
-        <div className="col-lg-8">
-            <div className="d-flex flex-column text-left mb-4">
-                <h4 className="text-secondary mb-3">Blog Detail</h4>
-                <h1 className="mb-3">{post.tieu_de}</h1>
-                <div className="d-flex mb-2">
-                    <span className="mr-3">
-                        <i className="fa fa-user text-muted" /> {post.nguoi_dung_id || 'Admin'}
-                    </span>
-                    <span className="mr-3">
-                        <i className="fa fa-folder text-muted" /> {post.category || 'General'}
-                    </span>
-                    <span className="mr-3">
-                        <i className="fa fa-comments text-muted" /> {mockComments.length || 0} Bình luận
-                    </span>
+  const handleDeleteComment = async (binh_luan_id: number) => {
+    const confirm = window.confirm("Bạn có chắc chắn muốn xóa bình luận này?");
+    if (!confirm) return;
+
+    try {
+      await axios.delete(`http://localhost:5000/api/binh-luan/${binh_luan_id}`);
+
+      window.location.reload();
+    } catch (err) {
+      console.error("Lỗi khi xóa bình luận:", err);
+    }
+  };
+
+  return (
+    <>
+      <Header />
+      <Navbar />
+
+      <div className="blog-wrapper">
+        <div className="blog-main">
+          {baiViet ? (
+            <>
+              <h1 className="blog-title">{baiViet.tieu_de}</h1>
+
+              {baiViet.hinh_anh && (
+                <div className="blog-image">
+                  <img
+                    src={`http://localhost:5000/img/${baiViet.hinh_anh}`}
+                    alt={baiViet.tieu_de}
+                    style={{
+                      width: "100%",
+                      maxHeight: "400px",
+                      objectFit: "cover",
+                      marginBottom: "1rem",
+                    }}
+                  />
                 </div>
-            </div>
+              )}
 
-            <div className="mb-5">
-                {post.hinh_anh && (
-                    <img className="img-fluid w-100 mb-4" src={`http://localhost:5000/img/${post.hinh_anh}`} alt={post.tieu_de} />
-                )}
-                {/* Căn đều 2 bên nội dung */}
-                <p style={{
-                    textAlign: 'justify',   // Căn đều văn bản
-                    lineHeight: '1.6',      // Khoảng cách giữa các dòng
-                    margin: '0 auto',       // Căn giữa phần tử
-                    maxWidth: '800px',      // Giới hạn chiều rộng tối đa cho bài viết
-                    padding: '0 15px'       // Thêm padding để tạo không gian bên trái và bên phải
-                }}>
-                    {post.noi_dung}
-                </p>
-            </div>
+              <div className="blog-meta">
+                <span>👤 {baiViet.nguoi_dung}</span>
+                <span>
+                  📅 {new Date(baiViet.ngay_dang).toLocaleDateString()}
+                </span>
+                <span>💬 {comments.length} bình luận</span>
+              </div>
 
-
-            {/* Comments Section */}
-            <div className="mb-5">
-                <h3 className="mb-4">Bình luận</h3>
-
-                {/* Display Static Mock Comments */}
-                {mockComments.map((comment, index) => (
-                    <div key={index} className="media mb-3">
-                        <img src="img/user.jpg" alt="User" className="img-fluid mr-3 mt-1" style={{ width: 45 }} />
-                        <div className="media-body">
-                            <h5>{comment.user}</h5>
-                            <small><i>{comment.date}</i></small>
-                            <p>{comment.content}</p>
-                        </div>
-                    </div>
+              <div className="blog-content">
+                {baiViet.noi_dung.split("\r\n").map((para, idx) => (
+                  <p key={idx}>{para}</p>
                 ))}
+              </div>
 
-                {/* Add New Comment Form */}
-                <h3 className="mb-4">Thêm bình luận</h3>
-                <form>
-                    <div className="form-group">
-                        <label htmlFor="message">Bình luận *</label>
-                        <textarea id="message" cols={30} rows={5} className="form-control" />
+              <div className="blog-comments">
+                <h3>📝 Bình luận ({comments.length})</h3>
+
+                {nguoiDung && (
+                  <p>
+                    Bạn đang bình luận với tư cách:{" "}
+                    <strong>{nguoiDung.ho_ten}</strong>
+                  </p>
+                )}
+
+                <textarea
+                  placeholder="Viết bình luận..."
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  rows={4}
+                  style={{ width: "100%", marginBottom: "1rem" }}
+                />
+                <button onClick={handleCommentSubmit}>Gửi bình luận</button>
+
+                {comments.map((c) => {
+                  console.log(
+                    "tai_khoan_id hiện tại:",
+                    nguoiDung?.tai_khoan_id,
+                    "| của bình luận:",
+                    c.tai_khoan_id
+                  );
+                  return (
+                    <div key={c.binh_luan_id} className="comment">
+                      <strong>{c.ho_ten}</strong>{" "}
+                      <em>
+                        {new Date(c.thoi_gian_binh_luan).toLocaleDateString()}
+                      </em>
+                      <p>{c.noi_dung}</p>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <div>👍 {c.so_luot_like}</div>
+                        {nguoiDung?.tai_khoan_id === c.tai_khoan_id && (
+                         <button
+                         onClick={() => handleDeleteComment(c.binh_luan_id)}
+                         className="delete-button"
+                       >
+                         🗑️ Xóa
+                       </button>
+                       
+                        
+                        
+                        )}
+                      </div>
                     </div>
-                    <div className="form-group mb-0">
-                        <input type="submit" value="Gửi bình luận" className="btn btn-primary px-3" />
-                    </div>
-                </form>
-            </div>
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            <p>Đang tải bài viết...</p>
+          )}
         </div>
-    );
+
+        <aside className="blog-sidebar">
+          <div className="author-card">
+            <div className="author-img">
+              <img
+                src={`http://localhost:5000/img/${
+                  baiViet?.avata || "default.jpg"
+                }`}
+                alt="Ảnh người dùng"
+                style={{ width: "100%", height: "auto", borderRadius: "50%" }}
+              />
+            </div>
+
+            <h4>{baiViet?.nguoi_dung || "Tác giả"}</h4>
+
+            <p>Chuyên gia phát triển nội dung thú cưng.</p>
+            <button>Xem tất cả bài viết</button>
+          </div>
+        </aside>
+      </div>
+
+      <Footer />
+    </>
+  );
 };
 
 export default BlogDetail;

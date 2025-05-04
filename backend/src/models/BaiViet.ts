@@ -1,103 +1,129 @@
-import connection from '../config/db';
-import { RowDataPacket } from 'mysql2/promise';
+import { RowDataPacket } from "mysql2";
+import connection from "../config/db"; // sửa lại path nếu cần
 
 export interface BaiViet extends RowDataPacket {
-    bai_viet_id: number;
-    nguoi_dung_id: number | null;
-    tieu_de: string;
-    noi_dung: string | null;
-    ngay_tao: Date;
-    hinh_anh: string | null;
-    trang_thai: 'đã duyệt' | 'chờ duyệt' | 'hủy';
-  }
+  bai_viet_id: number;
+  tai_khoan_id: number;
+  tieu_de: string | null;
+  noi_dung: string;
+  hinh_anh: string | null;
+  ngay_dang: Date;
+  trang_thai: "hien" | "an";
+  xet_duyet: "chờ duyệt" | "đã duyệt" | "không duyệt";
+}
 
-// Lấy tất cả bài viết
 export const getAllBaiViet = async (): Promise<BaiViet[]> => {
-  const [rows] = await connection.execute<RowDataPacket[]>(
-    'SELECT * FROM bai_viet'
-  );
-  return rows as BaiViet[];
+  try {
+    const [rows] = await connection.execute(`
+      SELECT 
+        bv.bai_viet_id,
+        bv.tieu_de,
+        bv.noi_dung,
+        bv.hinh_anh,
+        bv.ngay_dang,
+        bv.trang_thai,
+        bv.xet_duyet,
+        nd.ho_ten AS nguoi_dung 
+      FROM bai_viet bv
+      JOIN nguoi_dung nd ON bv.tai_khoan_id = nd.tai_khoan_id
+      ORDER BY bv.ngay_dang DESC
+    `);
+    return rows as BaiViet[];
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách bài viết:", error);
+    throw error;
+  }
 };
 
-// Lấy bài viết theo nguoi_dung_id
-export const getBaiVietByNguoiDung = async (nguoi_dung_id: number): Promise<BaiViet[]> => {
-  const [rows] = await connection.execute<RowDataPacket[]>(
-    'SELECT * FROM bai_viet WHERE nguoi_dung_id = ?',
-    [nguoi_dung_id]
-  );
-  return rows as BaiViet[];
+export const getDSBaiViet = async (): Promise<BaiViet[]> => {
+  try {
+    const [rows] = await connection.execute(`
+      SELECT 
+        bv.bai_viet_id,
+        bv.tieu_de,
+        bv.noi_dung,
+        bv.hinh_anh,
+        bv.ngay_dang,
+        nd.ho_ten AS nguoi_dung 
+      FROM bai_viet bv
+      JOIN nguoi_dung nd ON bv.tai_khoan_id = nd.tai_khoan_id
+      WHERE bv.trang_thai = 'hien' AND bv.xet_duyet = 'đã duyệt'
+
+    `);
+    return rows as BaiViet[];
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách bài viết:", error);
+    throw error;
+  }
 };
 
-// Lấy bài viết theo bai_viet_id
-
-export const getBaiVietById = async (bai_viet_id: number): Promise<BaiViet | null> => {
-  const [rows] = await connection.execute<RowDataPacket[]>(
-    'SELECT * FROM bai_viet WHERE bai_viet_id = ?',
-    [bai_viet_id]
+export const getBaiVietById = async (id: number): Promise<any> => {
+  const [rows] = await connection.execute<any[]>(
+    `SELECT 
+      bv.*, 
+      nd.ho_ten AS nguoi_dung, 
+      nd.avata
+    FROM bai_viet bv
+    JOIN nguoi_dung nd ON bv.tai_khoan_id = nd.tai_khoan_id
+    WHERE bv.bai_viet_id = ?
+`,
+    [id]
   );
-  // Return the first row or null if no results
-  return rows.length > 0 ? (rows[0] as BaiViet) : null;
+  return rows[0] || null;
 };
 
-
-// Thêm bài viết mới
-export const createBaiViet = async (
-  nguoi_dung_id: number | null,
-  tieu_de: string,
-  noi_dung: string | null,
-  hinh_anh: string | null
-): Promise<void> => {
-  const trang_thai = 'chờ duyệt'; 
-  const ngay_tao = new Date();
-
+export const createBaiViet = async (data: {
+  tai_khoan_id: number;
+  tieu_de: string;
+  noi_dung: string;
+  hinh_anh?: string;
+}): Promise<void> => {
+  const { tai_khoan_id, tieu_de, noi_dung, hinh_anh } = data;
   await connection.execute(
-    'INSERT INTO bai_viet (nguoi_dung_id, tieu_de, noi_dung, ngay_tao, hinh_anh, trang_thai) VALUES (?, ?, ?, ?, ?, ?)',
-    [nguoi_dung_id, tieu_de, noi_dung, ngay_tao, hinh_anh, trang_thai]
+    "INSERT INTO bai_viet (tai_khoan_id, tieu_de, noi_dung, hinh_anh) VALUES (?, ?, ?, ?)",
+    [tai_khoan_id, tieu_de, noi_dung, hinh_anh || null]
   );
 };
 
-// Cập nhật bài viết theo bai_viet_id
 export const updateBaiViet = async (
-  bai_viet_id: number,
-  tieu_de: string,
-  noi_dung: string | null,
-  hinh_anh: string | null,
-  trang_thai?: 'đã duyệt' | 'chờ duyệt' | 'hủy' 
+  id: number,
+  data: {
+    tieu_de?: string;
+    noi_dung?: string;
+    hinh_anh?: string | null;
+    trang_thai?: "hien" | "an";
+    xet_duyet?: "chờ duyệt" | "đã duyệt" | "không duyệt";
+  }
 ): Promise<void> => {
-  let query = 'UPDATE bai_viet SET tieu_de = ?';
-  const params: any[] = [tieu_de];
+  const fields: string[] = [];
+  const values: any[] = [];
 
-  // Chỉ cập nhật trường trang_thai nếu nó được truyền vào
-  if (trang_thai !== undefined && trang_thai !== null) {
-    query += ', trang_thai = ?';
-    params.push(trang_thai);
+  for (const [key, value] of Object.entries(data)) {
+    if (value !== undefined && value !== null) {
+      fields.push(`${key} = ?`);
+      values.push(value);
+    }
   }
 
-  // Kiểm tra và thêm nội dung nếu nó được cung cấp
-  if (noi_dung !== undefined && noi_dung !== null) {
-    query += ', noi_dung = ?';
-    params.push(noi_dung);
-  }
+  if (fields.length === 0) return;
 
-  // Kiểm tra và thêm hình ảnh nếu nó được cung cấp
-  if (hinh_anh !== undefined && hinh_anh !== null) {
-    query += ', hinh_anh = ?';
-    params.push(hinh_anh);
-  }
+  values.push(id);
+  const query = `UPDATE bai_viet SET ${fields.join(
+    ", "
+  )} WHERE bai_viet_id = ?`;
 
-  query += ' WHERE bai_viet_id = ?';
-  params.push(bai_viet_id);
-
-  // Thực hiện câu truy vấn cập nhật
-  await connection.execute(query, params);
+  await connection.execute(query, values);
 };
-;
-  
 
-// Xóa bài viết theo bai_viet_id
-export const deleteBaiViet = async (bai_viet_id: number): Promise<void> => {
-  await connection.execute(
-    'DELETE FROM bai_viet WHERE bai_viet_id = ?',
-    [bai_viet_id]
-  );
+export const deleteBaiViet = async (id: number): Promise<void> => {
+  await connection.execute("DELETE FROM bai_viet WHERE bai_viet_id = ?", [id]);
 };
+export function baiVietGetAll() {
+  throw new Error("Function not implemented.");
+}
+export function baiVietGetById(id: number) {
+  throw new Error("Function not implemented.");
+}
+export function baiVietDelete(id: number) {
+  throw new Error("Function not implemented.");
+}

@@ -10,7 +10,7 @@ import Service from "./pages/Service";
 import Price from "./pages/Price";
 import Booking from "./pages/Booking";
 import Blog from "./pages/Blog";
-import Blog2 from "./pages/Blog2";
+
 import BlogDetail from "./phanchinh/BlogDetail";
 import Contact from "./pages/Contact";
 import DSDichVu from "./pages/DichVuDS";
@@ -25,11 +25,14 @@ import NguoiDung from "./TaiKhoan/QLTaiKhoan/NguoiDung";
 import NhaCC from "./TaiKhoan/QLNhaCC/NhaCC";
 import QLTaiKhoan from "./TaiKhoan/QLTaiKhoan/QLTaiKhoan";
 import QLNhaCC from "./TaiKhoan/QLNhaCC/QLNhaCC";
+import ThongKe from "./TaiKhoan/QLNhaCC/ThongKe";
 import DatLich from "./TaiKhoan/QLTaiKhoan/DatLich";
+import ThongBao from "./TaiKhoan/ThongBao";
+
 import ThuCung from "./TaiKhoan/QLTaiKhoan/ThuCung";
 import ThuCungAdd from "./TaiKhoan/QLTaiKhoan/ThuCungAdd";
 import ThuCungUpdate from "./TaiKhoan/QLTaiKhoan/ThuCungUpdate";
-
+import ThanhToan from "./TaiKhoan/QLTaiKhoan/CachThanhToan";
 // --- Quản lý dịch vụ ---
 import DichVuQL from "./TaiKhoan/QLNhaCC/DichVuQL";
 import DichVuAdd from "./TaiKhoan/QLNhaCC/DichVuAdd";
@@ -48,7 +51,7 @@ const App: React.FC = () => {
         <Route path="/Price" element={<Price />} />
         <Route path="/Booking" element={<Booking />} />
         <Route path="/Blog" element={<Blog />} />
-        <Route path="/Blog2/:id" element={<Blog2 />} />
+        
         <Route path="/BlogDetail/:id" element={<BlogDetail />} />
         <Route path="/Contact" element={<Contact />} />
         <Route path="/DSDichVu" element={<DSDichVu />} />
@@ -61,10 +64,13 @@ const App: React.FC = () => {
         <Route path="/Register" element={<Register />} />
         <Route path="/NguoiDung" element={<NguoiDung />} />
         <Route path="/NhaCC" element={<NhaCC />} />
+        <Route path="/ThongKe" element={<ThongKe />} />
         <Route path="/QLTaiKhoan" element={<QLTaiKhoan />} />
         <Route path="/QLNhaCC" element={<QLNhaCC />} />
         <Route path="/DatLich" element={<DatLich />} />
+        <Route path="/ThanhToan" element={<ThanhToan />} />
         <Route path="/ThuCung" element={<ThuCung />} />
+        <Route path="/ThongBao" element={<ThongBao  />} />
         <Route path="/thu-cung/add" element={<ThuCungAdd />} />
         <Route path="/thu-cung/update/:id" element={<ThuCungUpdate />} />
 

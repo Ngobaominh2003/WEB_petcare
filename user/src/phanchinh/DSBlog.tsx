@@ -1,88 +1,82 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import Header from '../components/Header';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import Footer from "../components/Footer";
+import { Link } from "react-router-dom";
 
 interface BaiViet {
   bai_viet_id: number;
-  tieu_de: string;
+  tai_khoan_id: number;
+  tieu_de: string | null;
   noi_dung: string;
-  hinh_anh: string;
-  ngay_tao: string;
-  trang_thai: string;
+  hinh_anh: string | null;
+  ngay_dang: string;
+  trang_thai: "hien" | "an";
+  xet_duyet: "chờ duyệt" | "đã duyệt" | "không duyệt";
+  nguoi_dung: string;
 }
 
 const DSBlog: React.FC = () => {
-  const [baiViets, setBaiViets] = useState<BaiViet[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [blogs, setBlogs] = useState<BaiViet[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchBaiViets = async () => {
+    const fetchBlogs = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/baiviet`);
-        setBaiViets(response.data);
+        const response = await axios.get("http://localhost:5000/api/danh-sach-bai-viet-dk");
+        setBlogs(response.data);
         setLoading(false);
-      } catch (err) {
-        setError('Lỗi khi tải bài viết');
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
         setLoading(false);
       }
     };
 
-    fetchBaiViets();
+    fetchBlogs();
   }, []);
 
-  if (loading) {
-    return <p>Đang tải dữ liệu...</p>;
-  }
-
-  if (error) {
-    return <p>{error}</p>;
-  }
-
-  const approvedBaiViets = baiViets.filter(baiViet => baiViet.trang_thai === 'đã duyệt');
-
-  if (approvedBaiViets.length === 0) {
-    return <p>Không có bài viết đã duyệt.</p>;
-  }
-
   return (
-    <div>
-      <Header />
-      <Navbar />
-      <div className="container pt-5" style={{ marginTop: '245px' }}>
-        <div className="d-flex flex-column text-center mb-5 pt-5">
-          <h4 className="text-secondary mb-3">Blog Chăm Sóc Thú Cưng</h4>
-          <h1 className="display-4 m-0">
-            <span className="text-primary">Cập Nhật</span> Mỗi Ngày
-          </h1>
-        </div>
-        <div className="row pb-3">
-          {approvedBaiViets.map((baiViet) => (
-            <div className="col-lg-4 mb-4" key={baiViet.bai_viet_id}>
-              <div className="card border-0 mb-2">
+    <div className="blog-wrapper">
+      <h2 className="blog-heading">Blog của chúng tôi</h2>
+      <p className="blog-subheading">Chia sẻ kiến thức và kinh nghiệm về thú cưng</p>
+
+      <div className="blog-list">
+        {loading ? (
+          <div className="loading">Đang tải...</div>
+        ) : (
+          blogs.map((blog) => (
+            <div key={blog.bai_viet_id} className="blog-item">
+              <div className="blog-thumb">
                 <img
-                  className="card-img-top"
-                  src={`http://localhost:5000/img/${baiViet.hinh_anh}`}
-                  alt={baiViet.tieu_de}
+                  src={
+                    blog.hinh_anh
+                      ? `http://localhost:5000/img/${blog.hinh_anh}`
+                      : "https://placehold.co/400x250?text=No+Image"
+                  }
+                  alt={blog.tieu_de || "Ảnh bài viết"}
                 />
-                <div className="card-body bg-light p-4">
-                  <h4 className="card-title text-truncate">{baiViet.tieu_de}</h4>
-                  <p>{baiViet.noi_dung.slice(0, 100)}...</p>
-                  <Link
-                    className="font-weight-bold"
-                    to={`/Blog2/${baiViet.bai_viet_id}`}
-                  >
-                    Xem thêm
+              </div>
+              <div className="blog-body">
+                <h3 className="blog-title">{blog.tieu_de}</h3>
+                <p className="blog-date">
+                  📅 {new Date(blog.ngay_dang).toLocaleDateString()}
+                </p>
+                <p className="blog-excerpt">
+                  {blog.noi_dung.length > 200
+                    ? blog.noi_dung.slice(0, 200) + "..."
+                    : blog.noi_dung}
+                </p>
+                <div className="blog-meta">
+                  <span className="blog-author">👤 {blog.nguoi_dung}</span>
+                  <Link to={`/BlogDetail/${blog.bai_viet_id}`} className="blog-readmore">
+                    Đọc tiếp →
                   </Link>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+          ))
+        )}
       </div>
+
       
     </div>
   );
