@@ -15,7 +15,7 @@ const menuItems: MenuItem[] = [
   { label: "Bài viết", icon: "newspaper-outline", path: "/BaiViet" },
   { label: "Danh mục", icon: "list-outline", path: "/DanhMuc" },
   { label: "Phản hồi đánh giá", icon: "chatbox-ellipses-outline", path: "/reviews" },
-  { label: "Lịch hẹn", icon: "calendar-outline", path: "/LichHen" },
+  
   { label: "Dịch vụ", icon: "construct-outline", path: "/DichVu" },
   { label: "Báo Cáo", icon: "alert-circle-outline", path: "/BaoCao" },
 

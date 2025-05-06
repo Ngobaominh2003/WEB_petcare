@@ -11518,16 +11518,30 @@ h6 {
   font-family: "Segoe UI", sans-serif;
 }
 
+.blog-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Căn giữa nội dung theo chiều ngang */
+}
 .blog-heading {
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 6px;
+  font-size: 2.25rem;         /* 36px */
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 12px;        /* hơi tăng để cân đối với subheading */
+  line-height: 1.3;
+  text-align: center;
+  letter-spacing: -0.5px;
 }
 
 .blog-subheading {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 30px;
+  font-size: 1.125rem;        /* 18px */
+  color: #555;
+  margin-bottom: 32px;        /* tăng nhẹ */
+  line-height: 1.6;
+  text-align: center;
+  max-width: 640px;           /* tăng nhẹ chiều rộng nếu dùng font lớn hơn */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .blog-list {

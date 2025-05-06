@@ -7,7 +7,7 @@ import UserCT from './pages/UserCT';
 import BaiViet from './pages/BaiViet';
 import DanhMuc from './pages/DanhMuc';
 
-import LichHen from './pages/LichHen';
+
 import DichVu from './pages/DichVu';
 import DichVuUpdate from './pages/DichVuUpdate';
 import DichVuAdd from './pages/DichVuAdd';
@@ -36,7 +36,7 @@ const App: React.FC = () => {
           <Route path="/BaiViet" element={<BaiViet />} />
           <Route path="/DanhMuc" element={<DanhMuc />} />
           
-          <Route path="/LichHen" element={<LichHen />} />
+         
           <Route path="/DichVu" element={<DichVu />} />
           <Route path="/DichVuUpdate" element={<DichVuUpdate dichVuChon={dichVuChon} />} />
           <Route path="/DichVuAdd" element={<DichVuAdd />} />

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
 
 interface BaiViet {
@@ -36,8 +35,11 @@ const DSBlog: React.FC = () => {
 
   return (
     <div className="blog-wrapper">
-      <h2 className="blog-heading">Blog của chúng tôi</h2>
-      <p className="blog-subheading">Chia sẻ kiến thức và kinh nghiệm về thú cưng</p>
+    <div className="blog-wrapper">
+  <h2 className="blog-heading">Blog của chúng tôi</h2>
+  <p className="blog-subheading">Chia sẻ kiến thức và kinh nghiệm về thú cưng</p>
+</div>
+
 
       <div className="blog-list">
         {loading ? (

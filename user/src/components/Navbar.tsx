@@ -7,15 +7,10 @@ const Navbar: React.FC = () => {
   const menuItems = [
     { path: "/HomePage", label: "Trang Chủ" },
     { path: "/About", label: "Giới Thiệu" },
-    { path: "/DSDichVu", label: "Dịch Vụ" },
+    { path: "/DichVuDS", label: "Dịch Vụ" },
     { path: "/Price", label: "Giá" },
-    { path: "/Booking", label: "Đặt Phòng" },
     { path: "/Contact", label: "Liên Hệ" },
-  ];
-
-  const blogItems = [
     { path: "/Blog", label: "Blog" },
-    { path: "/Blog2", label: "Chi Tiết Blog" },
   ];
 
   return (
@@ -34,6 +29,7 @@ const Navbar: React.FC = () => {
             <span className="text-primary">Safety</span>First
           </h1>
         </Link>
+
         <button
           type="button"
           className="navbar-toggler"
@@ -42,6 +38,7 @@ const Navbar: React.FC = () => {
         >
           <span className="navbar-toggler-icon"></span>
         </button>
+
         <div
           className="collapse navbar-collapse justify-content-between px-3"
           id="navbarCollapse"
@@ -58,30 +55,8 @@ const Navbar: React.FC = () => {
                 {item.label}
               </Link>
             ))}
-
-            <div className="nav-item dropdown">
-              <Link
-                to="#"
-                className="nav-link dropdown-toggle"
-                data-toggle="dropdown"
-              >
-                Trang
-              </Link>
-              <div className="dropdown-menu rounded-0 m-0">
-                {blogItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`dropdown-item ${
-                      location.pathname === item.path ? "active" : ""
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
           </div>
+
           <Link
             to="/quote"
             className="btn btn-lg btn-primary px-3 d-none d-lg-block"

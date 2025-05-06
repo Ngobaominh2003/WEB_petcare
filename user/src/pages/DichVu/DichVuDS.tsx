@@ -1,11 +1,54 @@
 import type React from "react";
-import Header from "../components/Header";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import DichVu from "../phanchinh/DichVu";
-import styles from "../TaiKhoan/style/dichvu.module.css";
+import Header from "../../components/Header";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
+import DichVu from "../../phanchinh/DichVu";
+import styles from "../../TaiKhoan/style/dichvu.module.css";
+
+import { useState, useEffect } from "react";
 
 const DSDichVu: React.FC = () => {
+  const [tuKhoa, setTuKhoa] = useState("");
+  const [danhMucList, setDanhMucList] = useState([]);
+  const [filters, setFilters] = useState({
+    danh_muc_id: "",
+    loai_thu_cung: "",
+    danh_gia_tu: "",
+    gia_min: "",
+    gia_max: "",
+    sap_xep: "",
+  });
+  const [dichVuList, setDichVuList] = useState([]);
+  useEffect(() => {
+    fetch("http://localhost:5000/api/danh-muc")
+      .then((res) => res.json())
+      .then((data) => setDanhMucList(data))
+      .catch((err) => console.error("Lỗi khi lấy danh mục:", err));
+  }, []);
+
+  const [searchingKey, setSearchingKey] = useState("");
+
+  function handleSearch(): void {
+    setSearchingKey(tuKhoa.trim());
+  }
+  const handleFilter = async () => {
+    const params = new URLSearchParams();
+  
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) params.append(key, value.toString());
+    });
+  
+    try {
+      const res = await fetch(`http://localhost:5000/api/dich-vu/loc?${params.toString()}`);
+      const data = await res.json();
+      setDichVuList(data);
+      setSearchingKey(""); // xoá từ khóa tìm kiếm nếu đang lọc
+    } catch (error) {
+      console.error("Lỗi lọc dịch vụ:", error);
+    }
+  };
+  
+
   return (
     <div>
       <Header />
@@ -25,9 +68,10 @@ const DSDichVu: React.FC = () => {
                   <input
                     type="text"
                     placeholder="Tìm kiếm dịch vụ..."
-                    id="service-search"
+                    value={tuKhoa}
+                    onChange={(e) => setTuKhoa(e.target.value)}
                   />
-                  <button className={styles.searchBtn}>
+                  <button className={styles.searchBtn} onClick={handleSearch}>
                     <i className="fas fa-search" />
                   </button>
                 </div>
@@ -35,6 +79,7 @@ const DSDichVu: React.FC = () => {
             </div>
           </div>
         </section>
+
         {/* Services Section */}
         <section className={styles.servicesSection}>
           <div className={styles.container}>
@@ -50,113 +95,27 @@ const DSDichVu: React.FC = () => {
                   </div>
                   <div className={styles.filterGroup}>
                     <h4>Danh mục</h4>
-                    <div className={styles.filterOptions}>
-                      <label className={styles.filterOption}>
+                    {danhMucList.map((dm: any) => (
+                      <label
+                        className={styles.filterOption}
+                        key={dm.danh_muc_id}
+                      >
                         <input
-                          type="checkbox"
-                          id="category-grooming"
+                          type="radio"
                           name="category"
-                          defaultValue="grooming"
+                          value={dm.danh_muc_id}
+                          onChange={(e) =>
+                            setFilters({
+                              ...filters,
+                              danh_muc_id: e.target.value,
+                            })
+                          }
                         />
-                        <span>Làm đẹp</span>
+                        <span>{dm.ten_danh_muc}</span>
                       </label>
-                      <label className={styles.filterOption}>
-                        <input
-                          type="checkbox"
-                          id="category-spa"
-                          name="category"
-                          defaultValue="spa"
-                        />
-                        <span>Spa</span>
-                      </label>
-                      <label className={styles.filterOption}>
-                        <input
-                          type="checkbox"
-                          id="category-health"
-                          name="category"
-                          defaultValue="health"
-                        />
-                        <span>Sức khỏe</span>
-                      </label>
-                      <label className={styles.filterOption}>
-                        <input
-                          type="checkbox"
-                          id="category-training"
-                          name="category"
-                          defaultValue="training"
-                        />
-                        <span>Huấn luyện</span>
-                      </label>
-                      <label className={styles.filterOption}>
-                        <input
-                          type="checkbox"
-                          id="category-boarding"
-                          name="category"
-                          defaultValue="boarding"
-                        />
-                        <span>Trông giữ</span>
-                      </label>
-                    </div>
+                    ))}
                   </div>
-                  <div className={styles.filterGroup}>
-                    <h4>Loại thú cưng</h4>
-                    <div className={styles.filterOptions}>
-                      <label className={styles.filterOption}>
-                        <input
-                          type="checkbox"
-                          id="pet-dog"
-                          name="pet"
-                          defaultValue="dog"
-                        />
-                        <span>Chó</span>
-                      </label>
-                      <label className={styles.filterOption}>
-                        <input
-                          type="checkbox"
-                          id="pet-cat"
-                          name="pet"
-                          defaultValue="cat"
-                        />
-                        <span>Mèo</span>
-                      </label>
-                      <label className={styles.filterOption}>
-                        <input
-                          type="checkbox"
-                          id="pet-bird"
-                          name="pet"
-                          defaultValue="bird"
-                        />
-                        <span>Chim</span>
-                      </label>
-                      <label className={styles.filterOption}>
-                        <input
-                          type="checkbox"
-                          id="pet-small"
-                          name="pet"
-                          defaultValue="small"
-                        />
-                        <span>Thú nhỏ</span>
-                      </label>
-                      <label className={styles.filterOption}>
-                        <input
-                          type="checkbox"
-                          id="pet-reptile"
-                          name="pet"
-                          defaultValue="reptile"
-                        />
-                        <span>Bò sát</span>
-                      </label>
-                      <label className={styles.filterOption}>
-                        <input
-                          type="checkbox"
-                          id="pet-fish"
-                          name="pet"
-                          defaultValue="fish"
-                        />
-                        <span>Cá</span>
-                      </label>
-                    </div>
-                  </div>
+
                   <div className={styles.filterGroup}>
                     <h4>Khoảng giá</h4>
                     <div className={styles.priceRange}>
@@ -165,12 +124,18 @@ const DSDichVu: React.FC = () => {
                           type="number"
                           id="price-min"
                           placeholder="Tối thiểu"
+                          onChange={(e) =>
+                            setFilters({ ...filters, gia_min: e.target.value })
+                          }
                         />
                         <span>-</span>
                         <input
                           type="number"
                           id="price-max"
                           placeholder="Tối đa"
+                          onChange={(e) =>
+                            setFilters({ ...filters, gia_max: e.target.value })
+                          }
                         />
                       </div>
                       <button
@@ -188,7 +153,13 @@ const DSDichVu: React.FC = () => {
                           type="radio"
                           id="rating-5"
                           name="rating"
-                          defaultValue={5}
+                          value="5"
+                          onChange={(e) =>
+                            setFilters({
+                              ...filters,
+                              danh_gia_tu: e.target.value,
+                            })
+                          }
                         />
                         <div className={styles.stars}>
                           <i className="fas fa-star" />
@@ -203,7 +174,13 @@ const DSDichVu: React.FC = () => {
                           type="radio"
                           id="rating-4"
                           name="rating"
-                          defaultValue={4}
+                          value="4"
+                          onChange={(e) =>
+                            setFilters({
+                              ...filters,
+                              danh_gia_tu: e.target.value,
+                            })
+                          }
                         />
                         <div className={styles.stars}>
                           <i className="fas fa-star" />
@@ -219,7 +196,13 @@ const DSDichVu: React.FC = () => {
                           type="radio"
                           id="rating-3"
                           name="rating"
-                          defaultValue={3}
+                          value="3"
+                          onChange={(e) =>
+                            setFilters({
+                              ...filters,
+                              danh_gia_tu: e.target.value,
+                            })
+                          }
                         />
                         <div className={styles.stars}>
                           <i className="fas fa-star" />
@@ -235,6 +218,7 @@ const DSDichVu: React.FC = () => {
                   <div className={styles.filterActions}>
                     <button
                       className={`${styles.btn} ${styles.btnPrimary} ${styles.btnBlock}`}
+                      onClick={handleFilter}
                     >
                       Áp dụng bộ lọc
                     </button>
@@ -251,16 +235,35 @@ const DSDichVu: React.FC = () => {
                   </div>
                   <div className={styles.servicesSort}>
                     <label htmlFor="sort-by">Sắp xếp theo:</label>
-                    <select id="sort-by">
-                      <option value="popular">Phổ biến nhất</option>
-                      <option value="rating">Đánh giá cao nhất</option>
-                      <option value="price-low">Giá: Thấp đến cao</option>
-                      <option value="price-high">Giá: Cao đến thấp</option>
-                      <option value="newest">Mới nhất</option>
+                    <select
+                      id="sort-by"
+                      onChange={(e) =>
+                        setFilters({ ...filters, sap_xep: e.target.value })
+                      }
+                    >
+                      <option value="">Phổ biến nhất</option>
+                      <option value="gia_desc">Giá: Cao đến thấp</option>
+                      <option value="gia_asc">Giá: Thấp đến cao</option>
                     </select>
                   </div>
                 </div>
-                <DichVu />
+                <DichVu data={dichVuList} tuKhoa={searchingKey} />
+
+                <div className={styles.pagination}>
+                  <button className={styles.paginationBtn} disabled>
+                    <i className="fas fa-chevron-left" />
+                  </button>
+                  <button
+                    className={`${styles.paginationBtn} ${styles.active}`}
+                  >
+                    1
+                  </button>
+                  <button className={styles.paginationBtn}>2</button>
+                  <button className={styles.paginationBtn}>3</button>
+                  <button className={styles.paginationBtn}>
+                    <i className="fas fa-chevron-right" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -416,3 +419,4 @@ const DSDichVu: React.FC = () => {
 };
 
 export default DSDichVu;
+// Removed conflicting local useEffect function

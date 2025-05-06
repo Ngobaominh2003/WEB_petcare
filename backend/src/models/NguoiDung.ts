@@ -1,8 +1,7 @@
-// models/NguoiDung.ts
 import { RowDataPacket } from "mysql2/promise";
-import connection from "../config/db"; // Đảm bảo bạn đã cấu hình kết nối với MySQL
+import connection from "../config/db";
 
-// Định nghĩa interface cho người dùng
+// Interface người dùng
 export interface NguoiDung extends RowDataPacket {
   nguoi_dung_id: number;
   tai_khoan_id: number;
@@ -10,9 +9,8 @@ export interface NguoiDung extends RowDataPacket {
   sdt?: string;
   gioi_tinh: "nam" | "nu" | "khac" | null;
   avata?: string;
-  dia_chi?: string; // thêm dòng này
+  dia_chi?: string;
 }
-
 
 // Thêm người dùng
 export const createNguoiDung = async (
@@ -21,7 +19,7 @@ export const createNguoiDung = async (
   sdt: string | null,
   gioi_tinh: "nam" | "nu" | "khac" | null,
   avata: string | null,
-  dia_chi: string | null // thêm tham số này
+  dia_chi: string | null
 ): Promise<void> => {
   await connection.execute(
     "INSERT INTO nguoi_dung (tai_khoan_id, ho_ten, sdt, gioi_tinh, avata, dia_chi) VALUES (?, ?, ?, ?, ?, ?)",
@@ -29,72 +27,54 @@ export const createNguoiDung = async (
   );
 };
 
-
-// Cập nhật thông tin người dùng
+// Cập nhật người dùng
 export const updateNguoiDung = async (
   tai_khoan_id: number,
-  ho_ten?: string,
-  sdt?: string | null,
-  gioi_tinh?: 'nam' | 'nu' | 'khac' | null,
-  avata?: string | null,
-  dia_chi?: string | null // thêm tham số này
+  updates: Partial<Omit<NguoiDung, 'nguoi_dung_id' | 'tai_khoan_id'>>
 ): Promise<void> => {
-  let query = 'UPDATE nguoi_dung SET ';
-  const values: (string | number | null)[] = [];
+  const fields: string[] = [];
+  const values: (string | null)[] = [];
 
-  if (ho_ten !== undefined) {
-    query += 'ho_ten = ?, ';
-    values.push(ho_ten);
+  const fieldMap: { [key: string]: any } = {
+    ho_ten: updates.ho_ten,
+    sdt: updates.sdt,
+    gioi_tinh: updates.gioi_tinh,
+    avata: updates.avata,
+    dia_chi: updates.dia_chi,
+  };
+
+  for (const [key, value] of Object.entries(fieldMap)) {
+    if (value !== undefined) {
+      fields.push(`${key} = ?`);
+      values.push(value);
+    }
   }
 
-  if (sdt !== undefined) {
-    query += 'sdt = ?, ';
-    values.push(sdt);
-  }
+  if (fields.length === 0) throw new Error("Không có thông tin nào để cập nhật");
 
-  if (gioi_tinh !== undefined) {
-    query += 'gioi_tinh = ?, ';
-    values.push(gioi_tinh);
-  }
-
-  if (avata !== undefined) {
-    query += 'avata = ?, ';
-    values.push(avata);
-  }
-
-  if (dia_chi !== undefined) {
-    query += 'dia_chi = ?, ';
-    values.push(dia_chi);
-  }
-
-  if (values.length === 0) {
-    throw new Error('Không có thông tin nào để cập nhật');
-  }
-
-  query = query.slice(0, -2); // Xóa dấu phẩy cuối
-  query += ' WHERE tai_khoan_id = ?';
-  values.push(tai_khoan_id);
+  const query = `UPDATE nguoi_dung SET ${fields.join(', ')} WHERE tai_khoan_id = ?`;
+  values.push(String(tai_khoan_id));
 
   await connection.execute(query, values);
 };
 
-// Xóa người dùng
+// Xoá người dùng theo ID
 export const deleteNguoiDung = async (nguoi_dung_id: number): Promise<void> => {
-  await connection.execute("DELETE FROM nguoi_dung WHERE nguoi_dung_id = ?", [
-    nguoi_dung_id,
-  ]);
+  await connection.execute(
+    "DELETE FROM nguoi_dung WHERE nguoi_dung_id = ?",
+    [nguoi_dung_id]
+  );
 };
 
-// Xóa người dùng theo tai_khoan_id
-export const deleteNguoiDungByTaiKhoanId = async (
-  tai_khoan_id: number
-): Promise<void> => {
-  await connection.execute("DELETE FROM nguoi_dung WHERE tai_khoan_id = ?", [
-    tai_khoan_id,
-  ]);
+// Xoá người dùng theo tài khoản
+export const deleteNguoiDungByTaiKhoanId = async (tai_khoan_id: number): Promise<void> => {
+  await connection.execute(
+    "DELETE FROM nguoi_dung WHERE tai_khoan_id = ?",
+    [tai_khoan_id]
+  );
 };
 
-// Tìm người dùng theo `tai_khoan_id`
+// Lấy người dùng theo tài khoản
 export const getNguoiDungByTaiKhoanId = async (
   tai_khoan_id: number
 ): Promise<NguoiDung | null> => {

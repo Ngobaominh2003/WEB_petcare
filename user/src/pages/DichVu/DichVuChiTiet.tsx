@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import Header from "../components/Header";
-import Navbar from "../components/Navbar";
+import Header from "../../components/Header";
+import Navbar from "../../components/Navbar";
 import axios from "axios";
-import { showSuccess, showError, showWarn } from "../utils/toast";
+import { showSuccess, showError, showWarn } from "../../utils/toast";
 
 interface DanhGia {
   danh_gia_id: number;

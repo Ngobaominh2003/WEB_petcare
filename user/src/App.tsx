@@ -6,17 +6,17 @@ import "react-toastify/dist/ReactToastify.css";
 // --- Trang chính ---
 import HomePage from "./pages/HomePage";
 import About from "./pages/About";
-import Service from "./pages/Service";
+
 import Price from "./pages/Price";
-import Booking from "./pages/Booking";
+
 import Blog from "./pages/Blog";
 
 import BlogDetail from "./phanchinh/BlogDetail";
 import Contact from "./pages/Contact";
-import DSDichVu from "./pages/DichVuDS";
-import DatLich1 from "./pages/DatLich1";
+import DichVuDS from "./pages/DichVu/DichVuDS";
+
 import DatDichVu from "./pages/DatDichVu/DatDichVu";
-import DichVuChiTiet from "./pages/DichVuChiTiet";
+import DichVuChiTiet from "./pages/DichVu/DichVuChiTiet";
 
 // --- Tài khoản ---
 import Login from "./TaiKhoan/login";
@@ -27,12 +27,13 @@ import QLTaiKhoan from "./TaiKhoan/QLTaiKhoan/QLTaiKhoan";
 import QLNhaCC from "./TaiKhoan/QLNhaCC/QLNhaCC";
 import ThongKe from "./TaiKhoan/QLNhaCC/ThongKe";
 import DatLich from "./TaiKhoan/QLTaiKhoan/DatLich";
+import NhaCCYeuThich from "./TaiKhoan/QLTaiKhoan/NhaCCYeuThich";
 import ThongBao from "./TaiKhoan/ThongBao";
 
 import ThuCung from "./TaiKhoan/QLTaiKhoan/ThuCung";
 import ThuCungAdd from "./TaiKhoan/QLTaiKhoan/ThuCungAdd";
 import ThuCungUpdate from "./TaiKhoan/QLTaiKhoan/ThuCungUpdate";
-import ThanhToan from "./TaiKhoan/QLTaiKhoan/CachThanhToan";
+import CachThanhToan from "./TaiKhoan/QLTaiKhoan/CachThanhToan";
 // --- Quản lý dịch vụ ---
 import DichVuQL from "./TaiKhoan/QLNhaCC/DichVuQL";
 import DichVuAdd from "./TaiKhoan/QLNhaCC/DichVuAdd";
@@ -47,15 +48,15 @@ const App: React.FC = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/HomePage" element={<HomePage />} />
         <Route path="/About" element={<About />} />
-        <Route path="/Service" element={<Service />} />
+
         <Route path="/Price" element={<Price />} />
-        <Route path="/Booking" element={<Booking />} />
+
         <Route path="/Blog" element={<Blog />} />
-        
+
         <Route path="/BlogDetail/:id" element={<BlogDetail />} />
         <Route path="/Contact" element={<Contact />} />
-        <Route path="/DSDichVu" element={<DSDichVu />} />
-        <Route path="/DatLich1" element={<DatLich1 />} />
+        <Route path="/DichVuDS" element={<DichVuDS />} />
+
         <Route path="/DatDichVu" element={<DatDichVu />} />
         <Route path="/DichVuChiTiet/:id" element={<DichVuChiTiet />} />
 
@@ -68,9 +69,10 @@ const App: React.FC = () => {
         <Route path="/QLTaiKhoan" element={<QLTaiKhoan />} />
         <Route path="/QLNhaCC" element={<QLNhaCC />} />
         <Route path="/DatLich" element={<DatLich />} />
-        <Route path="/ThanhToan" element={<ThanhToan />} />
+        <Route path="/CachThanhToan" element={<CachThanhToan />} />
+        <Route path="/NhaCCYeuThich" element={<NhaCCYeuThich />} />
         <Route path="/ThuCung" element={<ThuCung />} />
-        <Route path="/ThongBao" element={<ThongBao  />} />
+        <Route path="/ThongBao" element={<ThongBao />} />
         <Route path="/thu-cung/add" element={<ThuCungAdd />} />
         <Route path="/thu-cung/update/:id" element={<ThuCungUpdate />} />
 

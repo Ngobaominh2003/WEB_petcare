@@ -1,74 +1,86 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import path from 'path';
+
+// Routers
 import userRouter from './routes/taikhoanRouter';
 import nguoidungRouter from './routes/nguoidungRouter';
 import nhacungcapRouter from './routes/nhacungcapRouter';
-import dichvuRouter from './routes/dichvuRouter';  
-import danhmucRouter from './routes/daivietRouter'; 
-import goidichvuRouter from './routes/goidichvuRouter'; 
-import baivietRouter from './routes/baivietRouter'; 
-import datlichtRouter from './routes/datlichRouter'; 
-import phongRouter from './routes/phongRouter'; 
-import thucungRouter from './routes/thucungRouter'; 
-import thongbaoRouter from './routes/thongbaoRouter'; 
+import thucungRouter from './routes/thucungRouter';
+
+import dichvuRouter from './routes/dichvuRouter';
+import danhmucRouter from './routes/danhmucRouter';
+import sudungdichvuRouter from './routes/sudungdichvuRouter';
+
+import datlichtRouter from './routes/datlichRouter';
+import hoadonRouter from './routes/hoadonRouter';
+
+import baivietRouter from './routes/baivietRouter';
+import binhluanbaivietRouter from './routes/binhluanbaivietRouter';
+
+import danhgiaRouter from './routes/danhgiaRouter';
+import baocaodanhgiaRouter from './routes/baocaodanhgiaRouter';
+
+import thongbaoRouter from './routes/thongbaoRouter';
+import thongkeRouter from './routes/thongkeRouter';
+import thongkeadminRouter from './routes/thongkeadminRouter';
+
+// Cron Jobs
 import './cron/ThongKeCron';
-
-import hoadonRouter from './routes/hoadonRouter'; 
-import thongkeRouter from './routes/thongkeRouter'; 
-import sudungdichvuRouter from './routes/sudungdichvuRouter'; 
-import danhgiaRouterr from './routes/danhgiaRouter'; 
-import baocaodanhgiaRouter from './routes/baocaodanhgiaRouter'; 
-import binhluanbaivietRouter from './routes/binhluanbaivietRouter'; 
-
-import path from 'path';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());  // Cho phép các nguồn gốc khác nhau truy cập
-app.use(express.json());  // Parse request body dưới dạng JSON
+// Middleware cấu hình chung
+app.use(cors());
+app.use(express.json());
 
-
-
-// Định nghĩa route để phục vụ các file tĩnh từ thư mục img
+// Phục vụ file ảnh tĩnh
 app.use('/img', express.static(path.join('D:/DoAnToNghiep01/backend/src/img')));
 
-
- // Sử dụng các route từ file userRoutes
+// === Đăng nhập, tài khoản, người dùng ===
 app.use('/api', userRouter);
-app.use('/api', binhluanbaivietRouter);
-app.use('/api', nguoidungRouter); 
+app.use('/api', nguoidungRouter);
 app.use('/api', nhacungcapRouter);
+
+// === Dịch vụ và danh mục ===
 app.use('/api', dichvuRouter);
-app.use('/api', thucungRouter);
 app.use('/api', danhmucRouter);
-app.use('/api', goidichvuRouter);
-app.use('/api', baivietRouter);
-app.use('/api', datlichtRouter); 
-app.use('/api', phongRouter);
-app.use('/api', thongbaoRouter);
-
-app.use('/api', hoadonRouter);
-app.use('/api', thongkeRouter);
 app.use('/api', sudungdichvuRouter);
-app.use('/api', danhgiaRouterr);
+
+// === Đặt lịch và hóa đơn ===
+app.use('/api', datlichtRouter);
+app.use('/api', hoadonRouter);
+
+// === Thú cưng ===
+app.use('/api', thucungRouter);
+
+// === Bài viết và bình luận ===
+app.use('/api', baivietRouter);
+app.use('/api', binhluanbaivietRouter);
+
+// === Đánh giá và báo cáo ===
+app.use('/api', danhgiaRouter);
 app.use('/api', baocaodanhgiaRouter);
-// Route kiểm tra server hoạt động
 
+// === Thông báo và thống kê ===
+app.use('/api', thongbaoRouter);
+app.use('/api', thongkeRouter);
+app.use('/api', thongkeadminRouter);
 
-
-// Xử lý route không tồn tại (404)
+// === Route kiểm tra & lỗi ===
+// 404 - Route không tồn tại
 app.use((req: Request, res: Response, next: NextFunction) => {
     res.status(404).json({ message: 'Route not found' });
 });
 
-// Xử lý lỗi tổng quát
+// 500 - Lỗi hệ thống
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     console.error(err.stack);
     res.status(500).json({ message: 'Internal Server Error' });
 });
 
-// Khởi động server
+// === Khởi động server ===
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

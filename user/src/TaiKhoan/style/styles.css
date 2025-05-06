@@ -1675,7 +1675,7 @@ textarea {
 .btn-clear-read:hover {
   background-color: #d32f2f;
 }
-.badge {
+.notification-badge {
   background-color: red;
   color: white;
   font-size: 0.75rem;
@@ -1683,85 +1683,18 @@ textarea {
   border-radius: 50%;
   margin-left: 8px;
 }
+
 /* ====== END Thông báo ====== */
 /* ====== Thanh Toán ====== */
-.payment-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 20px;
-}
-
-.payment-item {
-  border: 1px solid #ccc;
-  padding: 16px;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.payment-item h3 {
-  margin: 0 0 6px;
-}
-
-.payment-item p {
-  margin: 0;
-  color: #555;
-}
-
-.default-tag {
-  display: inline-block;
-  margin-top: 8px;
-  color: #fff;
-  background-color: #28a745;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-}
-
-.payment-actions {
-  margin-top: 12px;
-  display: flex;
-  gap: 10px;
-}
-
-.payment-actions button {
-  padding: 6px 12px;
-  border: none;
-  cursor: pointer;
-  background: #eee;
-  border-radius: 4px;
-  transition: background 0.2s;
-}
-
-.payment-actions button:hover {
-  background: #ddd;
-}
-
-.add-new-btn {
-  margin-top: 20px;
-  background-color: #007bff;
-  color: white;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.add-new-btn:hover {
-  background-color: #0056b3;
-}
-
-
-.payment-cards {
+.cachthanhtoan-payment-container {
+  margin-top: 24px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
-  margin-top: 24px;
 }
 
-.payment-card {
-  background-color: #ffffff;
+.cachthanhtoan-payment-card {
+  background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 20px;
@@ -1769,73 +1702,73 @@ textarea {
   transition: box-shadow 0.3s ease;
 }
 
-.payment-card:hover {
+.cachthanhtoan-payment-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.card-header {
+.cachthanhtoan-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
 }
 
-.card-header h3 {
+.cachthanhtoan-card-title {
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
   color: #1f2937;
 }
 
-.badge {
+.cachthanhtoan-badge-default {
   background-color: #10b981;
-  color: #fff;
+  color: white;
   font-size: 0.75rem;
   padding: 4px 8px;
   border-radius: 999px;
 }
 
-.card-detail {
+.cachthanhtoan-card-detail {
   font-size: 0.95rem;
   color: #4b5563;
-  margin: 0 0 10px;
+  margin-bottom: 10px;
 }
 
-.card-actions {
+.cachthanhtoan-card-actions {
   display: flex;
   gap: 12px;
 }
 
-.btn-edit,
-.btn-delete {
+.cachthanhtoan-btn-edit,
+.cachthanhtoan-btn-delete {
   flex: 1;
   padding: 8px 12px;
-  border-radius: 6px;
   border: none;
-  cursor: pointer;
+  border-radius: 6px;
   font-size: 0.9rem;
+  cursor: pointer;
   transition: background 0.2s ease;
 }
 
-.btn-edit {
+.cachthanhtoan-btn-edit {
   background-color: #facc15;
   color: #1f2937;
 }
 
-.btn-edit:hover {
+.cachthanhtoan-btn-edit:hover {
   background-color: #eab308;
 }
 
-.btn-delete {
+.cachthanhtoan-btn-delete {
   background-color: #ef4444;
-  color: #fff;
+  color: white;
 }
 
-.btn-delete:hover {
+.cachthanhtoan-btn-delete:hover {
   background-color: #dc2626;
 }
 
-.btn-add {
+.cachthanhtoan-btn-add {
   margin-top: 24px;
   padding: 12px 20px;
   background-color: #3b82f6;
@@ -1847,11 +1780,11 @@ textarea {
   transition: background 0.2s;
 }
 
-.btn-add:hover {
+.cachthanhtoan-btn-add:hover {
   background-color: #2563eb;
 }
 
-.payment-form {
+.cachthanhtoan-form {
   margin-top: 20px;
   display: flex;
   flex-direction: column;
@@ -1859,13 +1792,13 @@ textarea {
   max-width: 400px;
 }
 
-.payment-form input[type="text"] {
+.cachthanhtoan-form input[type="text"] {
   padding: 10px;
-  border-radius: 6px;
   border: 1px solid #d1d5db;
+  border-radius: 6px;
 }
 
-.form-checkbox {
+.cachthanhtoan-checkbox-group {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1873,7 +1806,7 @@ textarea {
   color: #374151;
 }
 
-.submit-btn {
+.cachthanhtoan-submit-btn {
   background-color: #10b981;
   color: white;
   padding: 10px 16px;
@@ -1884,8 +1817,60 @@ textarea {
   transition: background 0.2s;
 }
 
-.submit-btn:hover {
+.cachthanhtoan-submit-btn:hover {
   background-color: #059669;
 }
 
+
 /* ====== END Thanh Toán ====== */
+/* ====== yêu thích nha cung cap ====== */
+.yeuthich-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.yeuthich-card {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.yeuthich-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-right: 16px;
+}
+
+.yeuthich-info h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.yeuthich-info p {
+  margin: 4px 0 0;
+  color: #555;
+}
+
+.btn-xoa {
+  margin-left: auto;
+  padding: 6px 12px;
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-xoa:hover {
+  background-color: #d9363e;
+}
+/* ====== END yêu thích nha cung cap ====== */

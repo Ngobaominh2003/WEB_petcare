@@ -1,116 +1,79 @@
-// models/NhaCungCap.ts
 import { RowDataPacket } from "mysql2/promise";
-import connection from "../config/db"; // Đảm bảo bạn đã cấu hình kết nối với MySQL
+import connection from "../config/db";
 
-// Định nghĩa interface cho nhà cung cấp
 export interface NhaCungCap extends RowDataPacket {
   nha_cung_cap_id: number;
   tai_khoan_id: number;
   ten_nha_cung_cap: string;
   ma_so_thue: string;
   giay_phep_kinh_doanh?: string;
-  loai_hinh: string,
-  mo_ta: string | null
+  loai_hinh: string;
+  mo_ta: string | null;
+  dia_chi?: string;
 }
 
 // Thêm nhà cung cấp
-
 export const createNhaCungCap = async (
   tai_khoan_id: number,
   ten_nha_cung_cap: string,
   ma_so_thue: string,
-  giay_phep_kinh_doanh: string, // Không cho phép null
+  giay_phep_kinh_doanh: string,
   dia_chi: string,
   loai_hinh: string,
   mo_ta: string | null
 ): Promise<void> => {
   await connection.execute(
-    "INSERT INTO nha_cung_cap (tai_khoan_id, ten_nha_cung_cap, ma_so_thue, giay_phep_kinh_doanh, dia_chi, loai_hinh, mo_ta) VALUES (?, ?, ?, ?, ?, ?, ?)",
-    [
-      tai_khoan_id,
-      ten_nha_cung_cap,
-      ma_so_thue,
-      giay_phep_kinh_doanh,  // Truyền một giá trị hợp lệ (không phải null)
-      dia_chi,
-      loai_hinh,
-      mo_ta
-    ]
+    `INSERT INTO nha_cung_cap (
+      tai_khoan_id, ten_nha_cung_cap, ma_so_thue,
+      giay_phep_kinh_doanh, dia_chi, loai_hinh, mo_ta
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [tai_khoan_id, ten_nha_cung_cap, ma_so_thue, giay_phep_kinh_doanh, dia_chi, loai_hinh, mo_ta]
   );
 };
 
-// updateNhaCungCap trong model
+// Cập nhật nhà cung cấp
 export const updateNhaCungCap = async (
-  nha_cung_cap_id: number,
   tai_khoan_id: number,
-  ten_nha_cung_cap?: string,
-  ma_so_thue?: string,
-  giay_phep_kinh_doanh?: string | null,
-  dia_chi?: string,
-  loai_hinh?: string,
-  mo_ta?: string | null
+  updates: Partial<Omit<NhaCungCap, 'nha_cung_cap_id' | 'tai_khoan_id'>>
 ): Promise<void> => {
-  let query = "UPDATE nha_cung_cap SET ";
+  const fields: string[] = [];
   const values: (string | number | null)[] = [];
 
-  // Thêm các trường cần cập nhật
-  if (ten_nha_cung_cap !== undefined) {
-    query += "ten_nha_cung_cap = ?, ";
-    values.push(ten_nha_cung_cap);
+  const fieldMap: { [key: string]: any } = {
+    ten_nha_cung_cap: updates.ten_nha_cung_cap,
+    ma_so_thue: updates.ma_so_thue,
+    giay_phep_kinh_doanh: updates.giay_phep_kinh_doanh,
+    dia_chi: updates.dia_chi,
+    loai_hinh: updates.loai_hinh,
+    mo_ta: updates.mo_ta
+  };
+
+  for (const [key, value] of Object.entries(fieldMap)) {
+    if (value !== undefined) {
+      fields.push(`${key} = ?`);
+      values.push(value);
+    }
   }
 
-  if (ma_so_thue !== undefined) {
-    query += "ma_so_thue = ?, ";
-    values.push(ma_so_thue);
-  }
+  if (fields.length === 0) throw new Error("Không có thông tin nào để cập nhật");
 
-  if (giay_phep_kinh_doanh !== undefined) {
-    query += "giay_phep_kinh_doanh = ?, ";
-    values.push(giay_phep_kinh_doanh === null ? null : giay_phep_kinh_doanh);
-  }
-
-  if (dia_chi !== undefined) {
-    query += "dia_chi = ?, ";
-    values.push(dia_chi);
-  }
-
-  if (loai_hinh !== undefined) {
-    query += "loai_hinh = ?, ";
-    values.push(loai_hinh);
-  }
-
-  if (mo_ta !== undefined) {
-    query += "mo_ta = ?, ";
-    values.push(mo_ta === null ? null : mo_ta);
-  }
-
-  // Nếu không có bất kỳ trường nào được truyền vào để cập nhật, ném lỗi
-  if (values.length === 0) {
-    throw new Error("Không có thông tin nào để cập nhật");
-  }
-
-  // Xóa dấu phẩy thừa cuối cùng
-  query = query.slice(0, -2);
-
-  // Thêm điều kiện WHERE
-  query += " WHERE tai_khoan_id = ?";
+  const query = `UPDATE nha_cung_cap SET ${fields.join(', ')} WHERE tai_khoan_id = ?`;
   values.push(tai_khoan_id);
 
-  // Thực hiện câu lệnh SQL
   await connection.execute(query, values);
 };
 
-
-// Xóa nhà cung cấp
-export const deleteNhaCungCap = async (
-  nha_cung_cap_id: number
-): Promise<void> => {
-  await connection.execute(
-    "DELETE FROM nha_cung_cap WHERE nha_cung_cap_id = ?",
-    [nha_cung_cap_id]
-  );
+// Xóa theo ID
+export const deleteNhaCungCap = async (nha_cung_cap_id: number): Promise<void> => {
+  await connection.execute("DELETE FROM nha_cung_cap WHERE nha_cung_cap_id = ?", [nha_cung_cap_id]);
 };
 
-// Tìm nhà cung cấp theo `tai_khoan_id`
+// Xóa theo tài khoản
+export const deleteNhaCungCapByTaiKhoanId = async (tai_khoan_id: number): Promise<void> => {
+  await connection.execute("DELETE FROM nha_cung_cap WHERE tai_khoan_id = ?", [tai_khoan_id]);
+};
+
+// Lấy theo tài khoản
 export const getNhaCungCapByTaiKhoanId = async (
   tai_khoan_id: number
 ): Promise<NhaCungCap | null> => {
@@ -121,16 +84,7 @@ export const getNhaCungCapByTaiKhoanId = async (
   return rows.length > 0 ? (rows[0] as NhaCungCap) : null;
 };
 
-// Xóa nhà cung cấp theo tai_khoan_id
-export const deleteNhaCungCapByTaiKhoanId = async (
-  tai_khoan_id: number
-): Promise<void> => {
-  await connection.execute("DELETE FROM nha_cung_cap WHERE tai_khoan_id = ?", [
-    tai_khoan_id,
-  ]);
-};
-
-// Tìm nhà cung cấp theo tên nhà cung cấp (ten_nha_cung_cap)
+// Lấy theo tên nhà cung cấp
 export const getNhaCungCapByName = async (
   ten_nha_cung_cap: string
 ): Promise<NhaCungCap | null> => {
@@ -141,16 +95,18 @@ export const getNhaCungCapByName = async (
   return rows.length > 0 ? (rows[0] as NhaCungCap) : null;
 };
 
-export const getDanhSachNhaCungCap = async () => {
-  const query = `SELECT * FROM nha_cung_cap`;  
+// Lấy toàn bộ danh sách nhà cung cấp
+export const getDanhSachNhaCungCap = async (): Promise<NhaCungCap[]> => {
   try {
-    const [rows] = await connection.execute(query);
-    return rows;  
-  } catch (err: unknown) {
+    const [rows] = await connection.execute<RowDataPacket[]>(
+      "SELECT * FROM nha_cung_cap"
+    );
+    return rows as NhaCungCap[];
+  } catch (err) {
     if (err instanceof Error) {
       throw new Error(`Lỗi khi lấy danh sách nhà cung cấp: ${err.message}`);
     } else {
-      throw new Error('Lỗi không xác định khi lấy danh sách nhà cung cấp');
+      throw new Error("Lỗi không xác định khi lấy danh sách nhà cung cấp");
     }
   }
 };

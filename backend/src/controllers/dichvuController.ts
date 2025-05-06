@@ -120,12 +120,14 @@ export const xoaDichVu = async (req: Request, res: Response) => {
 
 // Controller tìm dịch vụ theo tên gần đúng
 export const timDichVuTheoTen = async (req: Request, res: Response) => {
-  const { tenDichVu } = req.query;
+  const tenDichVu = req.query.ten || req.query.tenDichVu;
+
   if (!tenDichVu || typeof tenDichVu !== "string") {
     return res
       .status(400)
       .json({ message: "Vui lòng cung cấp từ khóa tìm kiếm hợp lệ" });
   }
+
   try {
     const result = await dichVuModel.timDichVuTheoTen(tenDichVu);
     res.status(200).json(result);
@@ -137,6 +139,7 @@ export const timDichVuTheoTen = async (req: Request, res: Response) => {
     }
   }
 };
+
 
 export const getDichVuTheoDanhMucId = async (req: Request, res: Response) => {
   try {
@@ -174,3 +177,63 @@ export const getDichVuTheoDieuKien = async (req: Request, res: Response) => {
     }
   }
 };
+// Controller lấy chi tiết dịch vụ theo dich_vu_id
+export const getChiTietDichVu = async (req: Request, res: Response) => {
+  const dichVuId = parseInt(req.params.id, 10);
+
+  if (isNaN(dichVuId)) {
+    return res.status(400).json({ message: "ID dịch vụ không hợp lệ" });
+  }
+
+  try {
+    const result = await dichVuModel.getChiTietDichVu(dichVuId);
+
+    if (!result) {
+      return res.status(404).json({ message: "Không tìm thấy dịch vụ" });
+    }
+
+    res.status(200).json(result);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({
+        message: `Lỗi khi lấy chi tiết dịch vụ: ${err.message}`,
+      });
+    } else {
+      res
+        .status(500)
+        .json({ message: "Lỗi không xác định khi lấy chi tiết dịch vụ" });
+    }
+  }
+};
+
+
+export const locDichVu = async (req: Request, res: Response) => {
+  try {
+    const {
+      danh_muc_id,
+      loai_thu_cung,
+      danh_gia_tu,
+      gia_min,
+      gia_max,
+      sap_xep,
+    } = req.query;
+
+    const result = await dichVuModel.locDichVu({
+      danh_muc_id: danh_muc_id?.toString(),
+      loai_thu_cung: loai_thu_cung?.toString(),
+      danh_gia_tu: danh_gia_tu?.toString(),
+      gia_min: gia_min?.toString(),
+      gia_max: gia_max?.toString(),
+      sap_xep: sap_xep?.toString() as "gia_asc" | "gia_desc",
+    });
+
+    res.status(200).json(result);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: `Lỗi khi lọc dịch vụ: ${err.message}` });
+    } else {
+      res.status(500).json({ message: "Lỗi không xác định khi lọc dịch vụ" });
+    }
+  }
+};
+

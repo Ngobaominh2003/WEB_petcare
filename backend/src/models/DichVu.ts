@@ -49,88 +49,61 @@ export const dichVuModel = {
   },
 
   async capNhatDichVu(dichVuId: number, dichVu: Partial<DichVu>) {
-    const fieldsToUpdate = [];
-    const values = [];
-
-    if (dichVu.ten_dich_vu) {
-      fieldsToUpdate.push("ten_dich_vu = ?");
-      values.push(dichVu.ten_dich_vu);
+    const fieldMappings: [keyof DichVu, string][] = [
+      ['ten_dich_vu', 'ten_dich_vu = ?'],
+      ['mo_ta', 'mo_ta = ?'],
+      ['logo', 'logo = ?'],
+      ['tai_khoan_id', 'tai_khoan_id = ?'],
+      ['gia', 'gia = ?'],
+      ['luot_dung', 'luot_dung = ?'],
+      ['danh_muc_id', 'danh_muc_id = ?'],
+      ['trang_thai', 'trang_thai = ?'],
+      ['xet_duyet', 'xet_duyet = ?'],
+      ['thoi_gian_hoan_thanh', 'thoi_gian_hoan_thanh = ?']
+    ];
+  
+    const fieldsToUpdate: string[] = [];
+    const values: any[] = [];
+  
+    for (const [key, sqlExpr] of fieldMappings) {
+      if (dichVu[key] !== undefined) {
+        fieldsToUpdate.push(sqlExpr);
+        values.push(dichVu[key]);
+      }
     }
-    if (dichVu.mo_ta) {
-      fieldsToUpdate.push("mo_ta = ?");
-      values.push(dichVu.mo_ta);
-    }
-    if (dichVu.logo !== undefined) {
-      fieldsToUpdate.push("logo = ?");
-      values.push(dichVu.logo);
-    }
-    if (dichVu.logo !== undefined) {
-      fieldsToUpdate.push("tai_khoan_id = ?");
-      values.push(dichVu.tai_khoan_id);
-    }
-    if (dichVu.gia !== undefined) {
-      fieldsToUpdate.push("gia = ?");
-      values.push(dichVu.gia);
-    }
-    if (dichVu.luot_dung !== undefined) {
-      fieldsToUpdate.push("luot_dung = ?");
-      values.push(dichVu.luot_dung);
-    }
-    if (dichVu.danh_muc_id !== undefined) {
-      fieldsToUpdate.push("danh_muc_id = ?");
-      values.push(dichVu.danh_muc_id);
-    }
-
-    if (dichVu.trang_thai !== undefined) {
-      fieldsToUpdate.push("trang_thai = ?");
-      values.push(dichVu.trang_thai);
-    }
-    if (dichVu.xet_duyet !== undefined) {
-      fieldsToUpdate.push("xet_duyet = ?");
-      values.push(dichVu.xet_duyet);
-    }
-    // Kiểm tra thoi_gian_hoan_thanh
-    if (dichVu.thoi_gian_hoan_thanh !== undefined) {
-      fieldsToUpdate.push("thoi_gian_hoan_thanh = ?");
-      values.push(dichVu.thoi_gian_hoan_thanh);
-    }
-
-    // Nếu không có trường nào để cập nhật
+  
     if (fieldsToUpdate.length === 0) {
       throw new Error("Không có trường nào để cập nhật");
     }
-
-    // Truy vấn SQL để cập nhật dữ liệu
+  
     const query = `
-    UPDATE dich_vu
-    SET ${fieldsToUpdate.join(", ")}
-    WHERE dich_vu_id = ?
-  `;
+      UPDATE dich_vu
+      SET ${fieldsToUpdate.join(", ")}
+      WHERE dich_vu_id = ?
+    `;
     values.push(dichVuId);
-
+  
     try {
-      // Ghi log để kiểm tra các giá trị truyền vào
       console.log("Câu truy vấn:", query);
       console.log("Giá trị truyền vào:", values);
-
-      // Thực thi truy vấn
+  
       const [result] = await connection.execute(query, values);
-
-      // Kiểm tra nếu affectedRows > 0 thì cập nhật thành công
       const affectedRows = (result as { affectedRows: number }).affectedRows;
+  
       if (affectedRows === 0) {
         throw new Error("Không tìm thấy dịch vụ để cập nhật");
       }
+  
       return result;
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        throw new Error(`Lỗi khi cập nhật dịch vụ: ${err.message}`);
-      } else {
-        throw new Error("Lỗi không xác định khi cập nhật dịch vụ");
-      }
+      throw new Error(
+        err instanceof Error
+          ? `Lỗi khi cập nhật dịch vụ: ${err.message}`
+          : "Lỗi không xác định khi cập nhật dịch vụ"
+      );
     }
   },
-
+  
   // Hiển thị danh sách tất cả dịch vụ
   async getDanhSachDichVu() {
     const query = `SELECT * FROM dich_vu`;
@@ -211,26 +184,26 @@ export const dichVuModel = {
   // Lấy danh sách dịch vụ theo điều kiện
   async getDichVuTheoDieuKien() {
     const query = `
-     SELECT 
+    SELECT 
       dv.*, 
+      dmdv.ten_danh_muc,                      
       nc.ten_nha_cung_cap, 
       nc.dia_chi,            
       nd.sdt,                
       nd.avata, 
       tk.vai_tro
-      FROM dich_vu dv
-      INNER JOIN tai_khoan tk ON dv.tai_khoan_id = tk.tai_khoan_id
-      INNER JOIN nha_cung_cap nc ON dv.tai_khoan_id = nc.tai_khoan_id
-      INNER JOIN nguoi_dung nd ON dv.tai_khoan_id = nd.tai_khoan_id
-      WHERE dv.trang_thai = 1
+    FROM dich_vu dv
+    INNER JOIN tai_khoan tk ON dv.tai_khoan_id = tk.tai_khoan_id
+    INNER JOIN nha_cung_cap nc ON dv.tai_khoan_id = nc.tai_khoan_id
+    INNER JOIN nguoi_dung nd ON dv.tai_khoan_id = nd.tai_khoan_id
+    INNER JOIN danh_muc_dich_vu dmdv ON dv.danh_muc_id = dmdv.danh_muc_id
+    WHERE dv.trang_thai = 1
       AND dv.xet_duyet = 'đã duyệt'
       AND tk.vai_tro = 'nha_cung_cap'
       AND tk.trang_thai = 'hoat_dong'
       AND tk.trang_thai_xet_duyet = 'đã duyệt'
 
-
         `;
-
     try {
       const [rows] = await connection.execute(query);
       return rows as RowDataPacket[];
@@ -241,4 +214,117 @@ export const dichVuModel = {
       );
     }
   },
+
+  // Lấy dịch vụ theo ID
+  async getChiTietDichVu(dichVuId: number) {
+    const query = `
+      SELECT 
+        dv.*, 
+        nc.tai_khoan_id AS nha_cung_cap_tai_khoan_id,
+        nc.ten_nha_cung_cap, 
+        nc.dia_chi,
+        nd.sdt,
+        nd.avata,
+        tk.vai_tro
+      FROM dich_vu dv
+      INNER JOIN tai_khoan tk ON dv.tai_khoan_id = tk.tai_khoan_id
+      INNER JOIN nha_cung_cap nc ON dv.tai_khoan_id = nc.tai_khoan_id
+      INNER JOIN nguoi_dung nd ON dv.tai_khoan_id = nd.tai_khoan_id
+      WHERE dv.dich_vu_id = ?
+    `;
+  
+    try {
+      const [rows] = await connection.execute(query, [dichVuId]);
+      if (Array.isArray(rows) && rows.length > 0) {
+        return rows[0]; // Trả về chi tiết dịch vụ
+      } else {
+        throw new Error("Không tìm thấy dịch vụ với ID tương ứng");
+      }
+    } catch (err: unknown) {
+      throw new Error(
+        "Lỗi khi lấy chi tiết dịch vụ: " +
+        (err instanceof Error ? err.message : "Lỗi không xác định")
+      );
+    }
+  },
+  
+  async locDichVu(filters: {
+    danh_muc_id?: string;
+    loai_thu_cung?: string;
+    danh_gia_tu?: string;
+    gia_min?: string;
+    gia_max?: string;
+    sap_xep?: "gia_asc" | "gia_desc";
+  }) {
+    const {
+      danh_muc_id,
+      loai_thu_cung,
+      danh_gia_tu,
+      gia_min,
+      gia_max,
+      sap_xep
+    } = filters;
+  
+    const where: string[] = [
+      "dv.trang_thai = 1",
+      "dv.xet_duyet = 'đã duyệt'"
+    ];
+    const params: any[] = [];
+  
+    if (danh_muc_id) {
+      where.push("dv.danh_muc_id = ?");
+      params.push(danh_muc_id);
+    }
+  
+    if (loai_thu_cung) {
+      where.push("dtc.loai_thu_cung = ?");
+      params.push(loai_thu_cung);
+    }
+  
+    if (gia_min) {
+      where.push("dv.gia >= ?");
+      params.push(Number(gia_min));
+    }
+  
+    if (gia_max) {
+      where.push("dv.gia <= ?");
+      params.push(Number(gia_max));
+    }
+  
+    let having = "";
+    if (danh_gia_tu) {
+      having = "HAVING diem_trung_binh >= ?";
+      params.push(Number(danh_gia_tu));
+    }
+  
+    let query = `
+      SELECT 
+        dv.*, 
+        dmdv.ten_danh_muc,
+        AVG(dg.diem) AS diem_trung_binh
+      FROM dich_vu dv
+      LEFT JOIN dich_vu_thu_cung dtc ON dv.dich_vu_id = dtc.dich_vu_id
+      LEFT JOIN danh_gia dg ON dv.dich_vu_id = dg.dich_vu_id
+      INNER JOIN danh_muc_dich_vu dmdv ON dv.danh_muc_id = dmdv.danh_muc_id
+      ${where.length ? "WHERE " + where.join(" AND ") : ""}
+      GROUP BY dv.dich_vu_id
+      ${having}
+    `;
+  
+    if (sap_xep === "gia_asc") query += " ORDER BY dv.gia ASC";
+    if (sap_xep === "gia_desc") query += " ORDER BY dv.gia DESC";
+  
+    try {
+      const [rows] = await connection.execute(query, params);
+      return rows;
+    } catch (err) {
+      throw new Error(
+        err instanceof Error
+          ? `Lỗi khi lọc dịch vụ: ${err.message}`
+          : "Lỗi không xác định khi lọc dịch vụ"
+      );
+    }
+  }
+  
+  
 };

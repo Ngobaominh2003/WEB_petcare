@@ -13,12 +13,18 @@ const DatLich1: React.FC = () => {
       axios
         .get(`http://localhost:5000/api/dat-lich/tai-khoan/${taiKhoanId}`)
         .then((res) => {
-          const filtered = res.data.filter(
-            (item: any) =>
-              item.trang_thai === "chờ xác nhận" ||
-              item.trang_thai === "đã xác nhận" ||
-              item.trang_thai === "hủy"
-          );
+          const filtered = res.data
+            .filter(
+              (item: any) =>
+                item.trang_thai === "chờ xác nhận" ||
+                item.trang_thai === "đã xác nhận" ||
+                item.trang_thai === "hủy"
+            )
+            .sort(
+              (a: any, b: any) =>
+                new Date(b.thoi_gian_tao).getTime() - new Date(a.thoi_gian_tao).getTime()
+            );
+
           setDatLichList(filtered);
         })
         .catch((err) => console.error("Lỗi khi tải lịch hẹn:", err));

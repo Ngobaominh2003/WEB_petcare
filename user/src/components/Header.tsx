@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Header: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -10,19 +10,19 @@ const Header: React.FC = () => {
 
   // Lấy avatar từ API server khi component mount
   useEffect(() => {
-    const tai_khoan_id = localStorage.getItem('tai_khoan_id'); // Dùng tai_khoan_id thay vì nguoi_dung_id
+    const tai_khoan_id = localStorage.getItem("tai_khoan_id"); // Dùng tai_khoan_id thay vì nguoi_dung_id
 
     if (tai_khoan_id) {
       axios
         .get(`http://localhost:5000/api/nguoidung/tai-khoan/${tai_khoan_id}`)
         .then((response) => {
           const data = response.data;
-          console.log('Thông tin người dùng:', data);
-          setAvata(data.avata || '/img/icon_tk.png'); // Sử dụng 'avata' từ phản hồi API hoặc ảnh mặc định nếu không có avata
+          console.log("Thông tin người dùng:", data);
+          setAvata(data.avata || "/img/icon_tk.png"); // Sử dụng 'avata' từ phản hồi API hoặc ảnh mặc định nếu không có avata
         })
         .catch((error) => {
-          console.error('Lỗi khi lấy avata:', error);
-          setAvata('/img/icon_tk.png'); // Hiển thị ảnh mặc định nếu không lấy được avata
+          console.error("Lỗi khi lấy avata:", error);
+          setAvata("/img/icon_tk.png"); // Hiển thị ảnh mặc định nếu không lấy được avata
         });
     }
   }, []);
@@ -32,31 +32,36 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         closeDropdown();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('avata');
-    localStorage.removeItem('tai_khoan_id'); // Xóa tai_khoan_id
+    localStorage.removeItem("token");
+    localStorage.removeItem("avata");
+    localStorage.removeItem("tai_khoan_id"); // Xóa tai_khoan_id
     setAvata(null); // Xóa avata khỏi state
-    console.log('User logged out');
-    navigate('/Login');
+    console.log("User logged out");
+    navigate("/Login");
   };
 
   const handleAccountClick = async () => {
     const tai_khoan_id = localStorage.getItem("tai_khoan_id");
     if (tai_khoan_id) {
       try {
-        const response = await axios.get(`http://localhost:5000/api/users/${tai_khoan_id}`);
+        const response = await axios.get(
+          `http://localhost:5000/api/users/${tai_khoan_id}`
+        );
         const data = response.data;
 
         if (
@@ -77,13 +82,14 @@ const Header: React.FC = () => {
     }
   };
 
-
   return (
     <div>
-      <div className="container-fluid"  style={{
-     
-      padding: "10px 0", // thêm padding nếu cần
-    }}>
+      <div
+        className="container-fluid"
+        style={{
+          padding: "10px 0", // thêm padding nếu cần
+        }}
+      >
         <div className="row bg-secondary py-2 px-lg-5">
           <div className="col-lg-6 text-center text-lg-left mb-2 mb-lg-0">
             <div className="d-inline-flex align-items-center">
@@ -114,39 +120,66 @@ const Header: React.FC = () => {
               <a className="text-white px-3" href="">
                 <i className="fab fa-instagram"></i>
               </a>
-              <a className="text-white pl-3" href="">
+              
+              <div className="text-white pl-3" style={{ cursor: "pointer" }}>
                 <div className="container-fluid">
                   <div className="d-flex">
                     <div ref={dropdownRef} className="nav-item dropdown">
-                      <a href="#" id="userDropdown" role="button" onClick={toggleDropdown} style={{ cursor: 'pointer' }}>
+                      <div
+                        id="userDropdown"
+                        role="button"
+                        onClick={toggleDropdown}
+                        style={{ cursor: "pointer" }}
+                      >
                         <img
-                          src={avata ? `http://localhost:5000/img/${avata}` : '/img/icon_tk.png'}
+                          src={
+                            avata
+                              ? `http://localhost:5000/img/${avata}`
+                              : "/img/icon_tk.png"
+                          }
                           className="avata"
-                          style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '70px' }}
+                          style={{
+                            width: "30px",
+                            height: "30px",
+                            borderRadius: "50%",
+                            marginRight: "70px",
+                          }}
                         />
-                      </a>
+                      </div>
 
                       {open && (
-                        <div className="dropdown-menu show rounded-0 mt-2 shadow" aria-labelledby="userDropdown">
-                          <Link to="#" className="dropdown-item" onClick={handleAccountClick}>
+                        <div
+                          className="dropdown-menu show rounded-0 mt-2 shadow"
+                          aria-labelledby="userDropdown"
+                        >
+                          <Link
+                            to="#"
+                            className="dropdown-item"
+                            onClick={handleAccountClick}
+                          >
                             <i className="fas fa-user mr-2"></i> Tài khoản
                           </Link>
                           <Link to="/Login" className="dropdown-item">
-                            <i className="fas fa-sign-in-alt mr-2"></i> Đăng Nhập
+                            <i className="fas fa-sign-in-alt mr-2"></i> Đăng
+                            Nhập
                           </Link>
                           <Link to="/register" className="dropdown-item">
                             <i className="fas fa-user-plus mr-2"></i> Đăng Ký
                           </Link>
                           <div className="dropdown-divider"></div>
-                          <button className="dropdown-item text-danger" onClick={handleLogout}>
-                            <i className="fas fa-sign-out-alt mr-2"></i> Đăng Xuất
+                          <button
+                            className="dropdown-item text-danger"
+                            onClick={handleLogout}
+                          >
+                            <i className="fas fa-sign-out-alt mr-2"></i> Đăng
+                            Xuất
                           </button>
                         </div>
                       )}
                     </div>
                   </div>
                 </div>
-              </a>
+              </div>
             </div>
           </div>
         </div>

@@ -10,10 +10,13 @@ router.put('/dich-vu/cap-nhat/:id', upload.single('logo'), DichVuController.capN
 router.delete('/dich-vu/xoa/:id', DichVuController.xoaDichVu);
 
 // === Hiển thị danh sách ===
+router.get("/dich-vu/loc", DichVuController.locDichVu);
 router.get('/dich-vu', DichVuController.getDanhSachDichVu);
 router.get('/dich-vu/danhsach/:danhMucId', DichVuController.getDichVuTheoDanhMucId);
 router.get('/dich-vu/tai-khoan/:taiKhoanId', DichVuController.getDichVuTheoTaiKhoanId);
 router.get('/dich-vu/tim', DichVuController.timDichVuTheoTen);
 router.get('/dich-vu/dieu-kien', DichVuController.getDichVuTheoDieuKien); 
+router.get("/dich-vu/:id", DichVuController.getChiTietDichVu);
+
 
 export default router;

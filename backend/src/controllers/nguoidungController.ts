@@ -1,11 +1,16 @@
 import { Request, Response } from "express";
 import * as NguoiDungModel from "../models/NguoiDung";
 
+// Helper xử lý lỗi
+const handleError = (res: Response, error: unknown, message: string) => {
+  console.error(`${message}:`, error);
+  res.status(500).json({ message, error });
+};
+
 // Thêm người dùng
 export const createNguoiDung = async (req: Request, res: Response) => {
   try {
     const { tai_khoan_id, ho_ten, sdt, gioi_tinh, dia_chi } = req.body;
-
     const avata = req.file ? req.file.filename : null;
 
     await NguoiDungModel.createNguoiDung(
@@ -14,109 +19,90 @@ export const createNguoiDung = async (req: Request, res: Response) => {
       sdt,
       gioi_tinh,
       avata,
-      dia_chi // <== BẠN PHẢI TRUYỀN THÊM THAM SỐ NÀY
+      dia_chi
     );
-    
 
     res.status(201).json({ message: "Người dùng đã được thêm thành công!" });
   } catch (error) {
-    console.error(" Lỗi khi thêm người dùng:", error);
-    res.status(500).json({ message: "Lỗi khi thêm người dùng", error });
+    handleError(res, error, "Lỗi khi thêm người dùng");
   }
 };
 
-// Cập nhật thông tin người dùng
+// Cập nhật người dùng
 export const updateNguoiDung = async (req: Request, res: Response): Promise<void> => {
   const { tai_khoan_id, ho_ten, sdt, gioi_tinh, dia_chi } = req.body;
   const newAvata = req.file ? req.file.filename : null;
 
-  const validGioiTinhValues = ['nam', 'nu', 'khac'];
-  const gioiTinhValue = validGioiTinhValues.includes(gioi_tinh) ? gioi_tinh : null;
-
   try {
-    // Lấy thông tin người dùng hiện tại
-    const nguoiDungHienTai = await NguoiDungModel.getNguoiDungByTaiKhoanId(tai_khoan_id);
-
-    if (!nguoiDungHienTai) {
+    const existing = await NguoiDungModel.getNguoiDungByTaiKhoanId(tai_khoan_id);
+    if (!existing) {
       res.status(404).json({ message: "Không tìm thấy người dùng." });
       return;
     }
 
-    const avataToUpdate = newAvata || nguoiDungHienTai.avata; // Nếu không có file mới thì giữ avata cũ
-
-    await NguoiDungModel.updateNguoiDung(
-      tai_khoan_id,
+    const updates = {
       ho_ten,
       sdt,
-      gioiTinhValue,
-      avataToUpdate,
+      gioi_tinh: ['nam', 'nu', 'khac'].includes(gioi_tinh) ? gioi_tinh : null,
+      avata: newAvata || existing.avata,
       dia_chi
-    );
+    };
 
+    await NguoiDungModel.updateNguoiDung(tai_khoan_id, updates);
     res.status(200).json({ message: "Cập nhật người dùng thành công!" });
   } catch (error) {
-    console.error("Lỗi khi cập nhật người dùng:", error);
-    res.status(500).json({ message: "Lỗi khi cập nhật người dùng", error });
+    handleError(res, error, "Lỗi khi cập nhật người dùng");
   }
 };
 
-
-// Xóa người dùng theo nguoi_dung_id
-export const deleteNguoiDung = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const { nguoi_dung_id } = req.params;
+// Xoá theo nguoi_dung_id
+export const deleteNguoiDung = async (req: Request, res: Response): Promise<void> => {
+  const id = parseInt(req.params.nguoi_dung_id);
+  if (isNaN(id)) {
+    res.status(400).json({ message: "ID không hợp lệ" });
+    return;
+  }
 
   try {
-    await NguoiDungModel.deleteNguoiDung(parseInt(nguoi_dung_id));
-    res.status(200).json({ message: "Người dùng đã được xóa thành công" });
+    await NguoiDungModel.deleteNguoiDung(id);
+    res.status(200).json({ message: "Người dùng đã được xoá thành công" });
   } catch (error) {
-    console.error("Lỗi khi xóa người dùng:", error);
-    res.status(500).json({ message: "Lỗi khi xóa người dùng", error });
+    handleError(res, error, "Lỗi khi xoá người dùng");
   }
 };
 
-// Xóa người dùng theo tai_khoan_id
-export const deleteNguoiDungByTaiKhoanId = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const { tai_khoan_id } = req.params;
+// Xoá theo tai_khoan_id
+export const deleteNguoiDungByTaiKhoanId = async (req: Request, res: Response): Promise<void> => {
+  const id = parseInt(req.params.tai_khoan_id);
+  if (isNaN(id)) {
+    res.status(400).json({ message: "tai_khoan_id không hợp lệ" });
+    return;
+  }
 
   try {
-    await NguoiDungModel.deleteNguoiDungByTaiKhoanId(parseInt(tai_khoan_id));
-    res
-      .status(200)
-      .json({ message: "Người dùng đã được xóa thành công theo tai_khoan_id" });
+    await NguoiDungModel.deleteNguoiDungByTaiKhoanId(id);
+    res.status(200).json({ message: "Đã xoá người dùng theo tai_khoan_id" });
   } catch (error) {
-    console.error("Lỗi khi xóa người dùng theo tai_khoan_id:", error);
-    res
-      .status(500)
-      .json({ message: "Lỗi khi xóa người dùng theo tai_khoan_id", error });
+    handleError(res, error, "Lỗi khi xoá người dùng theo tai_khoan_id");
   }
 };
 
-// Tìm người dùng theo tai_khoan_id
-export const getNguoiDungByTaiKhoanId = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const { tai_khoan_id } = req.params;
+// Lấy người dùng theo tài khoản ID
+export const getNguoiDungByTaiKhoanId = async (req: Request, res: Response): Promise<void> => {
+  const id = parseInt(req.params.tai_khoan_id);
+  if (isNaN(id)) {
+    res.status(400).json({ message: "tai_khoan_id không hợp lệ" });
+    return;
+  }
 
   try {
-    const nguoiDung = await NguoiDungModel.getNguoiDungByTaiKhoanId(
-      parseInt(tai_khoan_id)
-    );
-    if (nguoiDung) {
-      res.status(200).json(nguoiDung);
+    const user = await NguoiDungModel.getNguoiDungByTaiKhoanId(id);
+    if (user) {
+      res.status(200).json(user);
     } else {
-      res.status(404).json({ message: "Người dùng không tìm thấy" });
+      res.status(404).json({ message: "Người dùng không tồn tại" });
     }
   } catch (error) {
-    console.error("Lỗi khi tìm người dùng theo tai_khoan_id:", error);
-    res
-      .status(500)
-      .json({ message: "Lỗi khi tìm người dùng theo tai_khoan_id", error });
+    handleError(res, error, "Lỗi khi lấy người dùng theo tai_khoan_id");
   }
 };

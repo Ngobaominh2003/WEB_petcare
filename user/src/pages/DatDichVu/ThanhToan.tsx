@@ -12,7 +12,7 @@ const ThanhToan: React.FC<Props> = ({ onNext, onBack }) => {
   const [dichVu, setDichVu] = useState<any | null>(null);
   const datLichInfo = JSON.parse(localStorage.getItem("datLichInfo") || "{}");
   const [chonDichVuInfo, setChonDichVuInfo] = useState<any | null>(null);
-  
+
   const paymentMap: Record<string, string> = {
     cash: "tiền mặt",
     card: "chuyển khoản",
@@ -68,7 +68,7 @@ const ThanhToan: React.FC<Props> = ({ onNext, onBack }) => {
         ngay_su_dung: today,
       });
 
-      // 4. (Mới) Cập nhật lại thông tin người dùng nếu có chỉnh sửa
+      // 4. Cập nhật người dùng nếu có
       const taiKhoanId = localStorage.getItem("tai_khoan_id");
       if (taiKhoanId) {
         await axios.put("http://localhost:5000/api/nguoidung", {
@@ -79,7 +79,34 @@ const ThanhToan: React.FC<Props> = ({ onNext, onBack }) => {
         });
       }
 
-      // 5. Chuyển sang bước xác nhận
+      // 5. Gửi thông báo cho người dùng
+      const thongBaoNoiDung = `Bạn đã đặt dịch vụ "${dichVu?.ten_dich_vu}" vào ngày ${datLichInfo.ngay_gio}. Phương thức thanh toán: ${paymentMap[selectedPayment]}.`;
+      await axios.post("http://localhost:5000/api/thong-bao", {
+        tai_khoan_id: chonDichVuInfo.tai_khoan_id,
+        tieu_de: "Đặt dịch vụ thành công",
+        noi_dung: thongBaoNoiDung,
+        loai: "dat_lich",
+      });
+
+     // 6. Gửi thông báo cho nhà cung cấp
+const dichVuRes = await axios.get(
+  `http://localhost:5000/api/dich-vu/${chonDichVuInfo.dich_vu_id}`
+);
+
+// Lưu ý: field đúng là 'nha_cung_cap_tai_khoan_id' từ truy vấn SQL
+const nhaCungCapId = dichVuRes.data.nha_cung_cap_tai_khoan_id;
+
+if (nhaCungCapId) {
+  await axios.post("http://localhost:5000/api/thong-bao", {
+    tai_khoan_id: nhaCungCapId,
+    tieu_de: "Có khách đặt lịch mới",
+    noi_dung: `Khách hàng đã đặt dịch vụ "${dichVu?.ten_dich_vu}" vào ${datLichInfo.ngay_gio}. Vui lòng xác nhận sớm.`,
+    loai: "dat_lich",
+  });
+}
+
+
+      // 7. Chuyển sang bước xác nhận
       onNext();
     } catch (err) {
       console.error("Lỗi khi hoàn tất thanh toán:", err);

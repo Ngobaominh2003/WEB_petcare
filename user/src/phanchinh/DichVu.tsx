@@ -2,9 +2,14 @@
 
 import type React from "react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import styles from "../TaiKhoan/style/dichvu.module.css";
+
+interface DichVuProps {
+  tuKhoa: string;
+  data: any;
+}
 
 interface DichVu {
   dich_vu_id: number;
@@ -16,20 +21,25 @@ interface DichVu {
   thoi_gian_hoan_thanh?: string;
   avata?: string;
   ten_nha_cung_cap?: string;
+  ten_danh_muc?: string; // Added this property
 }
 
 interface ThongKeDanhGia {
   diem_trung_binh: number | null;
 }
 
-const DichVu: React.FC = () => {
+const DichVu: React.FC<DichVuProps> = ({ tuKhoa: propTuKhoa, data }) => {
   const [dichVuList, setDichVuList] = useState<DichVu[]>([]);
   const [loading, setLoading] = useState(true);
   const [thongKeDanhGia, setThongKeDanhGia] = useState<{
     [key: number]: ThongKeDanhGia;
   }>({});
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const tuKhoa = searchParams.get("ten") || propTuKhoa;
+  
 
+  
   const handleDatLich = (dichVu: DichVu) => {
     const isLoggedIn = !!localStorage.getItem("token");
 
@@ -76,23 +86,44 @@ const DichVu: React.FC = () => {
   useEffect(() => {
     const fetchDichVu = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:5000/api/dich-vu/dieu-kien"
-        );
-        const list: DichVu[] = response.data;
+        setLoading(true);
+        let list: DichVu[] = [];
+  
+        // Nếu có từ khóa tìm kiếm → luôn ưu tiên gọi API tìm kiếm
+        if (tuKhoa && tuKhoa.trim() !== "") {
+          const res = await axios.get(
+            `http://localhost:5000/api/dich-vu/tim?ten=${encodeURIComponent(tuKhoa)}`
+          );
+          list = res.data;
+        }
+        // Nếu không có tuKhoa nhưng có data props từ cha → dùng luôn
+        else if (Array.isArray(data) && data.length > 0) {
+          list = data;
+        }
+        // Nếu không có gì cả → gọi API mặc định
+        else {
+          const res = await axios.get("http://localhost:5000/api/dich-vu/dieu-kien");
+          list = res.data;
+        }
+  
         setDichVuList(list);
+  
         list.forEach((dichVu) => {
-          fetchThongKeDanhGia(dichVu.dich_vu_id);
+          if (!thongKeDanhGia[dichVu.dich_vu_id]) {
+            fetchThongKeDanhGia(dichVu.dich_vu_id);
+          }
         });
       } catch (error) {
-        console.error("Error fetching services:", error);
+        console.error("Lỗi khi tải dịch vụ:", error);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchDichVu();
-  }, []);
+  }, [data, tuKhoa]);
+  
+  
 
   if (loading) return <p>Đang tải dịch vụ...</p>;
 
@@ -164,7 +195,7 @@ const DichVu: React.FC = () => {
                 <div className={styles.details}>
                   <div className={styles.detail}>
                     <i className="fas fa-tag" />
-                    <span>Làm đẹp</span>
+                    <span>{dichVu.ten_danh_muc}</span>
                   </div>
                   <div className={styles.detail}>
                     <i className="fas fa-clock" />
@@ -206,19 +237,6 @@ const DichVu: React.FC = () => {
       )}
 
       {/* Pagination */}
-      <div className={styles.pagination}>
-        <button className={styles.paginationBtn} disabled>
-          <i className="fas fa-chevron-left" />
-        </button>
-        <button className={`${styles.paginationBtn} ${styles.active}`}>
-          1
-        </button>
-        <button className={styles.paginationBtn}>2</button>
-        <button className={styles.paginationBtn}>3</button>
-        <button className={styles.paginationBtn}>
-          <i className="fas fa-chevron-right" />
-        </button>
-      </div>
     </div>
   );
 };

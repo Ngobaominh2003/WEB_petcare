@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Header from "../../components/Header";
 import Navbar from "../../components/Navbar";
 import NguoiDungMenu from "../../components/NguoiDungMenu";
-import "../style/styles.css";
+import "../style/styles.css"; // hoặc import "./cachthanhtoan.css"
 
 interface PhuongThuc {
   id: number;
@@ -55,32 +55,38 @@ const CachThanhToan: React.FC = () => {
                 <p>Quản lý các phương thức thanh toán của bạn</p>
               </div>
 
-              <div className="payment-cards">
+              <div className="cachthanhtoan-payment-container">
                 {phuongThucList.map((pt) => (
-                  <div key={pt.id} className="payment-card">
-                    <div className="card-header">
-                      <h3>{pt.loai}</h3>
-                      {pt.mac_dinh && <span className="badge">Mặc định</span>}
+                  <div key={pt.id} className="cachthanhtoan-payment-card">
+                    <div className="cachthanhtoan-card-header">
+                      <h3 className="cachthanhtoan-card-title">{pt.loai}</h3>
+                      {pt.mac_dinh && (
+                        <span className="cachthanhtoan-badge-default">
+                          Mặc định
+                        </span>
+                      )}
                     </div>
-                    <p className="card-detail">{pt.chi_tiet}</p>
-                    <div className="card-actions">
-                      <button className="btn-edit">Sửa</button>
-                      <button className="btn-delete">Xoá</button>
+                    <p className="cachthanhtoan-card-detail">{pt.chi_tiet}</p>
+                    <div className="cachthanhtoan-card-actions">
+                      <button className="cachthanhtoan-btn-edit">Sửa</button>
+                      <button className="cachthanhtoan-btn-delete">Xoá</button>
                     </div>
                   </div>
                 ))}
               </div>
 
               <button
-                className="btn-add"
+                className="cachthanhtoan-btn-add"
                 onClick={() => setShowForm(!showForm)}
               >
                 {showForm ? "✖ Đóng" : "+ Thêm phương thức mới"}
               </button>
 
-
               {showForm && (
-                <form className="payment-form" onSubmit={handleAddPhuongThuc}>
+                <form
+                  className="cachthanhtoan-form"
+                  onSubmit={handleAddPhuongThuc}
+                >
                   <input
                     type="text"
                     placeholder="Loại phương thức (VD: Ví MoMo)"
@@ -99,17 +105,20 @@ const CachThanhToan: React.FC = () => {
                       setFormData({ ...formData, chi_tiet: e.target.value })
                     }
                   />
-                  <label className="form-checkbox">
+                  <label className="cachthanhtoan-checkbox-group">
                     <input
                       type="checkbox"
                       checked={formData.mac_dinh}
                       onChange={(e) =>
-                        setFormData({ ...formData, mac_dinh: e.target.checked })
+                        setFormData({
+                          ...formData,
+                          mac_dinh: e.target.checked,
+                        })
                       }
                     />
                     Đặt làm mặc định
                   </label>
-                  <button type="submit" className="submit-btn">
+                  <button type="submit" className="cachthanhtoan-submit-btn">
                     Lưu phương thức
                   </button>
                 </form>
